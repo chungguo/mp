@@ -35,6 +35,8 @@ page {
   --td-brand-color: #3D61F5;
   --primary-color: #3D61F5;
   background-color: #F5F5F5;
+  padding-block-end: env(safe-area-inset-bottom);
+  box-sizing: border-box;
 }
 
 image {
