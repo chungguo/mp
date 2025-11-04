@@ -71,6 +71,8 @@ export const useUserStore = defineStore('user', () => {
         data: {
           code: loginRes.code,
         },
+        // @ts-ignore
+        usePromise: false,
         success: (res) => {
           const newToken = res.data.data.session_token;
           token.value = newToken;
@@ -81,7 +83,7 @@ export const useUserStore = defineStore('user', () => {
         },
       });
     });
-  }
+  };
 
   async function queryProfile() {
     const res = await request.fetch<{
@@ -92,7 +94,7 @@ export const useUserStore = defineStore('user', () => {
     });
 
     profile.value = res.data.data;
-  }
+  };
 
   return {
     // 状态

@@ -110,6 +110,11 @@ createPage({
     this.activeTab = 'hospital';
   },
 
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setCurrentTab('index');
+    }
+  },
   /**
    * 切换标签页
    */
