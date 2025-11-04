@@ -1,26 +1,40 @@
 <template>
   <view class="list">
-    <view wx:for="{{listData}}" wx:key="*this">{{item}}</view>
+    <view wx:for="{{ listData }}" wx:key="*this">{{ item }}</view>
+    <t-button theme="primary" size="large" bindtap="onLogin">填充按钮</t-button>
+
   </view>
 </template>
 
 <script lang="ts">
+import { mapActions } from '@mpxjs/pinia';
 import { createComponent } from '@mpxjs/core'
+import { useUserStore } from '@/store/user';
 
 createComponent({
   data: {
     listData: ['手机', '电视', '电脑']
+  },
+  methods: {
+    ...mapActions(useUserStore, ['login']),
+    onLogin() {
+      this.login();
+    }
   }
 })
 </script>
 
-<style lang="stylus">
-  .list
-    background-color red
+<style lang="less">
+.list {
+  background-color: red;
+}
 </style>
 
 <script type="application/json">
   {
-    "component": true
+    "component": true,
+    "usingComponents": {
+      "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    }
   }
 </script>

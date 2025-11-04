@@ -1,30 +1,108 @@
 <script lang="ts">
-import mpx, { createApp } from '@mpxjs/core'
-import apiProxy from '@mpxjs/api-proxy'
+import mpx, { createApp } from '@mpxjs/core';
+import apiProxy from '@mpxjs/api-proxy';
+import { createPinia } from '@mpxjs/pinia';
+import { updateManager } from '@/common/update-manager';
 
-mpx.use(apiProxy, { usePromise: true })
-createApp({})
+const pinia = createPinia();
+
+mpx.use(pinia);
+mpx.use(apiProxy, {
+  usePromise: true,
+});
+
+createApp({
+  onShow() {
+    updateManager();
+  },
+  restartMiniProgram() {
+    mpx.showModal({
+      title: '温馨提示',
+      content: '系统开小差，请重启小程序再试～',
+      showCancel: false,
+      complete: () => {
+        wx.restartMiniProgram({
+          path: "/pages/index/index",
+        });
+      },
+    });
+  },
+});
 </script>
 
-<style>
+<style lang="less">
+page {
+  --td-brand-color: #3D61F5;
+  --primary-color: #3D61F5;
+  background-color: #F5F5F5;
+}
 
+image {
+  width: 100%;
+  display: block;
+}
+
+/* 单行超出省略 */
+.ellipsis {
+  overflow: hidden;
+  width: 100%;
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>
 
 <script type="application/json">
   {
     "pages": [
-      "./pages/index"
-    ]
+      "./pages/index",
+      "./pages/me",
+      "./pages/consultation",
+      // "./pages/profile",
+      // "./pages/hospital/hospital",
+      // "./pages/advantage/advantage",
+      // "./pages/advantage-detail/advantage-detail",
+      // "./pages/consultation-list/consultation-list",
+      // "./pages/hospital-detail/hospital-detail",
+      // "./pages/my-coupon/my-coupon",
+      // "./pages/coupon-batch/coupon-batch",
+      // "./pages/coupon-receive/coupon-receive",
+      // "./pages/coupon-detail/coupon-detail"
+    ],
+    "window": {
+      "backgroundColor": "#F5F5F5",
+      "navigationBarBackgroundColor": "#FFFFFF",
+      "navigationBarTextStyle": "white"
+    },
+    "permission": {
+      "scope.userLocation": {
+        "desc": "基于您的位置信息，为您推荐最佳口腔医院"
+      }
+    },
+    "requiredPrivateInfos": [
+      "getLocation"
+    ],
+    "lazyCodeLoading": "requiredComponents",
+    "networkTimeout": {
+      "request": 10000,
+      "downloadFile": 30000
+    },
+    "tabBar": {
+      "custom": true,
+      "color": "#666",
+      "selectedColor": "#3D61F5",
+      "backgroundColor": "#fff",
+      "borderStyle": "black",
+      "list": [
+        {
+          "pagePath": "pages/index",
+          "text": "首页"
+        },
+        {
+          "pagePath": "pages/me",
+          "text": "我的"
+        },
+      ],
+    },
   }
 </script>
-
-<!--也可以通过以下形式用js输出json，便于书写注释和使用条件编译-->
-
-<!--<script name="json">-->
-<!--  // 可以写注释，通过defs注入的常量做一些判断之类的操作-->
-<!--  module.exports = {-->
-<!--    pages: [-->
-<!--      './pages/index'-->
-<!--    ]-->
-<!--  }-->
-<!--</script>-->

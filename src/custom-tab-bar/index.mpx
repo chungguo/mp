@@ -1,0 +1,66 @@
+<template>
+  <t-tab-bar value="{{ tab }}" bind:change="switchTab" fixed split="{{ false }}">
+    <t-tab-bar-item wx:for="{{ tabList }}" wx:key="value" value="{{ item.value }}" icon="{{ item.icon }}"
+      data-tab="{{ item.value }}" bind:tap="switchTab">
+      {{ item.text }}
+    </t-tab-bar-item>
+  </t-tab-bar>
+</template>
+
+<script lang="ts">
+import mpx, { createComponent } from "@mpxjs/core";
+
+createComponent({
+  data: {
+    tab: 'index',
+    tabList: [
+      {
+        text: '首页',
+        value: 'index',
+        icon: 'home',
+        path: '../pages/index',
+      },
+      {
+        text: '我的',
+        value: 'user',
+        icon: 'user',
+        path: '../pages/me',
+      },
+    ],
+  },
+  methods: {
+    switchTab(e: WechatMiniprogram.CustomEvent) {
+      const tab = e.currentTarget.dataset.tab;
+
+      // 如果点击的是当前页面，不执行跳转
+      if (tab === this.data.tab) {
+        return;
+      }
+
+      // 根据tab值找到对应的路径并跳转
+      const target = this.data.tabList.find(t => t.value === tab);
+      
+      if (target) {
+        mpx.switchTab({
+          url: target.path,
+        });
+      }
+    },
+
+    setCurrentTab(tab: string) {
+      this.data.tab = tab;
+    }
+  }
+});
+
+</script>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-tab-bar": "tdesign-miniprogram/miniprogram_dist/tab-bar/tab-bar",
+    "t-tab-bar-item": "tdesign-miniprogram/miniprogram_dist/tab-bar-item/tab-bar-item"
+  }
+}
+</script>

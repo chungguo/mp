@@ -1,0 +1,115 @@
+<template>
+  <view>
+    <t-navbar title="我的"></t-navbar>
+    <view class="user-header-background">
+      <image src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385148"
+        mode="widthFix" />
+    </view>
+    <view class="user-front">
+      <view class="user-header_content" bind:tap="goProfile">
+        <t-avatar size="84rpx" slot="image" image="{{ avatar }}" />
+        <view class="user-header_info">
+          <view>
+            <text class="nickname">{{ nickname }}</text>
+            <view class="extra">
+              <text wx:if="{{ roleName }}">{{ roleName }}</text>
+            </view>
+          </view>
+          <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="goProfile" />
+        </view>
+      </view>
+      <view gutter="14" class="user-header-card">
+        <view class="user-card" bind:tap="goCoupons">
+          <view class="user-card_icon_wrapper">
+            <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-coupon.png"
+              class="user-card_icon_image" />
+          </view>
+          优惠券
+        </view>
+        <view class="user-card" bind:tap="goConsultationList">
+          <view class="user-card_icon_wrapper">
+            <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-history.png"
+              class="user-card_icon_image" />
+          </view>
+          咨询记录
+        </view>
+      </view>
+      <t-cell-group wx:if="{{ role }}" theme="card" title="管理端">
+        <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
+      </t-cell-group>
+      <t-dialog visible="{{ scaned }}">
+        <view class="waitting" slot="content">
+          <t-loading theme="circular" size="40rpx" />
+          正在核销，请稍候...
+        </view>
+      </t-dialog>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import { useUserStore } from '@/store/user';
+import mpx from '@mpxjs/core';
+import { createPage } from "@mpxjs/core";
+import { mapState, mapActions } from '@mpxjs/pinia';
+
+createPage({
+  data: {
+    scaned: false,
+    roleName: '',
+  },
+  ...mapState(useUserStore, ['profile']),
+  ...mapActions(useUserStore, ['queryProfile']),
+
+  onShow() {
+    this.queryProfile();
+  },
+
+  async onScan() {
+    try {
+      const data = await mpx.scanCode({
+        onlyFromCamera: true,
+        scanType: ['qrCode'],
+      });
+
+      const { result } = data;
+      this.setData({
+        scaned: true,
+      });
+      this.redeem(result);
+    } catch (e) {
+      mpx.showModal({
+        title: '识别结果',
+        content: '识别失败',
+        showCancel: false,
+        confirmText: '知道了',
+      });
+    }
+  },
+
+  goProfile() {
+    mpx.navigateTo({
+      url: '/pages/profile/profile',
+    });
+  },
+
+  goCoupons() {
+    mpx.navigateTo({
+      url: '/pages/my-coupon/my-coupon',
+    });
+  },
+
+  goConsultationList() {
+    mpx.navigateTo({
+      url: '/pages/consultation-list/consultation-list',
+    });
+  },
+})
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-background: rgba(255, 255, 255, 0);
+  --td-navbar-bg-color: rgba(255, 255, 255, 0);
+}
+</style>

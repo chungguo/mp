@@ -1,21 +1,194 @@
 <template>
-  <list></list>
+  <view class="relative">
+
+    <t-navbar title="健牙宝">
+      <view slot="left" class="flex" style="gap: 12rpx;">
+        <t-icon name="location-filled" size="20" />
+        <text>{{ lbs.city }}</text>
+      </view>
+    </t-navbar>
+
+    <!-- 顶部渐变背景区域 -->
+    <image class="absolute top-0 left-0 right-0" bindtap="navigateToConsultation" mode="widthFix"
+      src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385150" />
+
+    <!-- 主内容区域 -->
+    <view class="mt-[294rpx] px-[32rpx] relative">
+      <!-- 功能入口卡片 -->
+      <view class="my-[24rpx] bg-white rounded-[24rpx] py-[40rpx]">
+        <t-row gutter="16">
+          <t-col span="8">
+            <view class="flex flex-col flex-items-center gap-xs" bindtap="navigateToAdvantage">
+              <view class="w-[112rpx]">
+                <image mode="widthFix" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/advantage.png" />
+              </view>
+              <text class="text-[28rpx] text-[#333333] font-400">优势项目</text>
+            </view>
+          </t-col>
+          <t-col span="8">
+            <view class="flex flex-col flex-items-center gap-xs " bindtap="navigateToConsultation">
+              <view class="w-[112rpx]">
+                <image mode="widthFix"
+                  src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/consulation.png" />
+              </view>
+              <text class="text-[28rpx] text-[#333333] font-400">口腔咨询</text>
+            </view>
+          </t-col>
+          <t-col span="8">
+            <view class="flex flex-col flex-items-center gap-xs" bindtap="navigateToHospital">
+              <view class="w-[112rpx]">
+                <image mode="widthFix" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital.png" />
+              </view>
+              <text class="text-[28rpx] text-[#333333] font-400">合作医院</text>
+            </view>
+          </t-col>
+        </t-row>
+      </view>
+      <!-- 特惠洗牙券广告 -->
+      <image mode="widthFix" class="rounded-[24rpx] my-[24rpx]" bindtap="navigateToCoupon"
+        src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385151" />
+
+      <view class="my-[24rpx]">
+        <view class="mb-[20rpx]">
+          <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" bottom-line-mode="full"
+            theme="line" t-class="tabs">
+            <t-tab-panel label="医院介绍" value="hospital">
+              <view class="grid grid-cols-2 gap-[24rpx] pb-[20rpx] mt-[20rpx]">
+                <view class="w-full bg-white rounded-[24rpx] overflow-hidden" wx:for="{{ hospitals }}" wx:key="id"
+                  bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
+                  <image class="h-[332rpx]" src="{{ item.images[0] }}" mode="aspectFill" />
+                  <view class="p-[20rpx] box-border">
+                    <text class="block text-[28rpx] text-black font-700 mb-[8rpx] ellipsis">{{ item.name }}</text>
+                    <text class="text-[24rpx] text-[#999999] font-400 ellipsis">{{ item.address }}</text>
+                  </view>
+                </view>
+              </view>
+            </t-tab-panel>
+            <t-tab-panel disabled label="" value="2"></t-tab-panel>
+            <t-tab-panel disabled label="" value="3"></t-tab-panel>
+            <t-tab-panel disabled label="" value="4"></t-tab-panel>
+            <t-tab-panel disabled label="" value="5"></t-tab-panel>
+          </t-tabs>
+        </view>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script lang="ts">
-import { createPage } from '@mpxjs/core'
+import { useHospitalStore } from '@/store/hospital';
+import mpx, { createPage } from '@mpxjs/core';
+import { mapState, mapActions } from '@mpxjs/pinia';
 
 createPage({
+  data: {
+    activeTab: '',
+
+    lbs: {
+      city: '全国',
+    },
+  },
+  ...mapState(useHospitalStore, {
+    hospitals: 'hospitalList'
+  }),
+  ...mapActions(useHospitalStore, {
+    fetchHospitals: 'fetch',
+  }),
+  watch: {
+    async activeTab(newValue) {
+      if (newValue === 'hospital') {
+        await this.fetchHospitals();
+      }
+    },
+  },
+  computed: {
+    hospitalList() {
+      return this.hospitals ?? [];
+    },
+  },
   onLoad() {
-    //
-  }
+    this.activeTab = 'hospital';
+  },
+
+  /**
+   * 切换标签页
+   */
+  onTabsChange(e: WechatMiniprogram.CustomEvent) {
+    this.activeTab = e.detail.value;
+  },
+
+  /**
+   * 导航到口腔咨询页面
+   */
+  navigateToConsultation() {
+    mpx.navigateTo({
+      url: './consultation'
+    });
+  },
+
+  /**
+   * 导航到医院页面
+   */
+  navigateToHospital() {
+    mpx.navigateTo({
+      url: './hospital/hospital'
+    });
+  },
+
+  navigateToAdvantage() {
+    mpx.navigateTo({
+      url: './advantage/advantage'
+    });
+  },
+
+  navigateToHospitalDetail(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `./hospital-detail/hospital-detail?id=${id}`
+    });
+  },
+  /**
+   * 导航到优惠券页面
+   */
+  navigateToCoupon() {
+    mpx.navigateTo({
+      url: './coupon-batch/coupon-batch'
+    });
+  },
 })
 </script>
 
 <script type="application/json">
   {
+    "navigationBarTitleText": "首页",
+    "navigationStyle": "custom",
     "usingComponents": {
-      "list": "../components/list"
+      "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+      "t-row": "tdesign-miniprogram/miniprogram_dist/row/row",
+      "t-col": "tdesign-miniprogram/miniprogram_dist/col/col",
+      "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+      "t-tabs": "tdesign-miniprogram/miniprogram_dist/tabs/tabs",
+      "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel"
     }
   }
 </script>
+
+<style>
+/* 页面基础样式 */
+page {
+  --td-navbar-color: white;
+  --td-tab-nav-bg-color: transparent;
+
+  --td-navbar-background: rgba(255, 255, 255, {
+      {
+      opacity
+    }
+  });
+
+--td-navbar-bg-color: rgba(255, 255, 255, {
+    {
+    opacity
+  }
+});
+}
+</style>
