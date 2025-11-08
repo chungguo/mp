@@ -2,22 +2,24 @@
   <!-- 优势项目列表页面 -->
   <view>
     <t-navbar title="优势项目" left-arrow bind:go-back="goBack" />
-    
+
     <!-- 背景图片 -->
-    <t-image src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385148" mode="widthFix" class="absolute top-0 left-0 right-0 z-1" />
-    
+    <image src='https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png' mode="widthFix"
+      class="absolute z-1 top-0 left-0 right-0" />
+
     <!-- 滚动容器 -->
-    <scroll-view scroll-y="{{true}}" class="relative z-2 box-border p-32rpx">
+    <scroll-view scroll-y="{{ true }}" class="relative z-2 box-border p-[32rpx]">
       <!-- 优势项目列表 -->
-      <block wx:for="{{projects}}" wx:key="_id">
-        <view class="flex flex-col rounded-24rpx bg-white mb-24rpx overflow-hidden" bindtap="navigateToAdvantageDetail" data-id="{{item._id}}">
+      <block wx:for="{{ projects }}" wx:key="id">
+        <view class="flex flex-col rounded-[24rpx] bg-white mb-[24rpx] overflow-hidden" bindtap="navigateToAdvantageDetail"
+          data-id="{{ item.id }}">
           <!-- 项目图片 -->
-          <t-image src="{{item.images[0]}}" mode="aspectFill" width="100%" height="160" />
-          
+          <t-image src="{{ item.images[0] }}" mode="aspectFill" width="100%" height="160" />
+
           <!-- 项目信息 -->
-          <view class="flex-1 flex flex-col gap-16rpx p-24rpx-32rpx">
-            <view class="flex items-center gap-12rpx">
-              <text class="text-36rpx font-600 text-#333 flex-1">{{item.name}}</text>
+          <view class="flex-1 flex flex-col gap-[16rpx] px-[24rpx] py-[32rpx]">
+            <view class="flex items-center gap-[12rpx]">
+              <text class="text-[36rpx] font-[600] text-[#333] flex-1">{{ item.name }}</text>
             </view>
           </view>
         </view>
@@ -28,47 +30,22 @@
 
 <script lang="ts">
 import mpx, { createPage } from '@mpxjs/core';
-
+import { advantage } from './config';
 createPage({
   data: {
-    projects: [],
-  },
-
-  async onLoad() {
-    mpx.showLoading({
-      title: '加载中...',
-      mask: true,
-    });
-
-    try {
-      await this.getAdvantageProjects();
-    } finally {
-      mpx.hideLoading();
-    }
+    projects: advantage,
   },
 
   goBack() {
     mpx.redirectTo({
-      url: '/pages/index/index',
+      url: '../index',
     });
   },
 
-  async getAdvantageProjects() {
-    try {
-      const resp = await db.collection('advantage_project').get();
-      this.projects = resp.data ?? [];
-    } catch (error) {
-      mpx.showToast({
-        title: '加载失败',
-        icon: 'none',
-      });
-    }
-  },
-
-  navigateToAdvantageDetail(e) {
+  navigateToAdvantageDetail(e: WechatMiniprogram.CustomEvent) {
     const { id } = e.currentTarget.dataset;
     mpx.navigateTo({
-      url: `/pages/advantage/detail?id=${id}`
+      url: `./detail?id=${id}`
     });
   }
 });
@@ -76,7 +53,6 @@ createPage({
 
 <style>
 page {
-  position: relative;
   --td-navbar-color: white;
   --td-navbar-background: transparent;
   --td-tag-disabled-background-color: #F0FFFB;

@@ -1,0 +1,296 @@
+<template>
+  <!-- 个人信息设置页面 -->
+  <view>
+    <t-navbar left-arrow bind:go-back="goBack" title="个人信息" />
+
+    <view class="flex flex-col gap-12px">
+      <!-- 头像设置 -->
+      <view class="w-full h-[200rpx] bg-white flex items-center justify-center">
+        <view class="relative">
+          <button name="avatar" class="w-164rpx h-164rpx m-0 p-0 border-0 rounded-full" open-type="chooseAvatar"
+            bind:chooseavatar="onChooseAvatar">
+            <image class="w-full" mode="widthFix" src="{{ avatar }}" />
+          </button>
+          <t-icon size="12" name="camera"
+            class="absolute right-0 bottom-0 z-2 text-white p-16rpx rounded-full bg-black" />
+        </view>
+      </view>
+
+      <!-- 个人信息表单 -->
+      <view>
+        <!-- 手机号授权 -->
+        <t-cell title="手机" t-class-center="cell-center" t-class-note="cell-note">
+          <t-button block size="small" theme="primary" variant="text" slot="note" open-type="getPhoneNumber"
+            bind:getphonenumber="onGetPhoneNumber">
+            <text wx:if="{{ mobile }}">{{ mobile }}</text>
+            <text wx:else>授权手机号</text>
+          </t-button>
+        </t-cell>
+
+        <!-- 昵称 -->
+        <t-cell title="昵称" t-class-center="cell-center" t-class-note="cell-note">
+          <t-input slot="note" borderless type="nickname" placeholder="请输入" maxlength="10"
+            bind:change="onNicknameChange" value="{{ nickname }}" />
+        </t-cell>
+
+        <!-- 性别选择 -->
+        <t-cell title="性别" t-class-center="cell-center" t-class-note="cell-note">
+          <t-radio-group slot="note" placement="horizontal" value="{{ gender }}" bind:change="onGenderChange"
+            class="flex items-center gap-48rpx">
+            <block wx:for="{{ genderOptions }}" wx:key="value">
+              <t-radio borderless block="{{ false }}" vicon="dot" value="{{ item.value }}" label="{{ item.label }}" />
+            </block>
+          </t-radio-group>
+        </t-cell>
+
+        <!-- 生日选择 -->
+        <t-cell title="生日" bind:tap="showDatePicker" t-class-center="cell-center" t-class-note="cell-note">
+          <text slot="note">{{ birthdate || '请选择' }}</text>
+        </t-cell>
+
+        <t-date-time-picker start="1900-01-01" end="{{ maxDate }}" default-value="2000-01-01" name="birthdate"
+          auto-close title="选择日期" visible="{{ dateVisible }}" mode="date" format="YYYY-MM-DD"
+          bind:confirm="onBirthDateConfirm" bind:cancel="handleClose" bind:close="handleClose" />
+      </view>
+    </view>
+
+    <!-- 保存按钮 -->
+    <button class="absolute left-0 right-0 z-2 m-64rpx bottom-0 text-white bg-#3D61F5" bind:tap="onSubmit">保存</button>
+  </view>
+</template>
+
+<script lang="ts">
+import request, { BASE_URL } from '@/common/request';
+import { Gender, GenderOptions, useUserStore } from '@/store/user';
+import mpx, { createPage } from '@mpxjs/core';
+import { mapActions, mapState } from '@mpxjs/pinia';
+import dayjs from 'dayjs';
+import { pickBy } from 'lodash-es';
+
+createPage({
+  data: {
+    avatar: '',
+    nickname: '',
+    mobile: '',
+    gender: Gender.Male,
+    birthdate: '',
+    maxDate: dayjs().subtract(1, 'd').format(),
+    dateVisible: false,
+    genderOptions: GenderOptions,
+  },
+  ...mapState(useUserStore, ['profile', 'token']),
+  ...mapActions(useUserStore, ['queryProfile', 'updateProfile']),
+
+  onLoad() {
+    this.fetch();
+  },
+
+  async fetch() {
+    mpx.showLoading({
+      title: '加载中...',
+      mask: true,
+    });
+
+    try {
+      await this.queryProfile();
+      const profile = this.profile().value;
+      this.avatar = profile?.avatarUrl ?? '';
+      this.nickname = profile?.nickname ?? '';
+      this.gender = profile?.gender ?? '';
+      this.mobile = profile?.phone ?? '';
+      this.birthdate = profile?.birthdate ?? '';
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  goBack() {
+    mpx.navigateBack();
+  },
+
+  handleClose() {
+    this.dateVisible = false;
+  },
+
+  showDatePicker() {
+    this.dateVisible = true;
+  },
+
+  onChooseAvatar(e: WechatMiniprogram.CustomEvent) {
+    const { avatarUrl } = e.detail;
+    this.avatar = avatarUrl;
+  },
+
+  async onGetPhoneNumber(e: WechatMiniprogram.CustomEvent) {
+    if (!e.detail.code) {
+      mpx.showModal({
+        title: '获取授权失败',
+        content: e.detail.errMsg,
+        showCancel: false,
+        confirmText: '知道了',
+      });
+      return;
+    }
+
+    mpx.showLoading({
+      title: '获取授权中...',
+    });
+
+    try {
+      const resp = await request.fetch<{
+        data: { phone_number: string }
+      }>({
+        url: '/auth/phone',
+        data: {
+          code: e.detail.code,
+        },
+      });
+
+      const phone = resp.data?.data?.phone_number;
+
+      if (!phone) {
+        mpx.showToast({
+          icon: 'error',
+          title: '获取授权失败',
+        });
+        return;
+      }
+
+      this.mobile = phone;
+    } catch (e) {
+      mpx.showToast({
+        title: '获取授权失败',
+        icon: 'error',
+      });
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  onNicknameChange(e: WechatMiniprogram.CustomEvent) {
+    this.nickname = e.detail.value;
+  },
+
+  onGenderChange(e: WechatMiniprogram.CustomEvent) {
+    this.gender = e.detail.value;
+  },
+
+  onBirthDateConfirm(e: WechatMiniprogram.CustomEvent) {
+    this.birthdate = dayjs(e.detail.value).format('YYYY-MM-DD');
+  },
+
+  async onSubmit() {
+    mpx.showLoading({
+      title: '正在保存...'
+    });
+
+    const url = await this.uploadAvatar();
+
+    const { mobile, nickname, gender, birthdate } = this;
+
+    const account = pickBy({
+      nickname,
+      avatar_url: url,
+      phone: mobile,
+      gender,
+      birthdate,
+    }, Boolean);
+
+    try {
+      await this.updateProfile(account);
+
+      mpx.showToast({
+        icon: 'success',
+        title: '保存成功',
+      });
+      setTimeout(() => {
+        this.goBack();
+      }, 1000);
+    } catch (error) {
+      console.log(error)
+      mpx.showToast({
+        icon: 'error',
+        title: '保存失败',
+      });
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  /**
+   * 将临时地址上传至云端
+   */
+  async uploadAvatar() {
+    if (!this.avatar || this.avatar.startsWith('cloud://')) {
+      return;
+    }
+
+    return new Promise((resolve, reject) => {
+      mpx.uploadFile({
+        url: `${BASE_URL}/upload/image`,
+        filePath: this.avatar,
+        name: 'file',
+        header: {
+          'Authorization': `Bearer ${this.token().value}`,
+        },
+        success: res => {
+          try {
+            const data = JSON.parse(res.data);
+            if (data.data?.url) {
+              resolve(data.data.url);
+            } else {
+              reject(data);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        },
+        fail: e => {
+          reject(e);
+        },
+      });
+    });
+  },
+});
+</script>
+
+<style scoped lang="less">
+page {
+  --td-input-vertical-padding: 0;
+  --td-button-font-weight: normal;
+}
+
+.t-cell {
+  align-items: center;
+}
+
+.cell-center {
+  flex: none !important;
+  width: 160rpx;
+}
+
+.cell-note {
+  flex: 1 !important;
+  justify-content: flex-start !important;
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "个人信息",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-input": "tdesign-miniprogram/miniprogram_dist/input/input",
+    "t-radio-group": "tdesign-miniprogram/miniprogram_dist/radio-group/radio-group",
+    "t-radio": "tdesign-miniprogram/miniprogram_dist/radio/radio",
+    "t-date-time-picker": "tdesign-miniprogram/miniprogram_dist/date-time-picker/date-time-picker",
+    "t-toast": "tdesign-miniprogram/miniprogram_dist/toast/toast",
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-cell-group": "tdesign-miniprogram/miniprogram_dist/cell-group/cell-group",
+    "t-cell": "tdesign-miniprogram/miniprogram_dist/cell/cell",
+    "t-avatar": "tdesign-miniprogram/miniprogram_dist/avatar/avatar"
+  }
+}
+</script>

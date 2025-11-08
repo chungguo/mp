@@ -13,37 +13,35 @@ export interface Hospital {
   business_hours: string;
 }
 
-interface HospitalState {
-  hospitals: Hospital[];
-}
-
 export const useHospitalStore = defineStore('hospital', {
-  state: (): HospitalState => {
-    return {
-      hospitals: [],
-    };
-  },
-
-  getters: {
-    hospitalList: (state) => state.hospitals,
-  },
-
   actions: {
-    async fetch() {
+    async fetch(filter = {}) {
       const response = await request.fetch<{
-        clinics: Hospital[];
+        data: {
+          clinics: Hospital[];
+        },
       }>({
         url: '/clinics',
         method: "GET",
         params: {
           page: 1,
           page_size: 100,
+          ...filter
         },
       });
 
-      this.$patch((state) => {
-        state.hospitals = response.data?.clinics ?? [];
+      const clinics = response.data.data.clinics ?? [];
+      return clinics;
+    },
+    async fetchById(id: string) {
+      const response = await request.fetch<{
+        data: Hospital
+      }>({
+        url: `/clinics/${id}`,
+        method: "GET",
       });
+
+      return response.data.data;
     }
   }
 })

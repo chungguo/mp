@@ -1,24 +1,26 @@
 <template>
   <!-- 优势项目详情页面 -->
   <view>
-    <t-navbar left-arrow bind:go-back="goBack" title="{{project.name}}" />
-    
+    <t-navbar left-arrow bind:go-back="goBack" title="{{ project.name }}" />
+
     <!-- 项目图片轮播 -->
-    <view class="mb-20rpx">
-      <t-swiper list="{{project.images}}" navigation="{{ { type: 'dots' } }}" image-props="{{imageProps}}"></t-swiper>
+    <view class="mb-[20rpx]">
+      <t-swiper list="{{ project.images }}" navigation="{{ { type: 'dots' } }}"
+        image-props="{{ imageProps }}"></t-swiper>
     </view>
-    
-    <view class="px-30rpx">
+
+    <view class="px-[30rpx]">
       <!-- 项目介绍 -->
-      <view class="bg-white p-30rpx mb-20rpx rounded-24rpx whitespace-pre-wrap">
-        <view class="text-32rpx font-600 text-#333 mb-20rpx pb-16rpx">项目介绍</view>
-        <view class="text-26rpx text-#666 leading-1.6">{{project.desc}}</view>
+      <view class="bg-white p-[30rpx] mb-[20rpx] rounded-[24rpx] whitespace-pre-wrap">
+        <view class="text-[32rpx] font-[600] text-#333 mb-[20rpx] pb-[16rpx]">项目介绍</view>
+        <view class="text-[26rpx] text-[#666] leading-[1.6]">{{ project.desc }}</view>
       </view>
     </view>
   </view>
 </template>
 
 <script lang="ts">
+import { advantage } from './config';
 import mpx, { createPage } from '@mpxjs/core';
 
 createPage({
@@ -26,43 +28,16 @@ createPage({
     imageProps: {
       mode: "aspectFit"
     },
-    project: {},
+    project: {} as typeof advantage[number],
   },
 
   async onLoad(options) {
     const { id } = options;
-    
-    mpx.showLoading({
-      title: '加载中...',
-      mask: true,
-    });
-
-    try {
-      await this.getAdvantageDetail(id);
-    } finally {
-      mpx.hideLoading();
-    }
+    this.project = advantage.find(item => item.id === id)!;
   },
 
   goBack() {
     mpx.navigateBack();
-  },
-
-  async getAdvantageDetail(id) {
-    try {
-      const resp = await db.collection('advantage_project').doc(id).field({
-        owner: false,
-        updateBy: false,
-        createBy: false,
-      }).get();
-
-      this.project = resp.data;
-    } catch (error) {
-      mpx.showToast({
-        title: '加载失败',
-        icon: 'none',
-      });
-    }
   },
 });
 </script>

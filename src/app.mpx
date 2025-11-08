@@ -35,7 +35,7 @@ page {
   --td-brand-color: #3D61F5;
   --primary-color: #3D61F5;
   background-color: #F5F5F5;
-  padding-block-end: env(safe-area-inset-bottom);
+  padding-block-end: calc(env(safe-area-inset-bottom) + 100rpx);
   box-sizing: border-box;
 }
 
@@ -58,7 +58,8 @@ image {
   {
     "pages": [
       "./pages/index",
-      "./pages/me",
+      "./pages/me/index",
+      "./pages/me/setting",
       "./pages/consultation/form",
       "./pages/consultation/record",
       "./pages/hospital/list",
@@ -101,7 +102,7 @@ image {
           "text": "首页"
         },
         {
-          "pagePath": "pages/me",
+          "pagePath": "pages/me/index",
           "text": "我的"
         },
       ],

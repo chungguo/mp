@@ -9,6 +9,11 @@ export enum Gender {
   Female = 2,
 }
 
+export const GenderOptions = [
+  { label: '男', value: Gender.Male },
+  { label: '女', value: Gender.Female }
+]
+
 export enum RoleId {
   // 平台管理员
   Admin = 1,
@@ -96,6 +101,13 @@ export const useUserStore = defineStore('user', () => {
     profile.value = res.data.data;
   };
 
+  async function updateProfile(data: Partial<Profile>) {
+    return request.fetch({
+      url: '/auth/profile',
+      method: 'PUT',
+      data,
+    });
+  }
   return {
     // 状态
     token,
@@ -103,5 +115,6 @@ export const useUserStore = defineStore('user', () => {
     // actions
     login,
     queryProfile,
+    updateProfile,
   };
 });

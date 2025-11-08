@@ -25,5 +25,17 @@ mpx.xfetch.interceptors.request.use(async (config) => {
   };
 });
 
+mpx.xfetch.interceptors.response.use((res) => {
+  if (res.data.error) {
+    wx.showModal({
+      title: '提示',
+      content: res.data.details || res.data.error,
+      showCancel: false,
+    });
+    return Promise.reject(res);
+  }
+  return res;
+});
+
 
 export default mpx.xfetch;

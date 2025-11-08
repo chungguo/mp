@@ -1,7 +1,7 @@
 <template>
   <!-- 合作医院列表页面 -->
   <t-navbar title="合作医院" left-arrow bind:go-back="goBack"></t-navbar>
-  <image src='https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385148'
+  <image src='https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png'
     mode="widthFix" class="absolute z-1 top-0 left-0 right-0" />
   <scroll-view scroll-y="{{ true }}" class="relative z-2 box-border p-32rpx">
     <!-- 医院列表 -->

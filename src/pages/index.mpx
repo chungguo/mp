@@ -56,7 +56,7 @@
               <view class="grid grid-cols-2 gap-[24rpx] pb-[20rpx] mt-[20rpx]">
                 <view class="w-full bg-white rounded-[24rpx] overflow-hidden" wx:for="{{ hospitals }}" wx:key="id"
                   bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
-                  <image class="h-[332rpx]" src="{{ item.images[0] }}" mode="aspectFill" />
+                  <image class="h-[332rpx]" src="{{ item.images?.[0] }}" mode="aspectFill" />
                   <view class="p-[20rpx] box-border">
                     <text class="block text-[28rpx] text-black font-700 mb-[8rpx] ellipsis">{{ item.name }}</text>
                     <text class="text-[24rpx] text-[#999999] font-400 ellipsis">{{ item.address }}</text>
@@ -78,19 +78,18 @@
 <script lang="ts">
 import { useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
-import { mapState, mapActions } from '@mpxjs/pinia';
+import { mapActions } from '@mpxjs/pinia';
 
 createPage({
   data: {
     activeTab: '',
 
+    hospitals: [],
+
     lbs: {
       city: '全国',
     },
   },
-  ...mapState(useHospitalStore, {
-    hospitals: 'hospitalList'
-  }),
   ...mapActions(useHospitalStore, {
     fetchHospitals: 'fetch',
   }),
@@ -107,13 +106,9 @@ createPage({
   watch: {
     async activeTab(newValue) {
       if (newValue === 'hospital') {
-        await this.fetchHospitals();
+        const hospitals = await this.fetchHospitals();
+        this.hospitals = hospitals;
       }
-    },
-  },
-  computed: {
-    hospitalList() {
-      return this.hospitals ?? [];
     },
   },
   onLoad() {
@@ -132,7 +127,7 @@ createPage({
    */
   navigateToConsultation() {
     mpx.navigateTo({
-      url: './consultation/form'
+      url: './consultation/form',
     });
   },
 
@@ -141,13 +136,13 @@ createPage({
    */
   navigateToHospital() {
     mpx.navigateTo({
-      url: './hospital/list'
+      url: './hospital/list',
     });
   },
 
   navigateToAdvantage() {
     mpx.navigateTo({
-      url: './advantage/advantage'
+      url: './advantage/list',
     });
   },
 

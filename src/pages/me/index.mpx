@@ -8,12 +8,12 @@
 
   <view class="relative z-2">
     <view class="relative z-2 flex gap-16rpx text-white text-24rpx px-30rpx" bind:tap="goProfile">
-      <t-avatar size="84rpx" slot="image" image="{{ avatar }}" />
+      <t-avatar size="84rpx" slot="image" image="{{ account.avatar }}" />
       <view class="flex-1 flex items-center justify-between pr-48rpx">
         <view>
           <text class="text-32rpx font-600">{{ account.nickname }}</text>
           <view class="mt-12rpx opacity-80">
-            <text wx:if="{{ roleName }}">{{ roleName }}</text>
+            <text wx:if="{{ account.roleName }}">{{ account.roleName }}</text>
           </view>
         </view>
         <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="goProfile" />
@@ -109,7 +109,7 @@ createPage({
 
   goProfile() {
     mpx.navigateTo({
-      url: '/pages/profile/profile',
+      url: './setting',
     });
   },
 
