@@ -223,7 +223,7 @@ createPage({
 
   onConfirm() {
     mpx.redirectTo({
-      url: './consultation-list',
+      url: './consultation/record',
     });
   },
 

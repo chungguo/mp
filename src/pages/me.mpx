@@ -65,6 +65,16 @@ createPage({
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
 
+  pageLifetimes: {
+    show() {
+      if (typeof this.getTabBar === 'function') {
+        this.getTabBar().setData({
+          tab: 'me',
+        })
+      }
+    },
+  },
+
   onShow() {
     this.queryProfile();
   },
@@ -111,7 +121,7 @@ createPage({
 
   goConsultationList() {
     mpx.navigateTo({
-      url: '/pages/consultation-list/consultation-list',
+      url: './consultation/record',
     });
   },
 })

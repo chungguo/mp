@@ -1,7 +1,7 @@
 <template>
   <t-tab-bar value="{{ tab }}" bind:change="switchTab" fixed split="{{ false }}">
     <t-tab-bar-item wx:for="{{ tabList }}" wx:key="value" value="{{ item.value }}"
-      icon="{{ tab === item.value ? item.selectedIcon : item.icon }}" bind:change="switchTab">
+      icon="{{ tab === item.value ? item.selectedIcon : item.icon }}">
       {{ item.text }}
     </t-tab-bar-item>
   </t-tab-bar>
@@ -23,7 +23,7 @@ createComponent({
       },
       {
         text: '我的',
-        value: 'user',
+        value: 'me',
         icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTExIDIwQzE1Ljk3MDYgMjAgMjAgMTUuOTcwNiAyMCAxMUMyMCA2LjAyOTQ0IDE1Ljk3MDYgMiAxMSAyQzYuMDI5NDQgMiAyIDYuMDI5NDQgMiAxMUMyIDE1Ljk3MDYgNi4wMjk0NCAyMCAxMSAyMFpNOC4xODc1IDcuNjI1QzguODA4ODIgNy42MjUgOS4zMTI1IDguMTI4NjggOS4zMTI1IDguNzVMOS4zMTI1IDkuODhDOS4zMTI1IDEwLjUwMTMgOC44MDg4MiAxMS4wMDUgOC4xODc1IDExLjAwNUM3LjU2NjE4IDExLjAwNSA3LjA2MjUgMTAuNTAxMyA3LjA2MjUgOS44OEw3LjA2MjUgOC43NUM3LjA2MjUgOC4xMjg2OCA3LjU2NjE4IDcuNjI1IDguMTg3NSA3LjYyNVpNMTMuODEyNSA3LjYyNUMxNC40MzM4IDcuNjI1IDE0LjkzNzUgOC4xMjg2OCAxNC45Mzc1IDguNzVMMTQuOTM3NSA5Ljg4QzE0LjkzNzUgMTAuNTAxMyAxNC40MzM4IDExLjAwNSAxMy44MTI1IDExLjAwNUMxMy4xOTEyIDExLjAwNSAxMi42ODc1IDEwLjUwMTMgMTIuNjg3NSA5Ljg4TDEyLjY4NzUgOC43NUMxMi42ODc1IDguMTI4NjggMTMuMTkxMiA3LjYyNSAxMy44MTI1IDcuNjI1WiIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bm9ybWFsIiBmaWxsPSIjOTk5OTk5IiA+PC9wYXRoPjwvc3ZnPg==',
         selectedIcon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjIiIGhlaWdodD0iMjIiIHZpZXdCb3g9IjAgMCAyMiAyMiIgZmlsbD0ibm9uZSI+CiAgPHBhdGggZD0iTTExIDIwQzE1Ljk3MDYgMjAgMjAgMTUuOTcwNiAyMCAxMUMyMCA2LjAyOTQ0IDE1Ljk3MDYgMiAxMSAyQzYuMDI5NDQgMiAyIDYuMDI5NDQgMiAxMUMyIDE1Ljk3MDYgNi4wMjk0NCAyMCAxMSAyMFpNOC4xODc1IDcuNjI1QzguODA4ODIgNy42MjUgOS4zMTI1IDguMTI4NjggOS4zMTI1IDguNzVMOS4zMTI1IDkuODhDOS4zMTI1IDEwLjUwMTMgOC44MDg4MiAxMS4wMDUgOC4xODc1IDExLjAwNUM3LjU2NjE4IDExLjAwNSA3LjA2MjUgMTAuNTAxMyA3LjA2MjUgOS44OEw3LjA2MjUgOC43NUM3LjA2MjUgOC4xMjg2OCA3LjU2NjE4IDcuNjI1IDguMTg3NSA3LjYyNVpNMTMuODEyNSA3LjYyNUMxNC40MzM4IDcuNjI1IDE0LjkzNzUgOC4xMjg2OCAxNC45Mzc1IDguNzVMMTQuOTM3NSA5Ljg4QzE0LjkzNzUgMTAuNTAxMyAxNC40MzM4IDExLjAwNSAxMy44MTI1IDExLjAwNUMxMy4xOTEyIDExLjAwNSAxMi42ODc1IDEwLjUwMTMgMTIuNjg3NSA5Ljg4TDEyLjY4NzUgOC43NUMxMi42ODc1IDguMTI4NjggMTMuMTkxMiA3LjYyNSAxMy44MTI1IDcuNjI1WiIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bm9ybWFsIiBmaWxsPSIjMzg2M0VEIi8+Cjwvc3ZnPgo=',
         path: '../pages/me',
@@ -34,11 +34,6 @@ createComponent({
     switchTab(e: WechatMiniprogram.CustomEvent) {
       const tab = e.detail.value;
 
-      // 如果点击的是当前页面，不执行跳转
-      if (tab === this.tab) {
-        return;
-      }
-
       // 根据tab值找到对应的路径并跳转
       const target = this.tabList.find(t => t.value === tab);
 
@@ -46,12 +41,10 @@ createComponent({
         mpx.switchTab({
           url: target.path,
         });
+
+        this.tab = tab;
       }
     },
-
-    setCurrentTab(tab: string) {
-      this.tab = tab;
-    }
   }
 });
 

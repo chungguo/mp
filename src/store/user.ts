@@ -71,7 +71,7 @@ export const useUserStore = defineStore('user', () => {
         data: {
           code: loginRes.code,
         },
-        // @ts-ignore
+        // @ts-expect-error mpx 的 request 方法不支持 usePromise 选项，需要手动设置
         usePromise: false,
         success: (res) => {
           const newToken = res.data.data.session_token;

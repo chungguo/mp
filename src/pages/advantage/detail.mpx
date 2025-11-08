@@ -1,0 +1,88 @@
+<template>
+  <!-- 优势项目详情页面 -->
+  <view>
+    <t-navbar left-arrow bind:go-back="goBack" title="{{project.name}}" />
+    
+    <!-- 项目图片轮播 -->
+    <view class="mb-20rpx">
+      <t-swiper list="{{project.images}}" navigation="{{ { type: 'dots' } }}" image-props="{{imageProps}}"></t-swiper>
+    </view>
+    
+    <view class="px-30rpx">
+      <!-- 项目介绍 -->
+      <view class="bg-white p-30rpx mb-20rpx rounded-24rpx whitespace-pre-wrap">
+        <view class="text-32rpx font-600 text-#333 mb-20rpx pb-16rpx">项目介绍</view>
+        <view class="text-26rpx text-#666 leading-1.6">{{project.desc}}</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from '@mpxjs/core';
+
+createPage({
+  data: {
+    imageProps: {
+      mode: "aspectFit"
+    },
+    project: {},
+  },
+
+  async onLoad(options) {
+    const { id } = options;
+    
+    mpx.showLoading({
+      title: '加载中...',
+      mask: true,
+    });
+
+    try {
+      await this.getAdvantageDetail(id);
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  goBack() {
+    mpx.navigateBack();
+  },
+
+  async getAdvantageDetail(id) {
+    try {
+      const resp = await db.collection('advantage_project').doc(id).field({
+        owner: false,
+        updateBy: false,
+        createBy: false,
+      }).get();
+
+      this.project = resp.data;
+    } catch (error) {
+      mpx.showToast({
+        title: '加载失败',
+        icon: 'none',
+      });
+    }
+  },
+});
+</script>
+
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "项目详情",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-cell": "tdesign-miniprogram/miniprogram_dist/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/miniprogram_dist/cell-group/cell-group",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
+    "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
+    "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
+    "t-link": "tdesign-miniprogram/miniprogram_dist/link/link",
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar"
+  }
+}
+</script>

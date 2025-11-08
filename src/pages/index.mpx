@@ -94,6 +94,16 @@ createPage({
   ...mapActions(useHospitalStore, {
     fetchHospitals: 'fetch',
   }),
+  pageLifetimes: {
+    show() {
+      if (typeof this.getTabBar === 'function') {
+        this.getTabBar().setData({
+          tab: 'index',
+        })
+      }
+    },
+  },
+
   watch: {
     async activeTab(newValue) {
       if (newValue === 'hospital') {
@@ -110,11 +120,6 @@ createPage({
     this.activeTab = 'hospital';
   },
 
-  onShow() {
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setCurrentTab('index');
-    }
-  },
   /**
    * 切换标签页
    */
@@ -127,7 +132,7 @@ createPage({
    */
   navigateToConsultation() {
     mpx.navigateTo({
-      url: './consultation'
+      url: './consultation/form'
     });
   },
 
@@ -136,7 +141,7 @@ createPage({
    */
   navigateToHospital() {
     mpx.navigateTo({
-      url: './hospital/hospital'
+      url: './hospital/list'
     });
   },
 
@@ -149,7 +154,7 @@ createPage({
   navigateToHospitalDetail(e: WechatMiniprogram.CustomEvent) {
     const { id } = e.currentTarget.dataset;
     mpx.navigateTo({
-      url: `./hospital-detail/hospital-detail?id=${id}`
+      url: `./hospital/detail?id=${id}`
     });
   },
   /**

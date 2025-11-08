@@ -1,0 +1,105 @@
+<template>
+  <!-- 合作医院列表页面 -->
+  <t-navbar title="合作医院" left-arrow bind:go-back="goBack"></t-navbar>
+  <image src='https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385148'
+    mode="widthFix" class="absolute z-1 top-0 left-0 right-0" />
+  <scroll-view scroll-y="{{ true }}" class="relative z-2 box-border p-32rpx">
+    <!-- 医院列表 -->
+    <block wx:for="{{ hospitalList }}" wx:key="_id">
+      <view class="flex flex-col rounded-24rpx bg-white mb-24rpx overflow-hidden" bindtap="navigateToHospital"
+        data-id="{{ item._id }}">
+        <!-- 医院图片 -->
+        <t-image src="{{ item.banners[0] }}" mode="aspectFill" width="100%" height="160" />
+        <!-- 医院信息 -->
+        <view class="flex-1 flex flex-col gap-16rpx p-24rpx-32rpx">
+          <view class="flex items-center gap-12rpx">
+            <text class="text-36rpx font-600 text-#333 flex-1">{{ item.name }}</text>
+          </view>
+          <view class="flex flex-wrap gap-12rpx">
+            <block wx:for="{{ item.special_services }}" wx:key="index">
+              <view class="rounded-4px bg-#F0FFFB border-1px border-#00D197 p-4rpx-12rpx text-#00D197 text-24rpx">{{
+                item }}</view>
+            </block>
+          </view>
+          <view class="flex items-center gap-8rpx mt-4rpx">
+            <t-icon name="location" size="24rpx" class="text-#999" />
+            <text class="text-24rpx text-#666 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{{
+              item.location.address }}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+</template>
+
+<script lang="ts">
+import { useHospitalStore } from '@/store/hospital';
+import mpx, { createPage } from '@mpxjs/core';
+import { mapState, mapActions } from '@mpxjs/pinia';
+
+createPage({
+  ...mapState(useHospitalStore, {
+    hospitals: 'hospitalList'
+  }),
+  ...mapActions(useHospitalStore, {
+    fetchHospitals: 'fetch',
+  }),
+  computed: {
+    hospitalList() {
+      return this.hospitals ?? [];
+    },
+  },
+  async onLoad() {
+    mpx.showLoading({
+      title: '加载中...',
+      mask: true,
+    });
+
+    try {
+      await this.getHospitalList();
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  goBack() {
+    mpx.redirectTo({
+      url: '../index',
+    });
+  },
+
+  async getHospitalList() {
+    this.setData({
+      hospitals: [],
+    });
+  },
+
+  navigateToHospital(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `../hospital/detail?id=${id}`
+    });
+  }
+});
+
+</script>
+
+<style>
+page {
+  --td-navbar-color: white;
+  --td-navbar-background: transparent;
+  --td-tag-disabled-background-color: #F0FFFB;
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "合作医院",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar"
+  }
+}
+</script>
