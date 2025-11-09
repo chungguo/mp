@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { useHospitalStore } from '@/store/hospital';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 
@@ -55,7 +55,10 @@ createPage({
     imageProps: {
       mode: "aspectFit"
     },
-    hospital: {},
+    hospital: {} as Hospital & {
+      special_services?: string[];
+      years?: string;
+    },
   },
 
   ...mapActions(useHospitalStore, ['fetchById']),

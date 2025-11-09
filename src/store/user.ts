@@ -1,6 +1,6 @@
 import mpx from '@mpxjs/core';
 import { defineStore } from '@mpxjs/pinia';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import request, { BASE_URL } from '@/common/request';
 
 export enum Gender {
@@ -42,18 +42,11 @@ export interface Profile {
   role_id: RoleId | null;
 }
 
-interface UserState {
-  token: string;
-  profile: Profile | null;
-}
-
 export const useUserStore = defineStore('user', () => {
-  // 状态
   const token = ref('');
   const profile = ref<Profile | null>(null);
 
-  // actions
-  async function login() {
+  const login = async () => {
     if (token.value) {
       return token.value;
     }
@@ -90,29 +83,27 @@ export const useUserStore = defineStore('user', () => {
     });
   };
 
-  async function queryProfile() {
+  const queryProfile = async () => {
     const res = await request.fetch<{
       data: Profile
     }>({
       url: '/auth/profile',
       method: 'GET',
     });
-
     profile.value = res.data.data;
   };
 
-  async function updateProfile(data: Partial<Profile>) {
+  const updateProfile = async (data: Partial<Profile>) => {
     return request.fetch({
       url: '/auth/profile',
       method: 'PUT',
       data,
     });
-  }
+  };
+
   return {
-    // 状态
     token,
     profile,
-    // actions
     login,
     queryProfile,
     updateProfile,

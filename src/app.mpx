@@ -21,8 +21,8 @@ createApp({
       content: '系统开小差，请重启小程序再试～',
       showCancel: false,
       complete: () => {
-        wx.restartMiniProgram({
-          path: "/pages/index/index",
+        mpx.restartMiniProgram({
+          path: "./pages/index",
         });
       },
     });
@@ -42,15 +42,6 @@ page {
 image {
   width: 100%;
   display: block;
-}
-
-/* 单行超出省略 */
-.ellipsis {
-  overflow: hidden;
-  width: 100%;
-  display: inline-block;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>
 

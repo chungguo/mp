@@ -341,17 +341,6 @@ createPage({
         title: '正在保存...',
       });
 
-      console.log(
-        {
-          real_name: this.name,
-          phone: this.mobile,
-          gender_real: Number(this.gender),
-          oral_symptoms: this.symptoms.map(s => SYMPTOM.find(o => o.value === s)?.label).filter(Boolean),
-          medical_history: this.symptomDes,
-          oral_photos: images,
-        }
-      )
-
       await request.fetch({
         url: '/profiles',
         data: {
@@ -477,7 +466,6 @@ page {
   height: 104rpx;
   font-weight: bold;
 }
-
 
 .form-container {
   margin-inline: 32rpx;

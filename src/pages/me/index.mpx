@@ -70,7 +70,7 @@ createPage({
       if (typeof this.getTabBar === 'function') {
         this.getTabBar().setData({
           tab: 'me',
-        })
+        });
       }
     },
   },

@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts">
-import { useHospitalStore } from '@/store/hospital';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 
@@ -84,7 +84,7 @@ createPage({
   data: {
     activeTab: '',
 
-    hospitals: [],
+    hospitals: [] as Hospital[],
 
     lbs: {
       city: '全国',
@@ -183,7 +183,17 @@ createPage({
 page {
   --td-navbar-color: white;
   --td-tab-nav-bg-color: transparent;
-  --td-navbar-background: rgba(255, 255, 255, {{ opacity }});
-  --td-navbar-bg-color: rgba(255, 255, 255, {{ opacity }});
+
+  --td-navbar-background: rgba(255, 255, 255, {
+      {
+      opacity
+    }
+  });
+
+--td-navbar-bg-color: rgba(255, 255, 255, {
+    {
+    opacity
+  }
+});
 }
 </style>
