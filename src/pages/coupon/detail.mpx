@@ -1,0 +1,142 @@
+<template>
+  <view>
+    <t-navbar title="优惠券详情" left-arrow bind:go-back="goBack" />
+
+    <!-- 优惠券信息卡片 -->
+    <view class="mx-[32rpx] my-[32rpx] p-[32rpx] bg-white rounded-[32rpx]">
+      <view class="text-[32rpx] font-bold text-black mb-[24rpx]">{{ coupon.coupon_name }}</view>
+      <t-divider />
+
+      <!-- 二维码区域 -->
+      <view class="flex flex-col items-center justify-center py-[32rpx]">
+        <t-qrcode wx:if="{{ coupon.verify_code }}" value="{{ coupon.verify_code }}" level="M" size="240" />
+        <t-loading wx:else theme="circular" size="40rpx" />
+      </view>
+    </view>
+
+    <!-- 使用说明卡片 -->
+    <view class="mx-[32rpx] my-[32rpx] p-[32rpx] bg-white rounded-[32rpx] text-[26rpx] text-[#999999]">
+      <view class="text-[32rpx] text-black mb-[24rpx]">使用说明</view>
+
+      <view>
+        <view class="flex items-center">
+          <t-icon name="clock" size="32rpx" color="#999999" class="mr-[8rpx]" />
+          <text>{{ until }}</text>
+        </view>
+
+        <view class="flex items-start">
+          <t-icon name="location" size="32rpx" color="#999999" class="mr-[8rpx] mt-[4rpx]" />
+          <text wx:for="{{ applicable_hospital }}" wx:key="id" class="mr-[8rpx]">{{ item.name }}，</text>
+        </view>
+
+        <view wx:if="{{ rule }}" class="flex items-start">
+          <t-icon name="info-circle" size="32rpx" color="#999999" class="mr-[8rpx] mt-[4rpx]" />
+          <view>
+            <text>使用规则：{{ rule }}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from '@mpxjs/core';
+import { mapActions } from '@mpxjs/pinia';
+import { useCouponStore, ValidityType } from '@/store/coupon';
+import { isEmpty } from 'lodash-es';
+import dayjs from 'dayjs';
+
+createPage({
+  data: {
+    coupon: {},
+  },
+  computed: {
+    until() {
+      if (isEmpty(this.coupon)) {
+        return;
+      }
+
+      const validity_type = this.coupon.validity_type;
+      const expire_time = this.coupon.expire_time;
+      const validity_days = this.coupon.validity_days;
+      const claimed_at = this.coupon.claimed_at;
+
+      if (validity_type === ValidityType.FixedTime) {
+        return `有效期至：${dayjs(expire_time).format('YYYY-MM-DD')}`
+      }
+
+      if (validity_type === ValidityType.AfterDays) {
+        if (!validity_days || !claimed_at) {
+          return;
+        }
+
+        return `有效期至：${dayjs(claimed_at).add(validity_days, 'days').format('YYYY-MM-DD')}`
+      }
+    },
+    applicable_hospital() {
+      const hospitalIds = this.coupon.clinic_ids;
+      if (hospitalIds === '*') {
+        return '适用医院：全部'
+      }
+
+      return `适用医院：${hospitalIds}`;
+    },
+  },
+
+  ...mapActions(useCouponStore, ['my']),
+
+  onLoad(options: { id?: string }) {
+    const { id } = options;
+    if (!id) {
+      mpx.redirectTo({
+        url: '../index',
+      });
+      return;
+    }
+    this.showCouponDetail(id);
+  },
+
+  async showCouponDetail(id: string) {
+    mpx.showLoading({
+      mask: true,
+      title: '努力加载中...',
+    });
+
+    try {
+      const mine = await this.my();
+      const coupon = mine.find((item) => item.id.toString() === id);
+      if (coupon) {
+        this.coupon = coupon;
+        console.log(this.coupon)
+      }
+    } catch (e) {
+      mpx.showToast({
+        title: '系统出小差了，请稍候再试～',
+      });
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  goBack() {
+    mpx.redirectTo({
+      url: './list',
+    });
+  },
+});
+</script>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "优惠券详情",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-qrcode": "tdesign-miniprogram/miniprogram_dist/qrcode/qrcode",
+    "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon"
+  }
+}
+</script>

@@ -66,11 +66,9 @@ image {
       "./pages/hospital/detail",
       "./pages/advantage/list",
       "./pages/advantage/detail",
-      // "./pages/profile",
-      // "./pages/my-coupon/my-coupon",
-      // "./pages/coupon-batch/coupon-batch",
-      // "./pages/coupon-receive/coupon-receive",
-      // "./pages/coupon-detail/coupon-detail"
+      "./pages/coupon/list",
+      "./pages/coupon/detail",
+      "./pages/coupon/my",
     ],
     "window": {
       "backgroundColor": "#F5F5F5",

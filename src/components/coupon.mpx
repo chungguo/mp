@@ -1,0 +1,88 @@
+<template>
+  <view class="coupon-item bg-[#F9F1E6] rounded-[20rpx] relative box-border" bind:tap="onClick">
+    <image class="relative z-1" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385847.png"
+      mode="widthFix" />
+    <view class="absolute z-2 top-0 left-0 right-0 bottom-0 flex">
+      <view class="text-[#FE4A40] font-[600] w-[140rpx] flex justify-center items-center">
+        <text class="text-[24rpx]">{{ small_text }}</text>
+        <text class="text-[48rpx]">{{ large_text }}</text>
+      </view>
+      <view class="flex-1 text-[24rpx] p-[24rpx] box-border text-[#999999] flex flex-col justify-center">
+        <view class="text-black text-[32rpx] box-border mb-[20rpx]">{{ coupon.name }}</view>
+        <view>{{ applicable_hospital }}</view>
+        <view>{{ until }}</view>
+      </view>
+      <view class="text-[24rpx] action w-[60rpx] writing-mode-vertical-tb text-white flex items-center justify-center">
+        {{ action }}</view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from '@mpxjs/core';
+import { ValidityType } from '@/store/coupon';
+import dayjs from 'dayjs';
+
+createComponent({
+  properties: {
+    coupon: {
+      type: Object,
+    },
+    action: {
+      type: String,
+      value: '立即领取',
+    },
+    small_text: {
+      type: String,
+      value: '¥',
+    },
+  },
+  computed: {
+    large_text() {
+      return this.properties.coupon.amount
+    },
+    applicable_hospital() {
+      const hospitalIds = this.properties.coupon.clinic_ids;
+      if (hospitalIds === '*') {
+        return '适用医院：全部'
+      }
+
+      return hospitalIds;
+    },
+    until() {
+      const validity_type = this.properties.coupon.validity_type;
+      const expire_time = this.properties.coupon.expire_time;
+      const validity_days = this.properties.coupon.validity_days;
+
+      if (validity_type === ValidityType.FixedTime) {
+        return `有效期至：${dayjs(expire_time).format('YYYY-MM-DD')}`
+      }
+
+      if (validity_type === ValidityType.AfterDays) {
+        return `领取后${validity_days}天有效`
+      }
+
+      return '';
+    }
+  },
+  methods: {
+    onClick() {
+      this.triggerEvent('coupon-click', { id: this.properties.coupon.id })
+    }
+  }
+})
+</script>
+
+<style lang="less">
+.action {
+  letter-spacing: 10rpx;
+  text-align: center;
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {}
+}
+</script>

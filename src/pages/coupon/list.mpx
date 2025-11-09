@@ -1,0 +1,121 @@
+<template>
+  <!-- 优惠券列表页面 -->
+  <view>
+    <t-navbar title="优惠券" left-arrow bind:go-back="goBack" />
+
+    <!-- 背景图片 -->
+    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385145.png" mode="widthFix"
+      class="absolute z-1 top-0 left-0 right-0" />
+
+    <!-- 滚动容器 -->
+    <scroll-view scroll-y="{{ true }}" class="relative z-2 mt-[180rpx]">
+      <!-- 空状态 -->
+      <view wx:if="{{ coupons.length === 0 }}" class="flex justify-center items-center h-60vh">
+        <t-empty icon="coupon" description="暂无优惠券" />
+      </view>
+
+      <!-- 优惠券列表 -->
+      <view wx:else class="bg-white rounded-[32rpx] mx-[32rpx] my-[48rpx] p-[32rpx]">
+        <view class="text-[32rpx] text-[#999999] text-center mb-[44rpx]">为您推荐以下优惠</view>
+
+        <view class="flex flex-col gap-[24rpx]">
+          <view class="w-full rounded-[16rpx] overflow-hidden border border-[#e5e5e5]" wx:for="{{ coupons }}"
+            wx:key="id">
+            <coupon coupon="{{ item.coupon }}" action="{{ item.action }}" bind:coupon-click="getCoupon" />
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</template>
+
+<script lang="ts">
+import { Coupon, useCouponStore } from '@/store/coupon';
+import mpx, { createPage } from '@mpxjs/core';
+import { mapActions } from '@mpxjs/pinia';
+
+createPage({
+  data: {
+    coupons: [],
+  },
+
+  ...mapActions(useCouponStore, ['query', 'claim', 'my']),
+
+  pageLifetimes: {
+    show() {
+      this.queryCouponList();
+    },
+  },
+
+  goBack() {
+    mpx.redirectTo({
+      url: '../index',
+    });
+  },
+
+  // 加载优惠券数据
+  async queryCouponList() {
+    mpx.showLoading({
+      mask: true,
+      title: '优惠马上来...',
+    });
+
+    try {
+      const coupons = await this.query();
+      this.coupons = coupons.map((item: Coupon) => ({
+        id: item.id,
+        coupon: item,
+        action: '立即领取',
+      }));
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  // 领取优惠券
+  async getCoupon(id: string) {
+    if (!id) {
+      mpx.showToast({
+        title: '哎呀，出错啦～',
+      });
+      return;
+    }
+
+    try {
+      mpx.showLoading({
+        title: '正在领取...',
+        mask: true,
+      });
+
+      await this.claim(id);
+
+      mpx.showToast({
+        title: '领取成功',
+      });
+
+    } finally {
+      mpx.hideLoading();
+    }
+  }
+});
+</script>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "优惠券",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-empty": "tdesign-miniprogram/miniprogram_dist/empty/empty",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "coupon": "../../components/coupon",
+  }
+}
+</script>
+
+<style>
+page {
+  --td-navbar-color: white;
+  --td-navbar-background: transparent;
+}
+</style>

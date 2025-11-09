@@ -115,7 +115,7 @@ createPage({
 
   goCoupons() {
     mpx.navigateTo({
-      url: '/pages/my-coupon/my-coupon',
+      url: '../coupon/my',
     });
   },
 
