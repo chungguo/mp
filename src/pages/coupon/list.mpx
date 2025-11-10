@@ -39,7 +39,7 @@ createPage({
     coupons: [] as {
       coupon: Coupon,
       action: string;
-      received: boolean;
+      claim_id: number | null;
     }[],
   },
 
@@ -71,7 +71,7 @@ createPage({
         id: item.id,
         coupon: item,
         action: '立即领取',
-        received: false,
+        claim_id: null,
       }));
     } finally {
       mpx.hideLoading();
@@ -99,9 +99,9 @@ createPage({
     }
 
     // 已领取，去使用
-    if (target.received) {
+    if (target.claim_id) {
       mpx.redirectTo({
-        url: `./detail?id=${id}`
+        url: `./detail?id=${target.claim_id}`
       });
       return;
     }
@@ -112,12 +112,12 @@ createPage({
         mask: true,
       });
 
-      await this.claim(id);
+      const res = await this.claim(id);
 
       this.coupons = this.coupons.map(c => ({
         ...c,
         action: '去使用',
-        received: true,
+        claim_id: res.claim_id,
       }));
 
       mpx.showToast({

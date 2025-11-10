@@ -86,6 +86,7 @@ createPage({
 
   ...mapActions(useCouponStore, ['my']),
 
+  // 领取记录ID
   onLoad(options: { id?: string }) {
     const { id } = options;
     if (!id) {
