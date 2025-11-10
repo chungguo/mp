@@ -1,5 +1,5 @@
 <template>
-  <t-navbar title="我的优惠券"></t-navbar>
+  <t-navbar left-arrow bind:go-back="goBack" title="我的优惠券"></t-navbar>
   <view class="m-32rpx bg-white rounded-32rpx overflow-hidden">
     <t-tabs split="{{ false }}" animation="{{ { duration: 0.6 } }}" defaultValue="{{ activeTab }}"
       bind:change="onTabChange" bottom-line-mode="auto">
@@ -47,7 +47,7 @@
 <script lang="ts">
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
-import { useCouponStore } from '@/store/coupon';
+import { CouponReceived, useCouponStore } from '@/store/coupon';
 
 createPage({
   data: {
@@ -77,11 +77,11 @@ createPage({
       mask: true,
     });
 
-    const records = await this.my();
+    const records = await this.my() as CouponReceived[];
 
     const coupons = (records ?? []).reduce((res, item) => {
       const { status } = item;
-      const container = [, res.unused, res.used, res.expired][status];
+      const container = [null, res.unused, res.used, res.expired][status] as CouponReceived[];
       container.push(item);
       return res;
     }, {
@@ -112,6 +112,12 @@ createPage({
     const id = e.currentTarget.id;
     mpx.navigateTo({
       url: `./detail?id=${id}`,
+    });
+  },
+
+  goBack() {
+    mpx.navigateTo({
+      url: '../me/index',
     });
   }
 });

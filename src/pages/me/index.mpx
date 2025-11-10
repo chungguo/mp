@@ -38,7 +38,7 @@
         咨询记录
       </view>
     </view>
-    <t-cell-group wx:if="{{ role }}" theme="card" title="管理端">
+    <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
       <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
     </t-cell-group>
     <t-dialog visible="{{ scaned }}">
@@ -48,11 +48,10 @@
       </view>
     </t-dialog>
   </view>
-
 </template>
 
 <script lang="ts">
-import { useUserStore } from '@/store/user';
+import { useUserStore, RoleId } from '@/store/user';
 import mpx from '@mpxjs/core';
 import { createPage } from "@mpxjs/core";
 import { mapState, mapActions } from '@mpxjs/pinia';
@@ -82,6 +81,10 @@ createPage({
   computed: {
     account() {
       return this.profile().value;
+    },
+    showScanCoupon() {
+      const id = this.profile().value?.role_id;
+      return id && [RoleId.HospitalAdmin, RoleId.HospitalOperator].includes(id);
     }
   },
 
@@ -93,10 +96,12 @@ createPage({
       });
 
       const { result } = data;
+
       this.setData({
         scaned: true,
       });
-      this.redeem(result);
+
+      await this.verify(result);
     } catch (e) {
       mpx.showModal({
         title: '识别结果',
@@ -121,7 +126,7 @@ createPage({
 
   goConsultationList() {
     mpx.navigateTo({
-      url: './consultation/record',
+      url: '../consultation/record',
     });
   },
 })

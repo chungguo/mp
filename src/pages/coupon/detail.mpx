@@ -26,7 +26,7 @@
 
         <view class="flex items-start">
           <t-icon name="location" size="32rpx" color="#999999" class="mr-[8rpx] mt-[4rpx]" />
-          <text wx:for="{{ applicable_hospital }}" wx:key="id" class="mr-[8rpx]">{{ item.name }}，</text>
+          <text class="mr-[8rpx]">{{ applicable_hospital }}，</text>
         </view>
 
         <view wx:if="{{ rule }}" class="flex items-start">
@@ -43,13 +43,13 @@
 <script lang="ts">
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
-import { useCouponStore, ValidityType } from '@/store/coupon';
+import { type CouponReceived, useCouponStore, ValidityType } from '@/store/coupon';
 import { isEmpty } from 'lodash-es';
 import dayjs from 'dayjs';
 
 createPage({
   data: {
-    coupon: {},
+    coupon: {} as CouponReceived,
   },
   computed: {
     until() {
@@ -104,7 +104,7 @@ createPage({
     });
 
     try {
-      const mine = await this.my();
+      const mine = await this.my() as CouponReceived[];
       const coupon = mine.find((item) => item.id.toString() === id);
       if (coupon) {
         this.coupon = coupon;

@@ -60,6 +60,7 @@ export interface CouponReceived {
   coupon_name: string;
   // 	有效期类型：1=固定时间有效，2=领取后n天有效
   validity_type: ValidityType;
+  validity_days: number;
   // 生效时间（ISO 8601格式）
   effective_time: string;
   // 过期时间（ISO 8601格式）
@@ -91,7 +92,7 @@ export const useCouponStore = defineStore('coupon', () => {
       url: '/coupons/available',
       method: 'GET',
     });
-    return res.data.data;
+    return res.data.data ?? [];
   };
 
   async function claim(id: number) {
@@ -108,15 +109,23 @@ export const useCouponStore = defineStore('coupon', () => {
 
   async function my() {
     const res = await request.fetch<{
-      data: CouponReceived
+      data: CouponReceived[];
     }>({
       url: '/coupons/my',
     });
     return res.data.data;
   };
 
-  async function verify() {
-
+  async function verify(code: string) {
+    const res = await request.fetch<{
+      data: CouponReceived
+    }>({
+      url: '/coupons/verify',
+      data: {
+        verify_code: code
+      },
+    });
+    return res.data.data;
   };
 
   return {

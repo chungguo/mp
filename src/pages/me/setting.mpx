@@ -20,7 +20,7 @@
       <view>
         <!-- 手机号授权 -->
         <t-cell title="手机" t-class-center="cell-center" t-class-note="cell-note">
-          <t-button block size="small" theme="primary" variant="text" slot="note" open-type="getPhoneNumber"
+          <t-button size="small" t-class="p-0 m-0" theme="primary" variant="text" slot="note" open-type="getPhoneNumber"
             bind:getphonenumber="onGetPhoneNumber">
             <text wx:if="{{ mobile }}">{{ mobile }}</text>
             <text wx:else>授权手机号</text>

@@ -30,13 +30,16 @@
 </template>
 
 <script lang="ts">
-import { Coupon, useCouponStore } from '@/store/coupon';
+import { type Coupon, useCouponStore } from '@/store/coupon';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 
 createPage({
   data: {
-    coupons: [],
+    coupons: [] as {
+      coupon: Coupon,
+      action: string;
+    }[],
   },
 
   ...mapActions(useCouponStore, ['query', 'claim', 'my']),
