@@ -21,14 +21,24 @@ export enum RoleId {
   Operator,
   // 平台客服
   CustomerService,
-  // 诊所管理员
+  // 医院管理员
   HospitalAdmin,
-  // 诊所运营
+  // 医院运营
   HospitalOperator,
-  // 诊所客服
+  // 医院客服
   HospitalCustomerService,
-  // 诊所医生
+  // 医院医生
   HospitalDoctor,
+}
+
+export const RoleName: Record<RoleId, string> = {
+  [RoleId.Admin]: '平台管理员',
+  [RoleId.Operator]: '平台运营',
+  [RoleId.CustomerService]: '平台客服',
+  [RoleId.HospitalAdmin]: '医院管理员',
+  [RoleId.HospitalOperator]: '医院运营',
+  [RoleId.HospitalCustomerService]: '医院客服',
+  [RoleId.HospitalDoctor]: '医院医生',
 }
 
 export interface Profile {

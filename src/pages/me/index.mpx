@@ -13,7 +13,7 @@
         <view>
           <text class="text-32rpx font-600">{{ account.nickname }}</text>
           <view class="mt-12rpx opacity-80">
-            <text wx:if="{{ account.roleName }}">{{ account.roleName }}</text>
+            <text wx:if="{{ roleName }}">{{ roleName }}</text>
           </view>
         </view>
         <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="goProfile" />
@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import { useUserStore, RoleId } from '@/store/user';
+import { useUserStore, RoleId, RoleName } from '@/store/user';
 import mpx from '@mpxjs/core';
 import { createPage } from "@mpxjs/core";
 import { mapState, mapActions } from '@mpxjs/pinia';
@@ -59,7 +59,6 @@ import { mapState, mapActions } from '@mpxjs/pinia';
 createPage({
   data: {
     scaned: false,
-    roleName: '',
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
@@ -85,6 +84,14 @@ createPage({
     showScanCoupon() {
       const id = this.profile().value?.role_id;
       return id && [RoleId.HospitalAdmin, RoleId.HospitalOperator].includes(id);
+    },
+    roleName() {
+      const id = this.profile().value?.role_id;
+      if (!id) {
+        return '';
+      }
+
+      return RoleName[id as RoleId] || '';
     }
   },
 

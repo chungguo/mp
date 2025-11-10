@@ -34,6 +34,16 @@ mpx.xfetch.interceptors.response.use((res) => {
     });
     return Promise.reject(res);
   }
+
+  if (!isNaN(res.status) && res.status !== 200) {
+    wx.showModal({
+      title: '提示',
+      content: res.data || '系统异常，请稍候再试～',
+      showCancel: false,
+    });
+    return Promise.reject(res);
+  }
+
   return res;
 });
 

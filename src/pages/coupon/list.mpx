@@ -39,6 +39,7 @@ createPage({
     coupons: [] as {
       coupon: Coupon,
       action: string;
+      received: boolean;
     }[],
   },
 
@@ -65,10 +66,12 @@ createPage({
 
     try {
       const coupons = await this.query();
+
       this.coupons = coupons.map((item: Coupon) => ({
         id: item.id,
         coupon: item,
         action: '立即领取',
+        received: false,
       }));
     } finally {
       mpx.hideLoading();
@@ -76,10 +79,29 @@ createPage({
   },
 
   // 领取优惠券
-  async getCoupon(id: string) {
+  async getCoupon(e: CustomEvent<{ id: string }>) {
+    const id = e.detail.id;
+
     if (!id) {
       mpx.showToast({
         title: '哎呀，出错啦～',
+      });
+      return;
+    }
+
+    const target = this.coupons.find(item => item.coupon.id === Number(id));
+
+    if (!target) {
+      mpx.showToast({
+        title: '优惠券不存在～',
+      });
+      return;
+    }
+
+    // 已领取，去使用
+    if (target.received) {
+      mpx.redirectTo({
+        url: `./detail?id=${id}`
       });
       return;
     }
@@ -91,6 +113,12 @@ createPage({
       });
 
       await this.claim(id);
+
+      this.coupons = this.coupons.map(c => ({
+        ...c,
+        action: '去使用',
+        received: true,
+      }));
 
       mpx.showToast({
         title: '领取成功',
