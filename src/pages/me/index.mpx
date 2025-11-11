@@ -2,7 +2,7 @@
   <t-navbar title="我的"></t-navbar>
 
   <view class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385148"
+    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png"
       mode="widthFix" />
   </view>
 

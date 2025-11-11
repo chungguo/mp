@@ -60,6 +60,7 @@ image {
       "./pages/coupon/list",
       "./pages/coupon/detail",
       "./pages/coupon/my",
+      "./pages/aitest/index",
     ],
     "window": {
       "backgroundColor": "#F5F5F5",
