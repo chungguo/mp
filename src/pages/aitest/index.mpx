@@ -8,14 +8,15 @@
       <view class="text-[36rpx] color-[#1D2129] mt-[10rpx] mb-[52rpx] text-center font-bold">
         领专属 <text class="color-[#4287FF] text-[66rpx] mx-[20rpx]">0</text> 元福利
       </view>
-      <view bindtap="togglePopup">
+      <view bindtap="startTest">
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/test-btn.png" mode="widthFix" />
       </view>
       <view class="mt-[10rpx] mb-[66rpx]">
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/steps.png" mode="widthFix" />
       </view>
 
-      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large" bindtap="goResult">
+      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large"
+        bindtap="goResult">
         <text slot="content" class="color-[#317DFF]">查看检查结果</text>
       </t-button>
     </view>
@@ -50,13 +51,14 @@
           class="absolute top-[-18rpx] left-0 right-0 flex w-full h-full items-center justify-center text-[30rpx] font-[600] color-white">
           添加企业微信立即领取</view>
       </view>
-      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large">
+      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large"
+        bindtap="goResult">
         <text slot="content" class="color-[#317DFF]">查看检查结果</text>
       </t-button>
     </view>
   </view>
 
-  <t-popup visible="{{ visible }}" bind:visible-change="onVisibleChange" placement="bottom" t-class="relative">
+  <t-popup visible="{{ mediaPopup }}" bind:visible-change="onVisibleChange" placement="bottom" t-class="relative">
     <t-icon slot="close-btn" name="close" class="color-[#CCCCCC] relative top-[-40rpx]" bindtap="togglePopup" />
     <view class="color-[#1D2129] px-[46rpx]">
       <view class="text-center text-[36rpx] mt-[45rpx] font-[800]">如何上传</view>
@@ -88,17 +90,30 @@
       </t-button>
     </view>
   </t-popup>
+
+  <t-popup visible="{{ mobilePopup }}" placement="bottom" t-class="h-[30vh] p-[100rpx] box-border"
+    t-class-content="flex flex-col justify-start">
+    <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
+    <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhoneNumber">
+      微信一键登录
+    </t-button>
+  </t-popup>
 </template>
 
 <script lang="ts">
+import { getPhoneNumber } from "@/common/phone";
 import request from "@/common/request";
 import { uploadImages } from "@/common/upload";
+import { useUserStore } from "@/store/user";
 import mpx, { createPage } from "@mpxjs/core";
+import { mapActions, mapState } from '@mpxjs/pinia';
 
 createPage({
   data: {
     uploaded: false,
-    visible: false,
+    mediaPopup: false,
+    mobilePopup: false,
   },
   pageLifetimes: {
     show() {
@@ -109,7 +124,28 @@ createPage({
       }
     },
   },
+  ...mapState(useUserStore, ['profile']),
+  ...mapActions(useUserStore, ['queryProfile', 'updateProfile']),
   methods: {
+    async startTest() {
+      mpx.showLoading({
+        title: '请稍候...',
+        mask: true,
+      });
+
+      try {
+        await this.queryProfile();
+        const profile = this.profile().value;
+
+        if (!profile.mobile) {
+          this.mobilePopup = true;
+        } else {
+          this.mediaPopup = true;
+        }
+      } finally {
+        mpx.hideLoading();
+      }
+    },
     async chooseMedia() {
       try {
         const res = await mpx.chooseMedia({
@@ -149,7 +185,7 @@ createPage({
           },
         });
 
-        this.visible = false;
+        this.mediaPopup = false;
         this.uploaded = true;
 
         mpx.showToast({
@@ -166,13 +202,26 @@ createPage({
         mpx.hideLoading();
       }
     },
+
+    async onGetPhoneNumber(e: WechatMiniprogram.ButtonGetPhoneNumber) {
+      const phone = await getPhoneNumber(e);
+
+      if (phone) {
+        await this.updateProfile({
+          phone,
+        });
+        this.mobilePopup = false;
+        this.mediaPopup = true;
+      }
+    },
+
     goBack() {
       mpx.switchTab({
         url: '/pages/index',
       });
     },
     togglePopup() {
-      this.visible = !this.visible;
+      this.mediaPopup = !this.mediaPopup;
     },
     goResult() {
       mpx.redirectTo({

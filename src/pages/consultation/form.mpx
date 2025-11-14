@@ -102,6 +102,7 @@ import { Gender, useUserStore } from "@/store/user";
 import { createPage } from "@mpxjs/core";
 import request, { BASE_URL } from '@/common/request';
 import type { } from 'tdesign-miniprogram/miniprogram_dist/upload/type';
+import { getPhoneNumber } from '@/common/phone';
 
 const SYMPTOM = [
   { label: "龋齿", value: "caries" },
@@ -361,49 +362,10 @@ createPage({
 
   // 获取手机号授权
   async onGetPhoneNumber(e: WechatMiniprogram.ButtonGetPhoneNumber) {
-    if (!e.detail.code) {
-      mpx.showModal({
-        title: '获取授权失败',
-        content: e.detail.errMsg,
-        showCancel: false,
-        confirmText: '知道了',
-      });
-      return;
-    }
-
-    mpx.showLoading({
-      title: '获取授权中...',
-    });
-
-    try {
-      const resp = await request.fetch<{
-        data: { phone_number: string }
-      }>({
-        url: '/auth/phone',
-        data: {
-          code: e.detail.code,
-        },
-      });
-
-      const phone = resp.data?.data?.phone_number;
-
-      if (!phone) {
-        mpx.showToast({
-          icon: 'error',
-          title: '获取授权失败',
-        });
-        return;
-      }
-
+    const phone = await getPhoneNumber(e);
+    if (phone) {
       this.mobile = phone;
       this.popupVisible = false;
-    } catch (e) {
-      mpx.showToast({
-        title: '获取授权失败',
-        icon: 'error',
-      });
-    } finally {
-      mpx.hideLoading();
     }
   },
 });
