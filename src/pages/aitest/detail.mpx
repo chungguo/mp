@@ -92,6 +92,12 @@ createPage({
 
       this.detail = res.data.data;
     },
+
+    goBack() {
+      mpx.redirectTo({
+        url: './result',
+      });
+    }
   }
 })
 </script>

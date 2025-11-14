@@ -167,8 +167,8 @@ createPage({
       }
     },
     goBack() {
-      mpx.navigateTo({
-        url: '../index',
+      mpx.switchTab({
+        url: '/pages/index',
       });
     },
     togglePopup() {

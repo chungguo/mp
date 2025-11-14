@@ -15,10 +15,10 @@
             <text>提交人：{{ item.nickname }}</text>
             <text>提交时间：{{ item.created_at }}</text>
           </view>
-          <t-button wx:if="{{ item.status === 2 || item.status === 3 }}" size="small" theme="primary" variant="outline"
+          <t-button wx:if="{{ item.status === 2 || item.status === 3 }}" size="extra-small" variant="outline"
             t-class="m-0 color-[#86909CFF] text-[24rpx] px-[20rpx] py-[5rpx]" bindtap="onClick" data-id="{{ item.id }}">
-            <text wx:if="{{ item.status === 2 }}" slot="content">查看</text>
-            <text wx:if="{{ item.status === 3 }}" slot="content">重新检测</text>
+            <text wx:if="{{ item.status === 2 }}" slot="content" class="color-[#86909C] font-[400] text-[24rpx]">查看</text>
+            <text wx:if="{{ item.status === 3 }}" slot="content" class="color-[#86909C] font-[400] text-[24rpx]">重新检测</text>
           </t-button>
         </view>
       </view>
@@ -117,15 +117,19 @@ createPage({
       return;
     }
 
-    if (item.status === 1 || item.status === 2) {
+    if (item.status === 2) {
       mpx.navigateTo({
         url: `./detail?id=${id}`,
+      });
+    } else {
+      mpx.switchTab({
+        url: '/pages/aitest/index',
       });
     }
   },
   goBack() {
     wx.switchTab({
-      url: '/pages/index/index',
+      url: '/pages/aitest/index',
     });
   },
 });
