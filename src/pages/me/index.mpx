@@ -103,11 +103,14 @@ createPage({
 
       const { result } = data;
 
-      this.setData({
-        scaned: true,
-      });
+      this.scaned = true;
 
       await this.verify(result);
+
+      mpx.showToast({
+        title: '核销成功',
+        icon: 'success',
+      });
     } catch (e) {
       mpx.showModal({
         title: '识别结果',
@@ -115,6 +118,8 @@ createPage({
         showCancel: false,
         confirmText: '知道了',
       });
+    } finally {
+      this.scaned = false;
     }
   },
 
