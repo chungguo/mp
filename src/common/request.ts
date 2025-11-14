@@ -35,7 +35,7 @@ mpx.xfetch.interceptors.response.use((res) => {
     return Promise.reject(res);
   }
 
-  if (!isNaN(res.status) && res.status !== 200) {
+  if (!isNaN(res.status) && (res.status < 200 || res.status >= 300)) {
     wx.showModal({
       title: '提示',
       content: res.data || '系统异常，请稍候再试～',

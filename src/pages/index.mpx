@@ -74,7 +74,6 @@
     </view>
   </view>
 </template>
-
 <script lang="ts">
 import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';

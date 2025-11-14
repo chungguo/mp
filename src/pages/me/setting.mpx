@@ -45,12 +45,12 @@
 
         <!-- 生日选择 -->
         <t-cell title="生日" bind:tap="showDatePicker" t-class-center="cell-center" t-class-note="cell-note">
-          <text slot="note">{{ birthdate || '请选择' }}</text>
+          <text slot="note">{{ birthday || '请选择' }}</text>
         </t-cell>
 
-        <t-date-time-picker start="1900-01-01" end="{{ maxDate }}" default-value="2000-01-01" name="birthdate"
+        <t-date-time-picker start="1900-01-01" end="{{ maxDate }}" default-value="2000-01-01" name="birthday"
           auto-close title="选择日期" visible="{{ dateVisible }}" mode="date" format="YYYY-MM-DD"
-          bind:confirm="onBirthDateConfirm" bind:cancel="handleClose" bind:close="handleClose" />
+          bind:confirm="onBirthDayConfirm" bind:cancel="handleClose" bind:close="handleClose" />
       </view>
     </view>
 
@@ -73,7 +73,7 @@ createPage({
     nickname: '',
     mobile: '',
     gender: Gender.Male,
-    birthdate: '',
+    birthday: '',
     maxDate: dayjs().subtract(1, 'd').format(),
     dateVisible: false,
     genderOptions: GenderOptions,
@@ -98,7 +98,7 @@ createPage({
       this.nickname = profile?.nickname ?? '';
       this.gender = profile?.gender ?? '';
       this.mobile = profile?.phone ?? '';
-      this.birthdate = profile?.birthdate ?? '';
+      this.birthday = profile?.birthday ?? '';
     } finally {
       mpx.hideLoading();
     }
@@ -175,8 +175,8 @@ createPage({
     this.gender = e.detail.value;
   },
 
-  onBirthDateConfirm(e: WechatMiniprogram.CustomEvent) {
-    this.birthdate = dayjs(e.detail.value).format('YYYY-MM-DD');
+  onBirthDayConfirm(e: WechatMiniprogram.CustomEvent) {
+    this.birthday = dayjs(e.detail.value).format('YYYY-MM-DD');
   },
 
   async onSubmit() {
@@ -186,14 +186,14 @@ createPage({
 
     const url = await this.uploadAvatar();
 
-    const { mobile, nickname, gender, birthdate } = this;
+    const { mobile, nickname, gender, birthday } = this;
 
     const account = pickBy({
       nickname,
       avatar_url: url,
       phone: mobile,
       gender,
-      birthdate,
+      birthday,
     }, Boolean);
 
     try {

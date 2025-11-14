@@ -1,0 +1,152 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
+  <view class="absolute top-0 left-0 right-0 z-1">
+    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/record.png" mode="widthFix" />
+    <view
+      class="relative bg-[#FFFFFF99] b-[#FFFFFF] top-[-272rpx] mx-[26rpx] px-[26rpx] py-[36rpx] flex flex-col justify-center border-rounded-[28rpx] border gap-[26rpx]">
+      <view wx:for="{{ records }}" wx:key="id"
+        class="bg-[#FFFFFF] p-[26rpx] border-rounded-[18rpx] color-[#636A73FF] text-[24rpx] flex flex-col gap-[18rpx]">
+        <text
+          class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] border-rounded-r-[18rpx]"
+          wx:style="{{ {backgroundColor: item.statusconfig.bg} }}">{{ item.statusconfig.name }}</text>
+        <view class="text-[28rpx] font-bold color-[#1D2129FF]">牙齿健康度报告</view>
+        <view class="flex justify-between items-center">
+          <view class="flex flex-col gap-[10rpx]">
+            <text>提交人：{{ item.nickname }}</text>
+            <text>提交时间：{{ item.created_at }}</text>
+          </view>
+          <t-button wx:if="{{ item.status === 2 || item.status === 3 }}" size="small" theme="primary" variant="outline"
+            t-class="m-0 color-[#86909CFF] text-[24rpx] px-[20rpx] py-[5rpx]" bindtap="onClick" data-id="{{ item.id }}">
+            <text wx:if="{{ item.status === 2 }}" slot="content">查看</text>
+            <text wx:if="{{ item.status === 3 }}" slot="content">重新检测</text>
+          </t-button>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import request from "@/common/request";
+import mpx, { createPage } from "@mpxjs/core";
+import dayjs from "dayjs";
+
+interface Record {
+  id: number;
+  status: number;
+  statusconfig: {
+    name: string;
+    bg: string;
+  };
+  nickname: string;
+  created_at: string;
+}
+
+const statusMap = [
+  {
+    name: '未知',
+    bg: '#86909C',
+  },
+  {
+    name: '生成中',
+    bg: '#317DFF',
+  },
+  {
+    name: '已生成',
+    bg: '#42DAA3',
+  },
+  {
+    name: '生成失败',
+    bg: '#F53A3A'
+  }
+];
+
+createPage({
+  data: {
+    records: [] as Record[],
+  },
+  onLoad() {
+    this.queryAiTestRecords();
+  },
+  async queryAiTestRecords() {
+    mpx.showLoading({
+      title: '加载中...',
+      mask: true,
+    });
+
+    try {
+      const res = await request.fetch<{
+        data: {
+          total: number;
+          records: {
+            id: number;
+            status: number;
+            user: {
+              nickname: string;
+            };
+            created_at: string;
+          }[],
+        },
+      }>({
+        url: '/diagnosis',
+        method: 'GET',
+      });
+      const {  records } = res.data.data ?? {
+        total: 0,
+        records: [],
+      };
+      this.records = records.map(item => ({
+        id: item.id,
+        status: item.status,
+        statusconfig: statusMap[item.status] ?? statusMap[0],
+        nickname: item.user.nickname,
+        created_at: dayjs(item.created_at).format('YYYY-MM-DD HH:mm'),
+      }));
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
+  onClick(e: WechatMiniprogram.CustomEvent) {
+    const { dataset } = e.currentTarget;
+    const { id } = dataset;
+
+    const item = this.records.find(item => item.id === id);
+
+    if (!item) {
+      return;
+    }
+
+    if (item.status === 1 || item.status === 2) {
+      mpx.navigateTo({
+        url: `./detail?id=${id}`,
+      });
+    }
+  },
+  goBack() {
+    wx.switchTab({
+      url: '/pages/index/index',
+    });
+  },
+});
+
+</script>
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "AI 牙齿健康监测",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+  }
+}
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-color: black;
+  --td-navbar-background: transparent;
+  background-color: #F1F3F7;
+}
+</style>

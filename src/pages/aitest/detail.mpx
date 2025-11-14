@@ -1,0 +1,117 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
+
+  <view class="absolute top-0 left-0 right-0 z-1">
+    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/record.png" mode="widthFix" />
+    <view class="relative top-[-372rpx] z-1 flex justify-end px-[26rpx]">
+      <view class="w-[194rpx] relative">
+        <image class="w-full" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/score-bg.png"
+          mode="widthFix" />
+        <view class="absolute left-0 right-0 top-0 bottom-[58rpx] flex justify-center items-end color-[#FFFFFF]">
+          <text class="text-[68rpx] font-bold">{{ detail.score || 0 }}</text><text class="text-[28rpx]">分</text>
+        </view>
+      </view>
+    </view>
+    <view class="relative top-[-419rpx] z-2">
+      <view
+        class="mx-[26rpx] px-[26rpx] py-[36rpx] bg-[#FFFFFF99] b-[#FFFFFF] flex flex-col justify-center border-rounded-[28rpx] border gap-[26rpx]">
+        <view class="flex flex-justify-center gap-[38rpx] .w100\%">
+          <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
+            <view class="w-[306rpx] h-[306rpx]">
+              <image class="w-full" src="{{ detail.images[0] }}" mode="widthFix" />
+            </view>
+            <text>正面露齿照</text>
+          </view>
+          <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
+            <view class="w-[306rpx] h-[306rpx]">
+              <image class="w-full" src="{{ detail.images[1] }}" mode="widthFix" />
+            </view>
+            <text>侧面不露齿照</text>
+          </view>
+        </view>
+
+        <view class="mt-[36rpx] text-[28rpx] flex flex-col gap-[32rpx]">
+          <view class="pl-[26rpx] relative">
+            <text class="color-[#1D2129] font-bold">整体情况：</text><text>{{ detail.overall_description }}</text>
+            <view class="absolute left-0 top-[10rpx] w-[10rpx] h-[10rpx] border-rounded-[50%] bg-[#317DFF]"></view>
+          </view>
+
+          <view class="pl-[26rpx] relative">
+            <text class="color-[#1D2129] font-bold">问题诊断和建议：</text><text>{{ detail.diagnosis_and_suggestions }}</text>
+            <view class="absolute left-0 top-[10rpx] w-[10rpx] h-[10rpx] border-rounded-[50%] bg-[#317DFF]"></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="flex flex-col gap-[36rpx] px-[26rpx] mt-[46rpx]">
+        <t-button block size="large" theme="primary">领取0元福利</t-button>
+        <t-button block size="large" theme="primary" variant="outline">邀请好友测一测，你我都能领奖励</t-button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import request from "@/common/request";
+import mpx, { createPage } from "@mpxjs/core";
+
+interface Detail {
+  score: number;
+  images: string[];
+  overall_description: string,
+  diagnosis_and_suggestions: string;
+}
+
+createPage({
+  data: {
+    detail: {} as Detail
+  },
+  onLoad(options: { id: string }) {
+    const { id } = options;
+    if (!id) {
+      mpx.redirectTo({
+        url: './result',
+      });
+      return;
+    }
+
+    this.queryAiTestDetail(id);
+  },
+
+  methods: {
+    async queryAiTestDetail(id: string) {
+      const res = await request.fetch<{
+        data: Detail;
+      }>({
+        url: `/diagnosis/${id}`,
+        method: 'GET',
+        params: {
+          id,
+        },
+      });
+
+      this.detail = res.data.data;
+    },
+  }
+})
+</script>
+
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "AI 牙齿健康监测",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+  }
+}
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-color: black;
+  --td-navbar-background: transparent;
+  background-color: #F1F3F7;
+}
+</style>

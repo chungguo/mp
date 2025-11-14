@@ -61,6 +61,8 @@ image {
       "./pages/coupon/detail",
       "./pages/coupon/my",
       "./pages/aitest/index",
+      "./pages/aitest/result",
+      "./pages/aitest/detail",
     ],
     "window": {
       "backgroundColor": "#F5F5F5",
@@ -90,6 +92,10 @@ image {
         {
           "pagePath": "pages/index",
           "text": "首页"
+        },
+        {
+          "pagePath": "pages/aitest/index",
+          "text": "AI牙卫士"
         },
         {
           "pagePath": "pages/me/index",

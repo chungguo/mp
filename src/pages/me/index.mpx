@@ -2,8 +2,7 @@
   <t-navbar title="我的"></t-navbar>
 
   <view class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png"
-      mode="widthFix" />
+    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png" mode="widthFix" />
   </view>
 
   <view class="relative z-2">
@@ -83,7 +82,7 @@ createPage({
     },
     showScanCoupon() {
       const id = this.profile().value?.role_id;
-      return id && [RoleId.HospitalAdmin, RoleId.HospitalOperator].includes(id);
+      return id && [RoleId.Admin, RoleId.HospitalAdmin, RoleId.HospitalOperator].includes(id);
     },
     roleName() {
       const id = this.profile().value?.role_id;

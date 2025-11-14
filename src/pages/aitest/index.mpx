@@ -1,7 +1,7 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
 
-  <view wx:if="{{ uploaded }}" class="absolute top-0 left-0 right-0 z-1">
+  <view wx:if="{{ !uploaded }}" class="absolute top-0 left-0 right-0 z-1">
     <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/banner.png" mode="widthFix" />
 
     <view class="px-[26rpx]">
@@ -15,7 +15,7 @@
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/steps.png" mode="widthFix" />
       </view>
 
-      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large">
+      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large" bindtap="goResult">
         <text slot="content" class="color-[#317DFF]">查看检查结果</text>
       </t-button>
     </view>
@@ -35,11 +35,21 @@
       </view>
     </view>
 
-    <view>
-      <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/doctor.png" mode="widthFix" />
+    <view class="relative">
+      <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/doctor-avatar.png"
+        mode="widthFix" />
+      <image class="absolute w-[240rpx] z-2 top-[38rpx] left-[94rpx]"
+        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/qrcode.png" mode="widthFix" />
     </view>
 
     <view class="px-26rpx">
+      <view class="relative">
+        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-button.png"
+          mode="widthFix" />
+        <view
+          class="absolute top-[-18rpx] left-0 right-0 flex w-full h-full items-center justify-center text-[30rpx] font-[600] color-white">
+          添加企业微信立即领取</view>
+      </view>
       <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large">
         <text slot="content" class="color-[#317DFF]">查看检查结果</text>
       </t-button>
@@ -70,10 +80,10 @@
         我们将遵循<text class="color-[#317DFF]">《AI处理图像信息协议》</text>处理你的照片
       </view>
 
-      <t-button block theme="primary" size="large" class="mb-[66rpx]">
+      <t-button block theme="primary" size="large" class="mb-[66rpx]" bindtap="chooseMedia">
         <view slot="content">
           <view class="text-[28rpx] lh-[40rpx]">上传或拍照</view>
-          <view class="text-[22rpx] lh-[30rpx] text-[rgba(255,255,255,0.8)]" bindtap="chooseMedia">点击上传表示我同意协议</view>
+          <view class="text-[22rpx] lh-[30rpx] text-[rgba(255,255,255,0.8)]">点击上传表示我同意协议</view>
         </view>
       </t-button>
     </view>
@@ -90,6 +100,15 @@ createPage({
     uploaded: false,
     visible: false,
   },
+  pageLifetimes: {
+    show() {
+      if (typeof this.getTabBar === 'function') {
+        this.getTabBar().setData({
+          tab: 'aitest',
+        });
+      }
+    },
+  },
   methods: {
     async chooseMedia() {
       try {
@@ -100,7 +119,28 @@ createPage({
           camera: 'front',
         });
 
+        if (res.tempFiles.length !== 2) {
+          mpx.showToast({
+            title: '请选择2张图片',
+            icon: 'error',
+          });
+          return;
+        }
+
         const images = await uploadImages(res.tempFiles.map((t: { tempFilePath: string }) => t.tempFilePath));
+
+        if (!images.length) {
+          mpx.showModal({
+            title: '提示',
+            content: '请选择图片',
+            showCancel: false,
+          });
+        }
+
+        mpx.showLoading({
+          title: '正在上传图片',
+          mask: true,
+        });
 
         await request.fetch({
           url: '/diagnosis',
@@ -108,16 +148,37 @@ createPage({
             images,
           },
         });
+
+        this.visible = false;
+        this.uploaded = true;
+
+        mpx.showToast({
+          title: '上传成功',
+          icon: 'success',
+        });
       } catch (error) {
-        console.log(error);
+        mpx.showModal({
+          title: '提示',
+          content: '诊断失败，请重试～',
+          showCancel: false,
+        })
+      } finally {
+        mpx.hideLoading();
       }
     },
     goBack() {
-
+      mpx.navigateTo({
+        url: '../index',
+      });
     },
     togglePopup() {
       this.visible = !this.visible;
     },
+    goResult() {
+      mpx.redirectTo({
+        url: './result',
+      });
+    }
   }
 });
 
@@ -127,13 +188,11 @@ createPage({
 page {
   --td-navbar-color: black;
   --td-navbar-background: transparent;
-  --td-step-item-circle-font-size: 20rpx;
   --td-button-default-bg-color: rgba(255, 255, 255, 0.6);
   --td-button-default-active-bg-color: rgba(255, 255, 255, 0.6);
   --td-button-default-active-border-color: #317DFF;
   background-color: #F1F3F7;
 }
-
 
 .tips {
   position: relative;
