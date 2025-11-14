@@ -4,23 +4,42 @@
     <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/record.png" mode="widthFix" />
     <view
       class="relative bg-[#FFFFFF99] b-[#FFFFFF] top-[-272rpx] mx-[26rpx] px-[26rpx] py-[36rpx] flex flex-col justify-center border-rounded-[28rpx] border gap-[26rpx]">
-      <view wx:for="{{ records }}" wx:key="id"
-        class="bg-[#FFFFFF] p-[26rpx] border-rounded-[18rpx] color-[#636A73FF] text-[24rpx] flex flex-col gap-[18rpx]">
-        <text
-          class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] border-rounded-r-[18rpx]"
-          wx:style="{{ {backgroundColor: item.statusconfig.bg} }}">{{ item.statusconfig.name }}</text>
-        <view class="text-[28rpx] font-bold color-[#1D2129FF]">牙齿健康度报告</view>
-        <view class="flex justify-between items-center">
-          <view class="flex flex-col gap-[10rpx]">
-            <text>提交人：{{ item.nickname }}</text>
-            <text>提交时间：{{ item.created_at }}</text>
+      <view wx:if="{{ records.length === 0 }}">
+        <t-empty description="暂无记录" icon="{{ {name: 'no-result', size: '48rpx'} }}">
+          <t-button slot="action" theme="primary" variant="outline" bindtap="goBack">去测试</t-button>
+        </t-empty>
+      </view>
+
+      <block wx:else>
+        <view wx:for="{{ records }}" wx:key="id"
+          class="bg-[#FFFFFF] p-[26rpx] border-rounded-[18rpx] color-[#636A73FF] text-[24rpx] flex flex-col gap-[18rpx]">
+          <text
+            class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] border-rounded-r-[18rpx]"
+            wx:style="{{ {backgroundColor: item.statusconfig.bg} }}">{{ item.statusconfig.name }}</text>
+          <view class="text-[28rpx] font-bold color-[#1D2129FF]">牙齿健康度报告</view>
+          <view class="flex justify-between items-center">
+            <view class="flex flex-col gap-[10rpx]">
+              <text>提交人：{{ item.nickname }}</text>
+              <text>提交时间：{{ item.created_at }}</text>
+            </view>
+            <t-button wx:if="{{ item.status === 2 || item.status === 3 }}" size="extra-small" variant="outline"
+              t-class="m-0 color-[#86909CFF] text-[24rpx] px-[20rpx] py-[5rpx]" bindtap="onClick"
+              data-id="{{ item.id }}">
+              <text wx:if="{{ item.status === 2 }}" slot="content"
+                class="color-[#86909C] font-[400] text-[24rpx]">查看</text>
+              <text wx:if="{{ item.status === 3 }}" slot="content"
+                class="color-[#86909C] font-[400] text-[24rpx]">重新检测</text>
+            </t-button>
           </view>
-          <t-button wx:if="{{ item.status === 2 || item.status === 3 }}" size="extra-small" variant="outline"
-            t-class="m-0 color-[#86909CFF] text-[24rpx] px-[20rpx] py-[5rpx]" bindtap="onClick" data-id="{{ item.id }}">
-            <text wx:if="{{ item.status === 2 }}" slot="content" class="color-[#86909C] font-[400] text-[24rpx]">查看</text>
-            <text wx:if="{{ item.status === 3 }}" slot="content" class="color-[#86909C] font-[400] text-[24rpx]">重新检测</text>
-          </t-button>
         </view>
+      </block>
+
+      <!-- 加载更多提示 -->
+      <view wx:if="{{ hasMore }}" class="flex justify-center items-center py-[20rpx]">
+        <text class="color-[#86909C] text-[24rpx]">加载中...</text>
+      </view>
+      <view wx:if="{{ !hasMore && records.length > 0 }}" class="flex justify-center items-center py-[20rpx]">
+        <text class="color-[#86909C] text-[24rpx]">没有更多数据了</text>
       </view>
     </view>
   </view>
@@ -64,15 +83,38 @@ const statusMap = [
 createPage({
   data: {
     records: [] as Record[],
+    page: 1,
+    pageSize: 20,
+    total: 0,
+    hasMore: true,
+    loading: false,
   },
   onLoad() {
-    this.queryAiTestRecords();
+    this.queryAiTestRecords(true);
   },
-  async queryAiTestRecords() {
-    mpx.showLoading({
-      title: '加载中...',
-      mask: true,
-    });
+  async queryAiTestRecords(isRefresh = false) {
+    if (this.data.loading) {
+      return;
+    }
+
+    if (isRefresh) {
+      this.setData({
+        page: 1,
+        hasMore: true,
+        loading: true,
+      });
+    } else {
+      this.setData({
+        loading: true,
+      });
+    }
+
+    if (isRefresh) {
+      mpx.showLoading({
+        title: '加载中...',
+        mask: true,
+      });
+    }
 
     try {
       const res = await request.fetch<{
@@ -90,20 +132,52 @@ createPage({
       }>({
         url: '/diagnosis',
         method: 'GET',
+        data: {
+          page: this.data.page,
+          page_size: this.data.pageSize,
+        },
       });
-      const {  records } = res.data.data ?? {
+
+      const { total, records } = res.data.data ?? {
         total: 0,
         records: [],
       };
-      this.records = records.map(item => ({
+
+      const newRecords = records.map(item => ({
         id: item.id,
         status: item.status,
         statusconfig: statusMap[item.status] ?? statusMap[0],
         nickname: item.user.nickname,
         created_at: dayjs(item.created_at).format('YYYY-MM-DD HH:mm'),
       }));
+
+      if (isRefresh) {
+        this.setData({
+          records: newRecords,
+          total,
+          hasMore: newRecords.length >= this.data.pageSize,
+        });
+      } else {
+        this.setData({
+          records: [...this.data.records, ...newRecords],
+          total,
+          hasMore: newRecords.length >= this.data.pageSize,
+        });
+      }
+
+      // 更新页码
+      if (newRecords.length > 0) {
+        this.setData({
+          page: this.data.page + 1,
+        });
+      }
     } finally {
-      mpx.hideLoading();
+      this.setData({
+        loading: false,
+      });
+      if (isRefresh) {
+        mpx.hideLoading();
+      }
     }
   },
 
@@ -127,6 +201,13 @@ createPage({
       });
     }
   },
+
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading) {
+      this.queryAiTestRecords(false);
+    }
+  },
+
   goBack() {
     wx.switchTab({
       url: '/pages/aitest/index',
@@ -143,6 +224,7 @@ createPage({
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-empty": "tdesign-miniprogram/miniprogram_dist/empty/empty",
   }
 }
 </script>
