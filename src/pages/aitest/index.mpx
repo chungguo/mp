@@ -58,36 +58,62 @@
     </view>
   </view>
 
-  <t-popup visible="{{ mediaPopup }}" bind:visible-change="onVisibleChange" placement="bottom" t-class="relative">
-    <t-icon slot="close-btn" name="close" class="color-[#CCCCCC] relative top-[-40rpx]" bindtap="togglePopup" />
+  <t-popup visible="{{ mediaPopup }}" placement="bottom" t-class="relative">
+    <t-icon slot="close-btn" name="close" class="color-[#CCCCCC] relative top-[-40rpx]" bindtap="closePopup" />
     <view class="color-[#1D2129] px-[46rpx]">
-      <view class="text-center text-[36rpx] mt-[45rpx] font-[800]">如何上传</view>
-      <view class="text-[24rpx] mb-[36rpx] mt-[46rpx] tips">
-        请分别上传你的正面露齿、侧脸不露齿照片，让 A 小助手更清 楚看到你的牙齿状况。未按照规定拍摄或上传图片，可能无法 准确测试出结果。
-      </view>
-      <view class="flex flex-justify-center gap-[38rpx] .w100\%">
-        <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-          <image class="w-[306rpx] h-[306rpx]"
-            src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/front.png" mode="widthFix" />
-          <text>正面露齿照</text>
+      <view class="text-center text-[36rpx] mt-[45rpx] font-[800]">{{ popupTitle }}</view>
+      <view wx:if="{{ images.length === 0 }}">
+        <view class="text-[24rpx] mb-[36rpx] mt-[46rpx] tips">
+          请分别上传你的正面露齿、侧脸不露齿照片，让 A 小助手更清 楚看到你的牙齿状况。未按照规定拍摄或上传图片，可能无法 准确测试出结果。
         </view>
-        <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-          <image class="w-[306rpx] h-[306rpx]"
-            src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/side.png" mode="widthFix" />
-          <text>侧面不露齿照</text>
+        <view class="flex flex-justify-center gap-[38rpx] .w100\%">
+          <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
+            <image class="w-[306rpx] h-[306rpx]"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/front.png" mode="widthFix" />
+            <text>正面露齿照</text>
+          </view>
+          <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
+            <image class="w-[306rpx] h-[306rpx]"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/side.png" mode="widthFix" />
+            <text>侧面不露齿照</text>
+          </view>
         </view>
+
+        <view class="text-[22rpx] text-center mt-[46rpx] mb-[27rpx]">
+          我们将遵循<text class="color-[#317DFF]">《AI处理图像信息协议》</text>处理你的照片
+        </view>
+
+        <t-button block theme="primary" size="large" class="mb-[66rpx]" bindtap="chooseMedia">
+          <view slot="content">
+            <view class="text-[28rpx] lh-[40rpx]">上传第一张正面露齿照</view>
+            <view class="text-[22rpx] lh-[30rpx] text-[rgba(255,255,255,0.8)]">点击上传表示我同意协议</view>
+          </view>
+        </t-button>
       </view>
 
-      <view class="text-[22rpx] text-center mt-[46rpx] mb-[27rpx]">
-        我们将遵循<text class="color-[#317DFF]">《AI处理图像信息协议》</text>处理你的照片
-      </view>
-
-      <t-button block theme="primary" size="large" class="mb-[66rpx]" bindtap="chooseMedia">
-        <view slot="content">
-          <view class="text-[28rpx] lh-[40rpx]">上传或拍照</view>
-          <view class="text-[22rpx] lh-[30rpx] text-[rgba(255,255,255,0.8)]">点击上传表示我同意协议</view>
+      <view wx:else>
+        <view class="flex flex-justify-center gap-[38rpx] .w100\% mt-[46rpx]">
+          <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
+            <view class="w-[306rpx] h-[306rpx]">
+              <image class="w-full" src="{{ images[0] }}" mode="widthFix" />
+            </view>
+            <text>正面露齿照（已上传）</text>
+          </view>
+          <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
+            <image class="w-[306rpx] h-[306rpx]"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/side.png" mode="widthFix" />
+            <text>侧面不露齿照（示例）</text>
+          </view>
         </view>
-      </t-button>
+
+        <t-button block theme="primary" size="large" class="mt-[66rpx]" bindtap="chooseMedia">
+          <view slot="content" class="text-[28rpx] lh-[40rpx]">上传第二张侧面不露齿照</view>
+        </t-button>
+
+        <t-button block theme="default" variant="outline" size="large" class="mt-[20rpx]" bindtap="reupload">
+          <view slot="content" class="text-[28rpx] lh-[40rpx]">重新上传第一张</view>
+        </t-button>
+      </view>
     </view>
   </t-popup>
 
@@ -114,6 +140,7 @@ createPage({
     uploaded: false,
     mediaPopup: false,
     mobilePopup: false,
+    images: [] as string[],
   },
   pageLifetimes: {
     show() {
@@ -126,6 +153,18 @@ createPage({
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile', 'updateProfile']),
+  computed: {
+    popupTitle() {
+      return !this.images.length ? '如何上传' : '上传第二张照片'
+    }
+  },
+  watch: {
+    images(value) {
+      if (value.length === 2) {
+        this.diagnosis();
+      }
+    }
+  },
   methods: {
     async startTest() {
       mpx.showLoading({
@@ -137,7 +176,7 @@ createPage({
         await this.queryProfile();
         const profile = this.profile().value;
 
-        if (!profile.mobile) {
+        if (!profile.phone) {
           this.mobilePopup = true;
         } else {
           this.mediaPopup = true;
@@ -149,21 +188,13 @@ createPage({
     async chooseMedia() {
       try {
         const res = await mpx.chooseMedia({
-          count: 2,
+          count: 1,
           mediaType: ['image'],
-          sourceType: ['album', 'camera'],
+          sourceType: ['camera'],
           camera: 'front',
         });
 
-        if (res.tempFiles.length !== 2) {
-          mpx.showToast({
-            title: '请选择2张图片',
-            icon: 'error',
-          });
-          return;
-        }
-
-        const images = await uploadImages(res.tempFiles.map((t: { tempFilePath: string }) => t.tempFilePath));
+        const images: string[] = await uploadImages(res.tempFiles.map((t: { tempFilePath: string }) => t.tempFilePath));
 
         if (!images.length) {
           mpx.showModal({
@@ -171,17 +202,38 @@ createPage({
             content: '请选择图片',
             showCancel: false,
           });
+          return;
         }
 
+        this.images.push(images[0]);
+
+      } catch (error) {
+        // 用户取消
+        if (error.errMsg === 'chooseMedia:fail cancel') {
+          return;
+        }
+
+        mpx.showModal({
+          title: '提示',
+          content: '诊断失败，请重试～',
+          showCancel: false,
+        })
+      } finally {
+        mpx.hideLoading();
+      }
+    },
+
+    async diagnosis() {
+      try {
         mpx.showLoading({
-          title: '正在上传图片',
+          title: '正在评估...',
           mask: true,
         });
 
         await request.fetch({
           url: '/diagnosis',
           data: {
-            images,
+            images: this.images,
           },
         });
 
@@ -189,15 +241,14 @@ createPage({
         this.uploaded = true;
 
         mpx.showToast({
-          title: '上传成功',
+          title: '操作成功',
           icon: 'success',
         });
       } catch (error) {
-        mpx.showModal({
-          title: '提示',
-          content: '诊断失败，请重试～',
-          showCancel: false,
-        })
+        mpx.showToast({
+          title: '操作失败',
+          icon: 'error',
+        });
       } finally {
         mpx.hideLoading();
       }
@@ -215,14 +266,21 @@ createPage({
       }
     },
 
+    reupload() {
+      this.images = [];
+    },
+
     goBack() {
       mpx.switchTab({
         url: '/pages/index',
       });
     },
-    togglePopup() {
-      this.mediaPopup = !this.mediaPopup;
+
+    closePopup() {
+      this.mediaPopup = false;
+      this.images = [];
     },
+
     goResult() {
       mpx.redirectTo({
         url: './result',

@@ -25,6 +25,6 @@ const upload = async (url: string) => {
   }
 };
 
-export const uploadImages = async (url: string[]) => {
+export const uploadImages = async (url: string[]): Promise<string[]> => {
   return Promise.all(url.map(upload));
 }

@@ -196,9 +196,34 @@ createPage({
         url: `./detail?id=${id}`,
       });
     } else {
-      mpx.switchTab({
-        url: '/pages/aitest/index',
+      this.retry(id);
+    }
+  },
+
+  async retry(id: number) {
+    if (!id) {
+      return;
+    }
+
+    try {
+      mpx.showLoading({
+        title: '正在重试...',
+        mask: true,
       });
+
+      await request.fetch({
+        url: `/diagnosis/${id}/retry`,
+        method: 'POST',
+      });
+
+      mpx.hideLoading();
+      mpx.showToast({
+        title: '重试成功',
+        icon: 'success',
+      });
+      this.queryAiTestRecords(true);
+    } finally {
+      mpx.hideLoading();
     }
   },
 
