@@ -17,13 +17,13 @@
         class="mx-[26rpx] px-[26rpx] py-[36rpx] bg-[#FFFFFF99] b-[#FFFFFF] flex flex-col justify-center border-rounded-[28rpx] border gap-[26rpx]">
         <view class="flex flex-justify-center gap-[38rpx] .w100\%">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <view class="w-[306rpx] h-[306rpx]">
+            <view class="w-[306rpx] h-[306rpx] overflow-hidden">
               <image class="w-full" src="{{ detail.images[0] }}" mode="widthFix" />
             </view>
             <text>正面露齿照</text>
           </view>
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <view class="w-[306rpx] h-[306rpx]">
+            <view class="w-[306rpx] h-[306rpx] overflow-hidden">
               <image class="w-full" src="{{ detail.images[1] }}" mode="widthFix" />
             </view>
             <text>侧面不露齿照</text>

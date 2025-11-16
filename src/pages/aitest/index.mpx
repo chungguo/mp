@@ -94,7 +94,7 @@
       <view wx:else>
         <view class="flex flex-justify-center gap-[38rpx] .w100\% mt-[46rpx]">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <view class="w-[306rpx] h-[306rpx]">
+            <view class="w-[306rpx] h-[306rpx] overflow-hidden">
               <image class="w-full" src="{{ images[0] }}" mode="widthFix" />
             </view>
             <text>正面露齿照（已上传）</text>
