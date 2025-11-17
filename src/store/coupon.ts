@@ -107,11 +107,13 @@ export const useCouponStore = defineStore('coupon', () => {
     return res.data.data;
   };
 
-  async function my() {
+  async function my(params: { status?: string, claim_id?: string } = {}) {
     const res = await request.fetch<{
       data: CouponReceived[];
     }>({
       url: '/coupons/my',
+      method: 'GET',
+      params,
     });
     return res.data.data;
   };

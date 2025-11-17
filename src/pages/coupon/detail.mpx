@@ -90,8 +90,8 @@ createPage({
   onLoad(options: { id?: string }) {
     const { id } = options;
     if (!id) {
-      mpx.redirectTo({
-        url: '../index',
+      mpx.switchTab({
+        url: 'pages/index',
       });
       return;
     }
@@ -105,11 +105,12 @@ createPage({
     });
 
     try {
-      const mine = await this.my() as CouponReceived[];
+      const mine = await this.my({
+        claim_id: id,
+      }) as CouponReceived[];
       const coupon = mine.find((item) => item.id.toString() === id);
       if (coupon) {
         this.coupon = coupon;
-        console.log(this.coupon)
       }
     } catch (e) {
       mpx.showToast({

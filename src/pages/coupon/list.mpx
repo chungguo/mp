@@ -52,8 +52,8 @@ createPage({
   },
 
   goBack() {
-    mpx.redirectTo({
-      url: '../index',
+    mpx.switchTab({
+      url: '/pages/index',
     });
   },
 
@@ -114,11 +114,16 @@ createPage({
 
       const res = await this.claim(id);
 
-      this.coupons = this.coupons.map(c => ({
-        ...c,
-        action: '去使用',
-        claim_id: res.claim_id,
-      }));
+      this.coupons = this.coupons.map(c => {
+        if (c.coupon.id === Number(id)) {
+          return {
+            ...c,
+            action: '去使用',
+            claim_id: res.claim_id,
+          };
+        }
+        return c;
+      });
 
       mpx.showToast({
         title: '领取成功',

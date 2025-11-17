@@ -3,9 +3,9 @@
   <view class="m-32rpx bg-white rounded-32rpx overflow-hidden">
     <t-tabs split="{{ false }}" animation="{{ { duration: 0.6 } }}" defaultValue="{{ activeTab }}"
       bind:change="onTabChange" bottom-line-mode="auto">
-      <t-tab-panel label="可使用" value="unused">
-        <block wx:if="{{ unused.length > 0 }}">
-          <view wx:for="{{ unused }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx">
+      <t-tab-panel label="可使用" value="1">
+        <block wx:if="{{ activeTab === '1' && coupons.length !== 0 }}">
+          <view wx:for="{{ coupons }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx">
             <coupon bind:coupon-click="onCouponTap" coupon="{{ item }}" action="去使用" />
           </view>
         </block>
@@ -15,9 +15,9 @@
           </view>
         </block>
       </t-tab-panel>
-      <t-tab-panel label="已使用" value="used">
-        <block wx:if="{{ used.length > 0 }}">
-          <view wx:for="{{ used }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx opacity-50">
+      <t-tab-panel label="已使用" value="2">
+        <block wx:if="{{ activeTab === '2' && coupons.length !== 0 }}">
+          <view wx:for="{{ coupons }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx opacity-50">
             <coupon coupon="{{ item }}" action="查看" />
           </view>
         </block>
@@ -27,9 +27,9 @@
           </view>
         </block>
       </t-tab-panel>
-      <t-tab-panel label="已过期" value="expired">
-        <block wx:if="{{ expired.length > 0 }}">
-          <view wx:for="{{ expired }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx opacity-50"
+      <t-tab-panel label="已过期" value="3">
+        <block wx:if="{{ activeTab === '3' && coupons.length !== 0 }}">
+          <view wx:for="{{ coupons }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx opacity-50"
             bindtap="onCouponTap">
             <coupon coupon="{{ item }}" action="查看" />
           </view>
@@ -51,15 +51,18 @@ import { CouponReceived, useCouponStore } from '@/store/coupon';
 
 createPage({
   data: {
-    activeTab: 'unused', // 默认选中未使用
-    unused: [], // 未使用的优惠券
-    used: [], // 已使用的优惠券
-    expired: [],
+    coupons: [] as CouponReceived[],
+    activeTab: '1', // 默认选中未使用
     isLoading: false, // 是否正在加载
-    visible: false,
   },
 
   ...mapActions(useCouponStore, ['my']),
+
+  watch: {
+    activeTab() {
+      this.loadCoupons();
+    }
+  },
 
   onLoad() {
     // 加载优惠券数据
@@ -78,28 +81,11 @@ createPage({
     });
 
     try {
-
-      const records = await this.my() as CouponReceived[];
-
-      const coupons = (records ?? []).reduce((res, item) => {
-        const { status } = item;
-        const container = [null, res.unused, res.used, res.expired][status] as CouponReceived[];
-        container.push(item);
-        return res;
-      }, {
-        unused: [],
-        used: [],
-        expired: [],
-      });
-
-      const { unused, used, expired } = coupons;
-
-      this.setData({
-        unused,
-        used,
-        expired,
-        isLoading: false,
-      });
+      const records = await this.my({
+        status: this.activeTab,
+      }) as CouponReceived[];
+      this.coupons = records;
+      this.isLoading = false;
     } finally {
       mpx.hideLoading();
     }
@@ -112,15 +98,15 @@ createPage({
 
   // 点击优惠券
   onCouponTap(e: WechatMiniprogram.CustomEvent) {
-    const id = e.currentTarget.id;
+    const id = e.detail.id;
     mpx.navigateTo({
       url: `./detail?id=${id}`,
     });
   },
 
   goBack() {
-    mpx.navigateTo({
-      url: '../me/index',
+    mpx.switchTab({
+      url: '/pages/me/index',
     });
   }
 });

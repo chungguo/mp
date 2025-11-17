@@ -207,7 +207,6 @@ createPage({
         this.goBack();
       }, 1000);
     } catch (error) {
-      console.log(error)
       mpx.showToast({
         icon: 'error',
         title: '保存失败',
