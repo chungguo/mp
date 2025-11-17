@@ -39,7 +39,7 @@ createComponent({
   },
   computed: {
     large_text() {
-      return this.properties.coupon.amount
+      return Math.floor(this.properties.coupon.coupon_amount / 100)
     },
     applicable_hospital() {
       const hospitalIds = this.properties.coupon.clinic_ids;
@@ -47,7 +47,7 @@ createComponent({
         return '适用医院：全部'
       }
 
-      return hospitalIds;
+      return this.properties.coupon.clinic_names;
     },
     until() {
       const validity_type = this.properties.coupon.validity_type;

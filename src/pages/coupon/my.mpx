@@ -77,29 +77,32 @@ createPage({
       mask: true,
     });
 
-    const records = await this.my() as CouponReceived[];
+    try {
 
-    const coupons = (records ?? []).reduce((res, item) => {
-      const { status } = item;
-      const container = [null, res.unused, res.used, res.expired][status] as CouponReceived[];
-      container.push(item);
-      return res;
-    }, {
-      unused: [],
-      used: [],
-      expired: [],
-    });
+      const records = await this.my() as CouponReceived[];
 
-    const { unused, used, expired } = coupons;
+      const coupons = (records ?? []).reduce((res, item) => {
+        const { status } = item;
+        const container = [null, res.unused, res.used, res.expired][status] as CouponReceived[];
+        container.push(item);
+        return res;
+      }, {
+        unused: [],
+        used: [],
+        expired: [],
+      });
 
-    this.setData({
-      unused,
-      used,
-      expired,
-      isLoading: false,
-    });
+      const { unused, used, expired } = coupons;
 
-    mpx.hideLoading();
+      this.setData({
+        unused,
+        used,
+        expired,
+        isLoading: false,
+      });
+    } finally {
+      mpx.hideLoading();
+    }
   },
 
   // 切换标签页
