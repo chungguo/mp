@@ -14,7 +14,7 @@
     </view>
     <view class="relative top-[-419rpx] z-2">
       <view
-        class="mx-[26rpx] px-[26rpx] py-[36rpx] bg-[#FFFFFF99] b-[#FFFFFF] flex flex-col justify-center border-rounded-[28rpx] border gap-[26rpx]">
+        class="mx-[26rpx] px-[26rpx] py-[36rpx] bg-[#FFFFFF99] b-[#FFFFFF] flex flex-col justify-center rounded-[28rpx] border gap-[26rpx]">
         <view class="flex flex-justify-center gap-[38rpx] .w100\%">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
             <view class="w-[306rpx] h-[306rpx] overflow-hidden">
@@ -33,12 +33,12 @@
         <view class="mt-[36rpx] text-[28rpx] flex flex-col gap-[32rpx]">
           <view class="pl-[26rpx] relative">
             <text class="color-[#1D2129] font-bold">整体情况：</text><text>{{ detail.overall_description }}</text>
-            <view class="absolute left-0 top-[10rpx] w-[10rpx] h-[10rpx] border-rounded-[50%] bg-[#317DFF]"></view>
+            <view class="absolute left-0 top-[10rpx] w-[10rpx] h-[10rpx] rounded-[50%] bg-[#317DFF]"></view>
           </view>
 
           <view class="pl-[26rpx] relative">
             <text class="color-[#1D2129] font-bold">问题诊断和建议：</text><text>{{ detail.diagnosis_and_suggestions }}</text>
-            <view class="absolute left-0 top-[10rpx] w-[10rpx] h-[10rpx] border-rounded-[50%] bg-[#317DFF]"></view>
+            <view class="absolute left-0 top-[10rpx] w-[10rpx] h-[10rpx] rounded-[50%] bg-[#317DFF]"></view>
           </view>
         </view>
       </view>

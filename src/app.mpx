@@ -64,6 +64,15 @@ image {
       "./pages/aitest/result",
       "./pages/aitest/detail",
     ],
+    "subPackages": [
+      {
+        "root": "subpackages/activity",
+        "name": "activity",
+        "pages": [
+          "./referral"
+        ]
+      }
+    ],
     "window": {
       "backgroundColor": "#F5F5F5",
       "navigationBarBackgroundColor": "#FFFFFF",

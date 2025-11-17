@@ -15,7 +15,7 @@
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/steps.png" mode="widthFix" />
       </view>
 
-      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large"
+      <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large"
         bindtap="goResult">
         <text slot="content" class="color-[#317DFF]">查看检查结果</text>
       </t-button>
@@ -51,7 +51,7 @@
           class="absolute top-[-18rpx] left-0 right-0 flex w-full h-full items-center justify-center text-[30rpx] font-[600] color-white">
           添加企业微信立即领取</view>
       </view>
-      <t-button block theme="default" class="bg-[#ffffff99] border border-rounded-[28rpx]" size="large"
+      <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large"
         bindtap="goResult">
         <text slot="content" class="color-[#317DFF]">查看检查结果</text>
       </t-button>

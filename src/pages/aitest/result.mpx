@@ -3,7 +3,7 @@
   <view class="absolute top-0 left-0 right-0 z-1">
     <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/record.png" mode="widthFix" />
     <view
-      class="relative bg-[#FFFFFF99] b-[#FFFFFF] top-[-272rpx] mx-[26rpx] px-[26rpx] py-[36rpx] flex flex-col justify-center border-rounded-[28rpx] border gap-[26rpx]">
+      class="relative bg-[#FFFFFF99] b-[#FFFFFF] top-[-272rpx] mx-[26rpx] px-[26rpx] py-[36rpx] flex flex-col justify-center rounded-[28rpx] border gap-[26rpx]">
       <view wx:if="{{ records.length === 0 }}">
         <t-empty description="暂无记录" icon="{{ {name: 'no-result', size: '48rpx'} }}">
           <t-button slot="action" theme="primary" variant="outline" bindtap="goBack">去测试</t-button>
@@ -12,9 +12,9 @@
 
       <block wx:else>
         <view wx:for="{{ records }}" wx:key="id"
-          class="bg-[#FFFFFF] p-[26rpx] border-rounded-[18rpx] color-[#636A73FF] text-[24rpx] flex flex-col gap-[18rpx]">
+          class="bg-[#FFFFFF] p-[26rpx] rounded-[18rpx] color-[#636A73FF] text-[24rpx] flex flex-col gap-[18rpx]">
           <text
-            class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] border-rounded-r-[18rpx]"
+            class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] rounded-r-[18rpx]"
             wx:style="{{ {backgroundColor: item.statusconfig.bg} }}">{{ item.statusconfig.name }}</text>
           <view class="text-[28rpx] font-bold color-[#1D2129FF]">牙齿健康度报告</view>
           <view class="flex justify-between items-center">
