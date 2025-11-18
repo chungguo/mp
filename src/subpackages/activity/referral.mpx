@@ -1,80 +1,109 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="推荐有礼" />
 
-  <view class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/banner.png"
-      mode="widthFix" />
-
-    <view class="px-[24rpx]">
-      <!-- 倒计时 -->
-      <view class="bg-[#E8F6FF]">
-        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/step.png"
-          mode="widthFix" />
-
-        <view class="flex justify-between items-center color-[#438DF0]">
-          <view class="flex items-center gap-[12rpx]">
-            <view class="font-[28rpx] color-[#000] font-[400]">活动倒计时</view>
-            <view class="flex items-center gap-[8rpx]">
-              <view>6天</view>
-              <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
-                23</view>
-              <view>:</view>
-              <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
-                23</view>
-              <view>:</view>
-              <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
-                23</view>
-            </view>
-          </view>
-          <view class="flex items-baseline gap-[8rpx]">
-            <view class="font-[500] text-[28rpx] color-[#000]">已邀请</view>
-            <view class="text-[60rpx] font-[600]">6</view>
-            <view class="font-[500] text-[28rpx] color-[#000]">位好友</view>
+  <view class="px-[24rpx] mt-[328rpx] bg-[#E8F6FF]">
+    <!-- 倒计时 -->
+    <view class="bg-[#E8F6FF] h-[194rpx] countdown">
+      <view class="absolute bottom-[18rpx] left-0 right-0 flex justify-between items-center color-[#438DF0] px-[24rpx]">
+        <view class="flex items-center gap-[12rpx]">
+          <view class="font-[28rpx] color-[#000] font-[400]">活动倒计时</view>
+          <view class="flex items-center gap-[8rpx]">
+            <view>6天</view>
+            <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
+              23</view>
+            <view>:</view>
+            <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
+              23</view>
+            <view>:</view>
+            <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
+              23</view>
           </view>
         </view>
-      </view>
-
-      <view class="flex flex-col gap-[16rpx]">
-        <!-- 进度 -->
-        <view class="p-[24rpx] bg-white rounded-[20rpx] text-[28rpx]">
-
-          <view class="receive py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
-          <view class="text-[24rpx] color-[#438DF0]">距离奖励仅差4位好友～</view>
-
-        </view>
-
-        <!-- 步骤指引 -->
-        <view class="relative p-[24rpx] bg-white rounded-[20rpx] text-[28rpx] flex flex-col gap-[24rpx]">
-          <view class="w-[20rpx] absolute top-[-45rpx] left-[22rpx]">
-            <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
-              mode="widthFix" />
-          </view>
-          <view class="w-[20rpx] absolute top-[-45rpx] right-[22rpx]">
-            <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
-              mode="widthFix" />
-          </view>
-          <view wx:for="{{ instructions }}" wx:key="index"
-            class="relative bg-[#ECF9FF] rounded-[20rpx] px-[24rpx] py-[40rpx] flex items-center gap-[32rpx]">
-            <image src="{{ item.image }}" mode="widthFix" class="w-[74rpx]"></image>
-            <view class="flex flex-col gap-[8rpx]">
-              <text class="text-[34rpx] font-[600]">{{ item.title }}</text>
-              <text class="color-[#00000073]">{{ item.content }}</text>
-            </view>
-            <view
-              class="absolute w-[40rpx] h-[40rpx] flex justify-center items-center left-0 top-0 rounded-tl-[16rpx] rounded-br-[16rpx] bg-[#16A1F6] color-white">
-              {{ index + 1 }}</view>
-          </view>
+        <view class="flex items-baseline gap-[8rpx]">
+          <view class="font-[500] text-[28rpx] color-[#000]">已邀请</view>
+          <view class="text-[60rpx] font-[600]">6</view>
+          <view class="font-[500] text-[28rpx] color-[#000]">位好友</view>
         </view>
       </view>
     </view>
-    <!-- 邀请按钮 -->
-    <view class="fixed z-10 bottom-0 left-0 right-0 footer px-[56rpx] pt-[40rpx]">
-      <!-- <t-button open-type="share">立即邀请</t-button> -->
-      <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png"
-        mode="widthFix" />
+
+    <view class="flex flex-col gap-[16rpx]">
+      <!-- 进度 -->
+      <view class="p-[24rpx] bg-white rounded-[20rpx] text-[28rpx]">
+        <view class="relative">
+          <view class="w-full flex p-[40rpx] box-border justify-between items-center relative z-2">
+            <!-- 奖品 -->
+            <view class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
+              <text>6位</text>
+              <image class="w-[98rpx]" mode="widthFix"
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png " />
+              <text>鸡蛋<text class="color-[#438DF0]">2</text>盒</text>
+              <view class="flex justify-center">
+                <view class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
+                <!-- <view class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">已领取</view> -->
+              </view>
+            </view>
+            <!-- 奖品 -->
+            <view class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
+              <text>6位</text>
+              <image class="w-[98rpx]" mode="widthFix"
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png " />
+              <text>鸡蛋<text class="color-[#438DF0]">2</text>盒</text>
+              <view class="flex justify-center">
+                <view class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
+                <!-- <view class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">已领取</view> -->
+              </view>
+            </view>
+            <!-- 奖品 -->
+            <view class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
+              <text>6位</text>
+              <image class="w-[98rpx]" mode="widthFix"
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png " />
+              <text>鸡蛋<text class="color-[#438DF0]">2</text>盒</text>
+              <view class="flex justify-center">
+                <view class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
+                <!-- <view class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">已领取</view> -->
+              </view>
+            </view>
+          </view>
+          <view class="w-full h-[20rpx] bg-[#0000000D] rounded-[12rpx] absolute left-0 top-[140rpx] z-1">
+            <view class="progress h-full rounded-[12rpx] z-2" wx:style="{{ {width: '30%'} }}"></view>
+          </view>
+        </view>
+
+        <view class="text-[24rpx] text-center mb-[10rpx] color-[#438DF0]">距离奖励仅差4位好友～</view>
+      </view>
+
+      <!-- 步骤指引 -->
+      <view class="relative p-[24rpx] bg-white rounded-[20rpx] text-[28rpx] flex flex-col gap-[24rpx]">
+        <view class="w-[20rpx] absolute top-[-45rpx] left-[22rpx]">
+          <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
+            mode="widthFix" />
+        </view>
+        <view class="w-[20rpx] absolute top-[-45rpx] right-[22rpx]">
+          <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
+            mode="widthFix" />
+        </view>
+        <view wx:for="{{ instructions }}" wx:key="index"
+          class="relative bg-[#ECF9FF] rounded-[20rpx] px-[24rpx] py-[40rpx] flex items-center gap-[32rpx]">
+          <image src="{{ item.image }}" mode="widthFix" class="w-[74rpx]"></image>
+          <view class="flex flex-col gap-[8rpx]">
+            <text class="text-[34rpx] font-[600]">{{ item.title }}</text>
+            <text class="color-[#00000073]">{{ item.content }}</text>
+          </view>
+          <view
+            class="absolute w-[40rpx] h-[40rpx] flex justify-center items-center left-0 top-0 rounded-tl-[16rpx] rounded-br-[16rpx] bg-[#16A1F6] color-white">
+            {{ index + 1 }}</view>
+        </view>
+      </view>
     </view>
   </view>
-
+  <!-- 邀请按钮 -->
+  <view class="fixed z-10 bottom-0 left-0 right-0 footer px-[56rpx] pt-[40rpx]">
+    <!-- <t-button open-type="share">立即邀请</t-button> -->
+    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png"
+      mode="widthFix" />
+  </view>
 </template>
 
 <script lang="ts">
@@ -109,6 +138,16 @@ page {
   --td-navbar-color: black;
   --td-navbar-background: transparent;
   background-color: #DDF2FC;
+  background-image: url(https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/background.png);
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
+.countdown {
+  background-image: url(https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/step.png);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  position: relative;
 }
 
 .footer {
@@ -119,7 +158,25 @@ page {
 }
 
 .receive {
-  background-color: linear-gradient(214deg, #FFC433, #FF9132);
+  background: linear-gradient(214deg, #FFC433 0%, #FF9132 100%);
+}
+
+.progress {
+  position: relative;
+  background: repeating-linear-gradient(-214deg, #67D3F7, #67D3F7 16rpx, #0D9CF6 16rpx, #0D9CF6 32rpx);
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 20rpx;
+    height: 20rpx;
+    border: 4px solid #438DF0;
+    border-radius: 50%;
+    background-color: white;
+    transform: translateY(-50%);
+  }
 }
 </style>
 
