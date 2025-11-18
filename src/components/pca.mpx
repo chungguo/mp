@@ -1,0 +1,235 @@
+<template>
+  <t-picker visible="{{ visible }}" value="{{ area }}" title="选择地区" cancelBtn="取消" confirmBtn="确认"
+    bindchange="onPickerChange" bindpick="onColumnChange" bindcancel="onPickerCancel">
+    <t-picker-item options="{{ provinces }}"></t-picker-item>
+    <t-picker-item options="{{ cities }}"></t-picker-item>
+    <t-picker-item options="{{ counties }}"></t-picker-item>
+  </t-picker>
+</template>
+
+<script lang="ts">
+import request from "@/common/request";
+import { createComponent } from "@mpxjs/core";
+import type { PickerItemOption } from 'tdesign-miniprogram/miniprogram_dist/picker-item/type'
+
+interface Node {
+  name: string;
+  code: string;
+  children: Node[];
+}
+
+createComponent({
+  properties: {
+    visible: {
+      type: Boolean,
+      value: false,
+    },
+    value: {
+      type: Array,
+      value: [],
+      observer: 'onValueChange'
+    }
+  },
+  data: {
+    pca: [] as Node[],
+    area: [] as string[],
+    provinces: [] as PickerItemOption[],
+    cities: [] as PickerItemOption[],
+    counties: [] as PickerItemOption[],
+    selectedProvince: '',
+    selectedCity: '',
+    selectedCounty: '',
+  },
+  lifetimes: {
+    ready() {
+      this.init();
+    },
+  },
+
+  methods: {
+    async init() {
+      const res = await request.fetch<Node[]>({
+        url: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/pca-code.json',
+        method: 'GET',
+      });
+
+      this.pca = res.data;
+
+      this.provinces = this.pca.map(item => ({
+        label: item.name,
+        value: item.name,
+      }));
+
+      this.cities = (this.pca[0]?.children || []).map(item => ({
+        label: item.name,
+        value: item.name,
+      }));
+
+      this.counties = (this.pca[0]?.children?.[0]?.children || []).map(item => ({
+        label: item.name,
+        value: item.name,
+      }));
+
+      // 如果有初始值，设置默认选中
+      if (this.properties.value && this.properties.value.length > 0) {
+        this.setInitialValues();
+      }
+    },
+
+    onValueChange(newVal: string[]) {
+      if (newVal && newVal.length > 0 && this.pca.length > 0) {
+        this.setInitialValues();
+      }
+    },
+
+    setInitialValues() {
+      const [provinceName, cityName, countyName] = this.data.value;
+
+      if (provinceName) {
+        const provinceIndex = this.pca.findIndex(p => p.name === provinceName);
+        if (provinceIndex !== -1) {
+          this.selectedProvince = provinceName;
+          this.updateCities(provinceIndex);
+
+          if (cityName) {
+            const province = this.pca[provinceIndex];
+            const cityIndex = province.children.findIndex(c => c.name === cityName);
+            if (cityIndex !== -1) {
+              this.selectedCity = cityName;
+              this.updateCounties(provinceIndex, cityIndex);
+
+              if (countyName) {
+                this.selectedCounty = countyName;
+              }
+            }
+          }
+        }
+      }
+
+      this.area = this.data.value;
+    },
+    onPickerChange(e: any) {
+      const { value } = e.detail;
+      this.area = value;
+
+      // 更新选中的值
+      this.selectedProvince = value[0] || '';
+      this.selectedCity = value[1] || '';
+      this.selectedCounty = value[2] || '';
+
+      // 触发变更事件
+      this.triggerEvent('change', {
+        value: value,
+        selectedText: value.filter((v: any) => v).join(''),
+        province: value[0],
+        city: value[1],
+        county: value[2]
+      });
+    },
+
+    onColumnChange(e: any) {
+      const { column, index } = e.detail;
+
+      // 更改省份
+      if (column === 0) {
+        this.updateCities(index);
+      }
+
+      // 更改城市
+      if (column === 1) {
+        const provinceIndex = this.data.provinces.findIndex(p => p.value === this.selectedProvince);
+        this.updateCounties(provinceIndex, index);
+      }
+    },
+
+    updateCities(provinceIndex: number) {
+      const cityNode = this.pca[provinceIndex].children;
+      const cities = cityNode.map(item => ({
+        label: item.name,
+        value: item.name,
+      }));
+      const counties = (cityNode[0]?.children || []).map(item => ({
+        label: item.name,
+        value: item.name,
+      }));
+
+      this.setData({
+        cities,
+        counties,
+        selectedProvince: this.data.provinces[provinceIndex].value as string,
+        selectedCity: cities[0]?.value as string || '',
+        selectedCounty: counties[0]?.value as string || ''
+      });
+    },
+
+    updateCounties(provinceIndex: number, cityIndex: number) {
+      const counties = this.pca[provinceIndex].children[cityIndex].children || [];
+      const countyOptions = counties.map(item => ({
+        label: item.name,
+        value: item.name,
+      }));
+
+      this.setData({
+        counties: countyOptions,
+        selectedCity: this.data.cities[cityIndex].value as string,
+        selectedCounty: countyOptions[0]?.value as string || ''
+      });
+    },
+
+    onPickerCancel() {
+      this.triggerEvent('cancel');
+    },
+
+    // 获取当前选中的完整地址信息
+    getSelectedInfo() {
+      return {
+        province: this.selectedProvince,
+        city: this.selectedCity,
+        county: this.selectedCounty,
+        fullAddress: [this.selectedProvince, this.selectedCity, this.selectedCounty]
+          .filter(item => item).join(' '),
+        value: this.area
+      };
+    },
+
+    // 获取指定省份的城市列表
+    getCities(provinceName: string) {
+      const province = this.pca.find(p => p.name === provinceName);
+      if (!province) return [];
+
+      return province.children.map(item => ({
+        label: item.name,
+        value: item.name,
+        code: item.code
+      }));
+    },
+
+    // 获取指定城市的区县列表
+    getCounties(cityName: string) {
+      for (const province of this.pca) {
+        const city = province.children.find(c => c.name === cityName);
+        if (city) {
+          return city.children.map(item => ({
+            label: item.name,
+            value: item.name,
+            code: item.code
+          }));
+        }
+      }
+      return [];
+    }
+  }
+})
+
+</script>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-picker": "tdesign-miniprogram/miniprogram_dist/picker/picker",
+    "t-picker-item": "tdesign-miniprogram/miniprogram_dist/picker-item/picker-item"
+  }
+}
+</script>

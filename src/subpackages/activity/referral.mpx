@@ -104,12 +104,12 @@
     <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png"
       mode="widthFix" />
   </view>
-  <t-popup placement="center" visible="{{ true }}">
+  <t-popup placement="center" visible="{{ addressFormVisible }}">
     <view class="w-[600rpx] form">
       <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">领取成功，请设置收货地址</view>
       <view class="px-[40rpx] pb-[64rpx]">
         <view class="flex flex-col gap-[24rpx]">
-          <t-input disabled t-class="rounded-[14rpx]" placeholder="请选择地区" borderless>
+          <t-input disabled t-class="rounded-[14rpx]" placeholder="请选择地区" borderless bindtap="showAddressPicker">
             <view slot="label" class="w-[140rpx]">地区</view>
           </t-input>
 
@@ -127,6 +127,7 @@
       </view>
     </view>
   </t-popup>
+  <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange"/>
 </template>
 
 <script lang="ts">
@@ -134,6 +135,8 @@ import { createPage } from '@mpxjs/core'
 
 createPage({
   data: {
+    addressPickerVisible: false,
+    addressFormVisible: true,
     instructions: [
       {
         title: '邀请好友',
@@ -152,7 +155,14 @@ createPage({
       },
     ]
   },
-
+  methods: {
+    onAddressChange(e: any) {
+      console.log(e)
+    },
+    showAddressPicker() {
+      this.addressPickerVisible = true;
+    }
+  }
 });
 </script>
 
@@ -223,6 +233,7 @@ page {
     "t-picker": "tdesign-miniprogram/miniprogram_dist/picker/picker",
     "t-picker-item": "tdesign-miniprogram/miniprogram_dist/picker-item/picker-item",
     "t-input": "tdesign-miniprogram/miniprogram_dist/input/input",
+    "pca": "../../components/pca",
   }
 }
 </script>
