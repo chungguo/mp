@@ -104,6 +104,29 @@
     <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png"
       mode="widthFix" />
   </view>
+  <t-popup placement="center" visible="{{ true }}">
+    <view class="w-[600rpx] form">
+      <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">领取成功，请设置收货地址</view>
+      <view class="px-[40rpx] pb-[64rpx]">
+        <view class="flex flex-col gap-[24rpx]">
+          <t-input disabled t-class="rounded-[14rpx]" placeholder="请选择地区" borderless>
+            <view slot="label" class="w-[140rpx]">地区</view>
+          </t-input>
+
+          <t-input t-class="rounded-[14rpx]" placeholder="请输入详细地址" borderless>
+            <view slot="label" class="w-[140rpx]">详细地址</view>
+          </t-input>
+          <t-input t-class="rounded-[14rpx]" placeholder="请输入真实姓名" borderless>
+            <view slot="label" class="w-[140rpx]">姓名</view>
+          </t-input>
+          <t-input t-class="rounded-[14rpx]" placeholder="请收入手机号" borderless>
+            <view slot="label" class="w-[140rpx]">手机号</view>
+          </t-input>
+        </view>
+        <t-button theme="primary" block t-class="mt-[64rpx]">提交</t-button>
+      </view>
+    </view>
+  </t-popup>
 </template>
 
 <script lang="ts">
@@ -137,6 +160,8 @@ createPage({
 page {
   --td-navbar-color: black;
   --td-navbar-background: transparent;
+  --td-popup-border-radius: 40rpx;
+  --td-input-bg-color: #F3F5F7;
   background-color: #DDF2FC;
   background-image: url(https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/background.png);
   background-repeat: no-repeat;
@@ -164,6 +189,7 @@ page {
 .progress {
   position: relative;
   background: repeating-linear-gradient(-214deg, #67D3F7, #67D3F7 16rpx, #0D9CF6 16rpx, #0D9CF6 32rpx);
+
   &::after {
     content: "";
     display: block;
@@ -178,6 +204,12 @@ page {
     transform: translateY(-50%);
   }
 }
+
+.form {
+  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/popup.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
 </style>
 
 <script type="application/json">
@@ -187,6 +219,10 @@ page {
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
+    "t-picker": "tdesign-miniprogram/miniprogram_dist/picker/picker",
+    "t-picker-item": "tdesign-miniprogram/miniprogram_dist/picker-item/picker-item",
+    "t-input": "tdesign-miniprogram/miniprogram_dist/input/input",
   }
 }
 </script>
