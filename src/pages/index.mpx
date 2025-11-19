@@ -184,7 +184,7 @@ createPage({
       const res = await store.participate();
 
       mpx.navigateTo({
-        url: `../../subpackages/activity/referral?code=${res.share_code}&activity=${res.participation_id}`,
+        url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
       });
     }
   },

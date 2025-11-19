@@ -1,7 +1,7 @@
 import { defineStore } from '@mpxjs/pinia';
 import request from '@/common/request';
 
-interface Activity {
+export interface Activity {
   id: number;
   /** 活动名称 */
   name: string;
@@ -23,7 +23,7 @@ interface Activity {
   daily_reward_claim_limit: number;
 }
 
-interface Participation {
+export interface Participation {
   /** 参与记录ID */
   id: number;
   /** 分享码 */
@@ -36,7 +36,7 @@ interface Participation {
   expire_time: string;
 }
 
-interface Reward {
+export interface Reward {
   id: number;
   /** 达成里程碑（邀请人数） */
   milestone: number;
@@ -44,22 +44,18 @@ interface Reward {
   reward_type: number;
   /** 奖励名称 */
   reward_name: string;
-  /** 优惠券批次ID（虚拟奖励必填） */
-  coupon_batch_id?: number;
-  /** 排序序号 */
-  sort_order: number;
   /** 是否已领取 */
   is_claimed?: boolean;
 }
 
-interface Rewards {
+export interface Rewards {
   /** 已解锁的奖励 */
   unlocked: Reward[];
   /** 未解锁的奖励 */
   locked: Reward[];
 }
 
-interface Invitation {
+export interface Invitation {
   /** 邀请记录ID */
   id: number;
   /** 被邀请用户ID */
@@ -72,7 +68,7 @@ interface Invitation {
   consultation_completed_at: string | null;
 }
 
-interface ActivityData {
+export interface ActivityData {
   /** 活动信息 */
   activity: Activity;
   /** 参与信息 */
@@ -81,6 +77,14 @@ interface ActivityData {
   rewards: Rewards;
   /** 邀请记录 */
   invitations: Invitation[];
+}
+
+export interface ClaimParams {
+  participation_id: number;
+  reward_id: number;
+  recipient_name?: string;
+  recipient_phone?: string;
+  recipient_address?: string;
 }
 
 
@@ -110,9 +114,19 @@ export const useReferralStore = defineStore('referral', () => {
     return response.data?.data ?? {};
   };
 
+  const claim = async (data: ClaimParams) => {
+    const response = await request.fetch({
+      url: '/referral/rewards/claim',
+      method: 'POST',
+      data,
+    });
+    return response.data ?? {};
+  };
+
   return {
     participate,
     progress,
+    claim,
   };
 });
 

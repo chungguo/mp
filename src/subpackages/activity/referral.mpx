@@ -1,7 +1,7 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="推荐有礼" />
 
-  <view class="px-[24rpx] mt-[328rpx] bg-[#E8F6FF]">
+  <view class="px-[24rpx] pb-[100rpx] mt-[328rpx] bg-[#E8F6FF]">
     <!-- 倒计时 -->
     <view class="bg-[#E8F6FF] h-[194rpx] countdown">
       <view
@@ -26,24 +26,26 @@
     <view class="flex flex-col gap-[16rpx]">
       <!-- 进度 -->
       <view class="p-[24rpx] bg-white rounded-[20rpx] text-[28rpx]">
-        <view class="relative">
+        <view class="relative min-h-[200rpx]" wx:if="{{ rewards.length > 0 }}">
           <view class="w-full flex p-[40rpx] box-border justify-between items-center relative z-2">
             <!-- 奖品 -->
-            <view wx:for="{{ task }}" wx:key="index"
+            <view wx:for="{{ rewards }}" wx:key="id"
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
-              <text>{{ item.target }}位</text>
+              <text>{{ item.milestone }}位</text>
               <image class="w-[98rpx]" mode="widthFix" src="{{ item.image }}" />
-              <text>{{ item.reward.name }}<text class="color-[#438DF0]">{{ item.reward.quantity }}</text>{{
-                item.reward.unit }}</text>
-              <view wx:if="{{ item.achieved }}" class="flex justify-center">
-                <view wx:if="{{ item.received }}" class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">
+              <text>{{ item.reward_name }}</text>
+              <view class="flex justify-center w-[100rpx] h-[48rpx] border-box py-[4rpx] px-[16rpx] color-white">
+                <view wx:if="{{ item.achieved && item.received }}"
+                  class="flex items-center justify-center w-full h-full bg-[#D8D8D8] rounded-[10rpx]">
                   已领取</view>
-                <view wx:else class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
+                <view wx:if="{{ item.achieved && !item.received }}" bindtap="onReceive"
+                  class="w-full h-full flex items-center justify-center rounded-[10rpx] receive"
+                  data-id="{{ item.id }}">领取</view>
               </view>
             </view>
           </view>
           <view class="w-full h-[20rpx] bg-[#0000000D] rounded-[12rpx] absolute left-0 top-[140rpx] z-1">
-            <view class="progress h-full rounded-[12rpx] z-2" wx:style="{{ {width: '30%'} }}"></view>
+            <view class="progress h-full rounded-[12rpx] z-2" wx:style="{{ {width: percent} }}"></view>
           </view>
         </view>
 
@@ -78,9 +80,7 @@
 
   <!-- 邀请按钮 -->
   <view class="fixed z-10 bottom-0 left-0 right-0 footer px-[56rpx] pt-[40rpx]">
-    <!-- <t-button open-type="share">立即邀请</t-button> -->
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png"
-      mode="widthFix" />
+    <t-button open-type="share" block t-class="sharebutton" />
   </view>
 
   <!-- 地址表单 -->
@@ -89,21 +89,25 @@
       <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">领取成功，请设置收货地址</view>
       <view class="px-[40rpx] pb-[64rpx]">
         <view class="flex flex-col gap-[24rpx]">
-          <t-input disabled t-class="rounded-[14rpx]" placeholder="请选择地区" borderless bindtap="showAddressPicker">
+          <t-input disabled t-class="rounded-[14rpx]" placeholder="请选择地区" borderless value="{{ areaText }}"
+            bindtap="showAddressPicker">
             <view slot="label" class="w-[140rpx]">地区</view>
           </t-input>
 
-          <t-input t-class="rounded-[14rpx]" placeholder="请输入详细地址" borderless>
+          <t-input t-class="rounded-[14rpx]" placeholder="请输入详细地址" borderless value="{{ form.address }}"
+            bind:change="onAddressTextChange">
             <view slot="label" class="w-[140rpx]">详细地址</view>
           </t-input>
-          <t-input t-class="rounded-[14rpx]" placeholder="请输入真实姓名" borderless>
+          <t-input t-class="rounded-[14rpx]" placeholder="请输入真实姓名" borderless value="{{ form.recipient_name }}"
+            bind:change="onNameChange">
             <view slot="label" class="w-[140rpx]">姓名</view>
           </t-input>
-          <t-input t-class="rounded-[14rpx]" placeholder="请收入手机号" borderless>
+          <t-input t-class="rounded-[14rpx]" placeholder="请收入手机号" borderless value="{{ form.recipient_phone }}"
+            bind:change="onMobileChange">
             <view slot="label" class="w-[140rpx]">手机号</view>
           </t-input>
         </view>
-        <t-button theme="primary" block t-class="mt-[64rpx]">提交</t-button>
+        <t-button theme="primary" block t-class="mt-[64rpx]" bindtap="onSubmit">提交</t-button>
       </view>
     </view>
   </t-popup>
@@ -116,17 +120,23 @@
 </template>
 
 <script lang="ts">
-import { createPage } from '@mpxjs/core'
+import mpx, { createPage } from '@mpxjs/core'
 import { mapActions } from '@mpxjs/pinia';
-import { useReferralStore } from './store';
+import { useReferralStore, type Reward } from './store';
 import dayjs from 'dayjs';
 
 createPage({
   data: {
-    activity: '',
+    activity_id: '',
     code: '',
     countdowntime: 0,
     invitation_count: 0,
+    form: {
+      area: [],
+      address: '',
+      recipient_name: '',
+      recipient_phone: '',
+    },
     loading: false,
     addressPickerVisible: false,
     addressFormVisible: false,
@@ -147,43 +157,21 @@ createPage({
         image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/gift.png'
       },
     ],
-    task: [
-      {
-        target: 6,
-        reward: {
-          name: '鸡蛋',
-          quantity: 2,
-          unit: '盒'
-        },
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-disabled.png',
-        received: true,
-        achieved: true,
-      },
-      {
-        target: 6,
-        reward: {
-          name: '鸡蛋',
-          quantity: 2,
-          unit: '盒'
-        },
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png',
-        received: false,
-        achieved: false,
-      },
-      {
-        target: 6,
-        reward: {
-          name: '鸡蛋',
-          quantity: 2,
-          unit: '盒'
-        },
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png',
-        received: false,
-        achieved: false,
-      },
-    ],
+    rewards: [] as (Reward & {
+      image: string;
+      received: boolean;
+      achieved: boolean;
+    })[],
   },
-  ...mapActions(useReferralStore, ['progress', 'participate']),
+  computed: {
+    areaText(): string {
+      if (this.form.area.length === 0) {
+        return '';
+      }
+      return this.form.area.join('');
+    },
+  },
+  ...mapActions(useReferralStore, ['progress', 'participate', 'claim']),
   onLoad(options) {
     this.setData(options);
     this.init();
@@ -191,22 +179,153 @@ createPage({
   methods: {
     async init() {
       this.loading = true;
+
       try {
-        const data = await this.progress({ activity_id: this.activity });
-        this.countdowntime = Math.abs(dayjs().diff(dayjs(data.participation.expire_time)));
-        this.invitation_count = data?.participation?.invitation_count ?? 0;
+        const data = await this.progress({ activity_id: this.activity_id });
+        const { participation, rewards } = data;
+
+        if (!participation.expire_time || dayjs().isAfter(dayjs(participation.expire_time))) {
+          this.onFinish();
+          return;
+        }
+
+        this.countdowntime = Math.abs(dayjs().diff(dayjs(participation.expire_time)));
+        this.invitation_count = participation.invitation_count ?? 0;
+
+        const { unlocked = [], locked = [] } = rewards;
+
+        const unlockedRewards = unlocked.map((item: Reward) => ({
+          id: item.id,
+          reward_name: item.reward_name,
+          reward_type: item.reward_type,
+          milestone: item.milestone,
+          image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-disabled.png',
+          received: item.is_claimed,
+          achieved: true,
+        }));
+
+        const lockedRewards = locked.map((item: Reward) => ({
+          id: item.id,
+          reward_name: item.reward_name,
+          reward_type: item.reward_type,
+          milestone: item.milestone,
+          image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png',
+          received: item.is_claimed,
+          achieved: false,
+        }));
+
+        this.rewards = [...unlockedRewards, ...lockedRewards];
+
+      } catch (error) {
+        mpx.showModal({
+          title: '错误',
+          content: '获取活动信息失败，请稍后重试',
+          showCancel: false,
+          success: (res) => {
+            if (res.confirm) {
+              mpx.switchTab({
+                url: '/pages/index',
+              });
+            }
+          },
+        });
       } finally {
         this.loading = false;
       }
     },
-    onAddressChange(e: any) {
-      console.log(e)
+    async onReceive(e: WechatMiniprogram.CustomEvent) {
+      const { id } = e.currentTarget.dataset;
+      const reward = this.rewards.find(item => item.id === id);
+
+      if (!reward || reward.received || !reward.achieved) {
+        return;
+      }
+
+      // 实物奖品
+      if (reward.reward_type === 2) {
+        this.addressFormVisible = true;
+        return;
+      }
+
+      // 虚拟奖品
+      try {
+        this.loading = true;
+
+        await this.claim({
+          participation_id: this.activity_id,
+          reward_id: id,
+        });
+
+        this.rewards = this.rewards.map(item => {
+          if (item.id === id) {
+            return {
+              ...item,
+              received: true,
+            };
+          }
+          return item;
+        });
+
+        mpx.showToast({
+          title: '奖励已发放至您的账户，请注意查收',
+          icon: 'success',
+        });
+      } catch (error) {
+        mpx.showToast({
+          title: '领取失败，请稍后重试',
+          icon: 'error',
+        });
+      } finally {
+        this.loading = true;
+      }
+    },
+    onAddressChange(e: WechatMiniprogram.CustomEvent) {
+      this.form.area = e.detail.value;
+      console.log(e.detail.value);
+      this.addressPickerVisible = false;
+    },
+    onSubmit() {
+      // 检测是否为手机号
+      if (this.form.recipient_phone.length !== 11 || !/^1[3-9]\d{9}$/.test(this.form.recipient_phone)) {
+        mpx.showToast({
+          title: '请输入正确的手机号',
+          icon: 'error',
+        });
+        return;
+      }
     },
     showAddressPicker() {
       this.addressPickerVisible = true;
     },
+    onAddressTextChange(e: WechatMiniprogram.CustomEvent) {
+      this.form.address = e.detail.value
+    },
+    onNameChange(e: WechatMiniprogram.CustomEvent) {
+      this.form.recipient_name = e.detail.value
+    },
+    onMobileChange(e: WechatMiniprogram.CustomEvent) {
+      this.form.recipient_phone = e.detail.value;
+    },
     onFinish() {
-      console.log('倒计时结束');
+      mpx.showModal({
+        title: '活动已结束',
+        icon: 'error',
+        showCancel: false,
+        success(res) {
+          if (res.confirm) {
+            mpx.switchTab({
+              url: '/pages/index',
+            });
+          }
+        },
+      });
+    },
+    onShareAppMessage() {
+      return {
+        title: '在线问诊，牙齿问题秒回答',
+        path: `/pages/consulation/form?activity_id=${this.activity_id}&code=${this.code}`,
+        imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+      }
     }
   }
 });
@@ -267,6 +386,19 @@ page {
   background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/popup.png");
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.sharebutton {
+  --td-button-default-color: transparent;
+  --td-button-default-bg-color: transparent;
+  --td-button-default-active-bg-color: transparent;
+  --td-button-default-border-color: transparent;
+  --td-button-default-active-border-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  border: none;
+  height: 104rpx !important;
+  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png") !important;
 }
 </style>
 
