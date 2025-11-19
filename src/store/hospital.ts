@@ -11,16 +11,24 @@ export interface Hospital {
   description: string;
   images: string[];
   business_hours: string;
+  services: string[];
+  doctors: Doctor[];
+}
+
+export interface Doctor {
+  name: string;
+  title: string;
+  speciality: string;
 }
 
 export const useHospitalStore = defineStore('hospital', () => {
   const fetch = async (filter = {}) => {
     const response = await request.fetch<{
       data: {
-        clinics: Hospital[];
+        hospitals: Hospital[];
       },
     }>({
-      url: '/clinics',
+      url: '/hospitals',
       method: "GET",
       params: {
         page: 1,
@@ -29,14 +37,14 @@ export const useHospitalStore = defineStore('hospital', () => {
       },
     });
 
-    return response.data?.data?.clinics ?? [];
+    return response.data?.data?.hospitals ?? [];
   };
 
   const fetchById = async (id: string) => {
     const response = await request.fetch<{
       data: Hospital
     }>({
-      url: `/clinics/${id}`,
+      url: `/hospitals/${id}`,
       method: "GET",
     });
 
