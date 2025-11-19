@@ -1,52 +1,45 @@
 <template>
   <t-navbar title="我的"></t-navbar>
 
-  <view class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png" mode="widthFix" />
-  </view>
-
-  <view class="relative z-2">
-    <view class="relative z-2 flex gap-16rpx text-white text-24rpx px-30rpx" bind:tap="goProfile">
-      <t-avatar size="84rpx" slot="image" image="{{ account.avatar }}" />
-      <view class="flex-1 flex items-center justify-between pr-48rpx">
-        <view>
-          <text class="text-32rpx font-600">{{ account.nickname }}</text>
-          <view class="mt-12rpx opacity-80">
-            <text wx:if="{{ roleName }}">{{ roleName }}</text>
-          </view>
+  <view class="relative z-2 flex gap-16rpx text-white text-24rpx px-30rpx" bind:tap="goProfile">
+    <t-avatar size="84rpx" slot="image" image="{{ account.avatar }}" />
+    <view class="flex-1 flex items-center justify-between pr-48rpx">
+      <view>
+        <text class="text-32rpx font-600">{{ account.nickname }}</text>
+        <view class="mt-12rpx opacity-80">
+          <text wx:if="{{ roleName }}">{{ roleName }}</text>
         </view>
-        <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="goProfile" />
       </view>
+      <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="goProfile" />
     </view>
-    <view gutter="14" class="px-32rpx mt-64rpx relative z-2 flex gap-32rpx">
-      <view
-        class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
-        bind:tap="goCoupons">
-        <view class="relative w-72rpx h-72rpx">
-          <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-coupon.png" class="w-full h-full" />
-        </view>
-        优惠券
-      </view>
-      <view
-        class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
-        bind:tap="goConsultationList">
-        <view class="relative w-72rpx h-72rpx">
-          <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-history.png"
-            class="w-full h-full" />
-        </view>
-        咨询记录
-      </view>
-    </view>
-    <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
-      <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
-    </t-cell-group>
-    <t-dialog visible="{{ scaned }}">
-      <view class="flex items-center gap-12rpx" slot="content">
-        <t-loading theme="circular" size="40rpx" />
-        正在核销，请稍候...
-      </view>
-    </t-dialog>
   </view>
+  <view gutter="14" class="px-32rpx mt-64rpx relative z-2 flex gap-32rpx">
+    <view
+      class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
+      bind:tap="goCoupons">
+      <view class="relative w-72rpx h-72rpx">
+        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-coupon.png" class="w-full h-full" />
+      </view>
+      优惠券
+    </view>
+    <view
+      class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
+      bind:tap="goConsultationList">
+      <view class="relative w-72rpx h-72rpx">
+        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-history.png" class="w-full h-full" />
+      </view>
+      咨询记录
+    </view>
+  </view>
+  <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
+    <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
+  </t-cell-group>
+  <t-dialog visible="{{ scaned }}">
+    <view class="flex items-center gap-12rpx" slot="content">
+      <t-loading theme="circular" size="40rpx" />
+      正在核销，请稍候...
+    </view>
+  </t-dialog>
 </template>
 
 <script lang="ts">
@@ -145,11 +138,14 @@ createPage({
 
 <style lang="less">
 page {
+  position: relative;
   --td-navbar-color: white;
   --td-navbar-background: transparent;
   --td-cell-group-title-bg-color: transparent;
   --td-navbar-title-font-weight: 500;
-  position: relative;
+  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png");
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
 </style>
 

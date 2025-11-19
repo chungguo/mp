@@ -10,7 +10,7 @@
 
     <!-- 顶部渐变背景区域 -->
     <image class="absolute top-0 left-0 right-0" bindtap="navigateToConsultation" mode="widthFix"
-      src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385150" />
+      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385150.png" />
 
     <!-- 主内容区域 -->
     <view class="mt-[294rpx] px-[32rpx] relative">
@@ -44,9 +44,10 @@
           </t-col>
         </t-row>
       </view>
+
+      <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
+        navigation="{{ { type: 'dots-bar' } }}" />
       <!-- 特惠洗牙券广告 -->
-      <image mode="widthFix" class="rounded-[24rpx] my-[24rpx]" bindtap="navigateToCoupon"
-        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png" />
 
       <view class="my-[24rpx]">
         <view class="mb-[20rpx]">
@@ -76,11 +77,15 @@
 </template>
 <script lang="ts">
 import { type Hospital, useHospitalStore } from '@/store/hospital';
+import { useUserStore } from '@/store/user';
 import mpx, { createPage } from '@mpxjs/core';
-import { mapActions } from '@mpxjs/pinia';
+import { mapActions, mapState } from '@mpxjs/pinia';
+import { useReferralStore } from '@/subpackages/activity/store';
 
 createPage({
   data: {
+    banner: [] as string[],
+
     activeTab: '',
 
     hospitals: [] as Hospital[],
@@ -89,6 +94,7 @@ createPage({
       city: '全国',
     },
   },
+  ...mapState(useUserStore, ['newUser']),
   ...mapActions(useHospitalStore, {
     fetchHospitals: 'fetch',
   }),
@@ -102,11 +108,25 @@ createPage({
     },
   },
 
+  computed: {
+    freshUser() {
+      return this.newUser().value;
+    }
+  },
+
   watch: {
     async activeTab(newValue) {
       if (newValue === 'hospital') {
         const hospitals = await this.fetchHospitals();
         this.hospitals = hospitals;
+      }
+    },
+    async freshUser(v) {
+      if (v === true) {
+        this.banner = ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png'];
+      }
+      if (v === false) {
+        this.banner = ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/referral.png'];
       }
     },
   },
@@ -154,10 +174,19 @@ createPage({
   /**
    * 导航到优惠券页面
    */
-  navigateToCoupon() {
-    mpx.navigateTo({
-      url: './coupon/list',
-    });
+  async onSwiperClick() {
+    if (this.freshUser) {
+      mpx.navigateTo({
+        url: './coupon/list',
+      });
+    } else {
+      const store = useReferralStore();
+      const res = await store.participate();
+
+      mpx.navigateTo({
+        url: `../../subpackages/activity/referral?code=${res.share_code}&activity=${res.participation_id}`,
+      });
+    }
   },
 })
 </script>
@@ -172,7 +201,9 @@ createPage({
       "t-col": "tdesign-miniprogram/miniprogram_dist/col/col",
       "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
       "t-tabs": "tdesign-miniprogram/miniprogram_dist/tabs/tabs",
-      "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel"
+      "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel",
+      "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
+      "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
     }
   }
 </script>

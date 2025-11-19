@@ -4,24 +4,20 @@
   <view class="px-[24rpx] mt-[328rpx] bg-[#E8F6FF]">
     <!-- 倒计时 -->
     <view class="bg-[#E8F6FF] h-[194rpx] countdown">
-      <view class="absolute bottom-[18rpx] left-0 right-0 flex justify-between items-center color-[#438DF0] px-[24rpx]">
+      <view
+        class="absolute bottom-[18rpx] left-0 right-0 flex justify-between items-baseline color-[#438DF0] px-[24rpx]">
         <view class="flex items-center gap-[12rpx]">
           <view class="font-[28rpx] color-[#000] font-[400]">活动倒计时</view>
           <view class="flex items-center gap-[8rpx]">
-            <view>6天</view>
-            <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
-              23</view>
-            <view>:</view>
-            <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
-              23</view>
-            <view>:</view>
-            <view class="bg-[#438DF0] rounded-[8rpx] color-white px-[5rpx] py-[3rpx] text-[24rpx] font-[600]">
-              23</view>
+            <view class="flex items-center">
+              <t-count-down size="small" theme="square" format="DD" time="{{ countdowntime }}" />天
+            </view>
+            <t-count-down size="small" theme="square" time="{{ countdowntime }}" bind:finish="onFinish" />
           </view>
         </view>
         <view class="flex items-baseline gap-[8rpx]">
           <view class="font-[500] text-[28rpx] color-[#000]">已邀请</view>
-          <view class="text-[60rpx] font-[600]">6</view>
+          <view class="text-[60rpx] font-[600]">{{ invitation_count }}</view>
           <view class="font-[500] text-[28rpx] color-[#000]">位好友</view>
         </view>
       </view>
@@ -79,12 +75,15 @@
       </view>
     </view>
   </view>
+
   <!-- 邀请按钮 -->
   <view class="fixed z-10 bottom-0 left-0 right-0 footer px-[56rpx] pt-[40rpx]">
     <!-- <t-button open-type="share">立即邀请</t-button> -->
     <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png"
       mode="widthFix" />
   </view>
+
+  <!-- 地址表单 -->
   <t-popup placement="center" visible="{{ addressFormVisible }}">
     <view class="w-[600rpx] form">
       <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">领取成功，请设置收货地址</view>
@@ -108,14 +107,27 @@
       </view>
     </view>
   </t-popup>
+
+  <!-- 地址选择器 -->
   <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange" />
+
+  <!-- 全屏加载 -->
+  <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
 </template>
 
 <script lang="ts">
 import { createPage } from '@mpxjs/core'
+import { mapActions } from '@mpxjs/pinia';
+import { useReferralStore } from './store';
+import dayjs from 'dayjs';
 
 createPage({
   data: {
+    activity: '',
+    code: '',
+    countdowntime: 0,
+    invitation_count: 0,
+    loading: false,
     addressPickerVisible: false,
     addressFormVisible: false,
     instructions: [
@@ -169,14 +181,32 @@ createPage({
         received: false,
         achieved: false,
       },
-    ]
+    ],
+  },
+  ...mapActions(useReferralStore, ['progress', 'participate']),
+  onLoad(options) {
+    this.setData(options);
+    this.init();
   },
   methods: {
+    async init() {
+      this.loading = true;
+      try {
+        const data = await this.progress({ activity_id: this.activity });
+        this.countdowntime = Math.abs(dayjs().diff(dayjs(data.participation.expire_time)));
+        this.invitation_count = data?.participation?.invitation_count ?? 0;
+      } finally {
+        this.loading = false;
+      }
+    },
     onAddressChange(e: any) {
       console.log(e)
     },
     showAddressPicker() {
       this.addressPickerVisible = true;
+    },
+    onFinish() {
+      console.log('倒计时结束');
     }
   }
 });
@@ -188,6 +218,8 @@ page {
   --td-navbar-background: transparent;
   --td-popup-border-radius: 40rpx;
   --td-input-bg-color: #F3F5F7;
+  --td-countdown-bg-color: #438DF0;
+  --td-error-color: #438DF0;
   background-color: #DDF2FC;
   background-image: url(https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/background.png);
   background-repeat: no-repeat;
@@ -249,6 +281,8 @@ page {
     "t-picker": "tdesign-miniprogram/miniprogram_dist/picker/picker",
     "t-picker-item": "tdesign-miniprogram/miniprogram_dist/picker-item/picker-item",
     "t-input": "tdesign-miniprogram/miniprogram_dist/input/input",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
     "pca": "../../components/pca",
   }
 }

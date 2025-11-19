@@ -54,6 +54,7 @@ export interface Profile {
 
 export const useUserStore = defineStore('user', () => {
   const token = ref('');
+  const newUser = ref<boolean | null>(null);
   const profile = ref<Profile | null>(null);
 
   const login = async () => {
@@ -84,6 +85,7 @@ export const useUserStore = defineStore('user', () => {
         success: (res) => {
           const newToken = res.data.data.session_token;
           token.value = newToken;
+          newUser.value = res.data.data.is_new_user;
           resolve(newToken);
         },
         fail: (err) => {
@@ -114,6 +116,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     token,
     profile,
+    newUser,
     login,
     queryProfile,
     updateProfile,
