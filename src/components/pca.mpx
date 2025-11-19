@@ -120,7 +120,7 @@ createComponent({
       // 触发变更事件
       this.triggerEvent('change', {
         value: value,
-        selectedText: value.filter((v: any) => v).join(''),
+        text: value.filter((v: any) => v).join(''),
         province: value[0],
         city: value[1],
         county: value[2]

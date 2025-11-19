@@ -33,36 +33,16 @@
         <view class="relative">
           <view class="w-full flex p-[40rpx] box-border justify-between items-center relative z-2">
             <!-- 奖品 -->
-            <view class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
-              <text>6位</text>
-              <image class="w-[98rpx]" mode="widthFix"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png " />
-              <text>鸡蛋<text class="color-[#438DF0]">2</text>盒</text>
-              <view class="flex justify-center">
-                <view class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
-                <!-- <view class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">已领取</view> -->
-              </view>
-            </view>
-            <!-- 奖品 -->
-            <view class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
-              <text>6位</text>
-              <image class="w-[98rpx]" mode="widthFix"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png " />
-              <text>鸡蛋<text class="color-[#438DF0]">2</text>盒</text>
-              <view class="flex justify-center">
-                <view class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
-                <!-- <view class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">已领取</view> -->
-              </view>
-            </view>
-            <!-- 奖品 -->
-            <view class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
-              <text>6位</text>
-              <image class="w-[98rpx]" mode="widthFix"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png " />
-              <text>鸡蛋<text class="color-[#438DF0]">2</text>盒</text>
-              <view class="flex justify-center">
-                <view class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
-                <!-- <view class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">已领取</view> -->
+            <view wx:for="{{ task }}" wx:key="index"
+              class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
+              <text>{{ item.target }}位</text>
+              <image class="w-[98rpx]" mode="widthFix" src="{{ item.image }}" />
+              <text>{{ item.reward.name }}<text class="color-[#438DF0]">{{ item.reward.quantity }}</text>{{
+                item.reward.unit }}</text>
+              <view wx:if="{{ item.achieved }}" class="flex justify-center">
+                <view wx:if="{{ item.received }}" class="bg-[#D8D8D8] color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">
+                  已领取</view>
+                <view wx:else class="receive color-white py-[4rpx] px-[16rpx] rounded-[10rpx]">领取</view>
               </view>
             </view>
           </view>
@@ -84,6 +64,7 @@
           <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
             mode="widthFix" />
         </view>
+
         <view wx:for="{{ instructions }}" wx:key="index"
           class="relative bg-[#ECF9FF] rounded-[20rpx] px-[24rpx] py-[40rpx] flex items-center gap-[32rpx]">
           <image src="{{ item.image }}" mode="widthFix" class="w-[74rpx]"></image>
@@ -127,7 +108,7 @@
       </view>
     </view>
   </t-popup>
-  <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange"/>
+  <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange" />
 </template>
 
 <script lang="ts">
@@ -136,7 +117,7 @@ import { createPage } from '@mpxjs/core'
 createPage({
   data: {
     addressPickerVisible: false,
-    addressFormVisible: true,
+    addressFormVisible: false,
     instructions: [
       {
         title: '邀请好友',
@@ -152,6 +133,41 @@ createPage({
         title: '获得奖励',
         content: '人数达标后，可领取对应奖励',
         image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/gift.png'
+      },
+    ],
+    task: [
+      {
+        target: 6,
+        reward: {
+          name: '鸡蛋',
+          quantity: 2,
+          unit: '盒'
+        },
+        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-disabled.png',
+        received: true,
+        achieved: true,
+      },
+      {
+        target: 6,
+        reward: {
+          name: '鸡蛋',
+          quantity: 2,
+          unit: '盒'
+        },
+        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png',
+        received: false,
+        achieved: false,
+      },
+      {
+        target: 6,
+        reward: {
+          name: '鸡蛋',
+          quantity: 2,
+          unit: '盒'
+        },
+        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png',
+        received: false,
+        achieved: false,
       },
     ]
   },

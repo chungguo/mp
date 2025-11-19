@@ -234,7 +234,7 @@ createPage({
   },
 
   goBack() {
-    wx.switchTab({
+    mpx.switchTab({
       url: '/pages/aitest/index',
     });
   },

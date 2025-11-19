@@ -16,10 +16,10 @@
             <text class="text-[36rpx] font-[600] text-[#333] flex-[1]">{{ item.name }}</text>
           </view>
           <view class="flex flex-wrap gap-[12rpx]">
-            <block wx:for="{{ item.special_services }}" wx:key="index">
+            <block wx:for="{{ item.services }}" wx:key="index" wx:for-item="service">
               <view
                 class="rounded-[4px] bg-[#F0FFFB] border-[1px] border-[#00D197] px-[4rpx] py-[12rpx] text-[#00D197] text-[24rpx]">
-                {{ item }}</view>
+                {{ service }}</view>
             </block>
           </view>
           <view class="flex items-center gap-[8rpx] mt-[4rpx]">
@@ -34,13 +34,13 @@
 </template>
 
 <script lang="ts">
-import { useHospitalStore } from '@/store/hospital';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 
 createPage({
   data: {
-    hospitals: [],
+    hospitals: [] as Hospital[],
   },
   ...mapActions(useHospitalStore, ['fetch']),
 
@@ -53,7 +53,7 @@ createPage({
     try {
       this.hospitals = await this.fetch();
     } finally {
-      wx.hideLoading();
+      mpx.hideLoading();
     }
   },
 

@@ -27,7 +27,7 @@ mpx.xfetch.interceptors.request.use(async (config) => {
 
 mpx.xfetch.interceptors.response.use((res) => {
   if (res.data.error) {
-    wx.showModal({
+    mpx.showModal({
       title: '提示',
       content: res.data.details || res.data.error,
       showCancel: false,
@@ -36,7 +36,7 @@ mpx.xfetch.interceptors.response.use((res) => {
   }
 
   if (!isNaN(res.status) && (res.status < 200 || res.status >= 300)) {
-    wx.showModal({
+    mpx.showModal({
       title: '提示',
       content: res.data || '系统异常，请稍候再试～',
       showCancel: false,
