@@ -24,7 +24,8 @@ export interface Coupon {
   // 优惠券描述
   description: string;
   // 可用诊所ID，* 表示所有诊所，或分号分隔的ID如"1;2;3"
-  clinic_ids: string;
+  hospital_ids: string;
+  hospital_names: string;
   // 有效期类型：1=固定时间有效，2=领取后n天有效
   validity_type: ValidityType;
   //  固定时间有效时的券生效时间（ISO 8601格式）
@@ -66,7 +67,8 @@ export interface CouponReceived {
   // 过期时间（ISO 8601格式）
   expire_time: string;
   // 可用诊所ID，* 表示所有诊所
-  clinic_ids: string;
+  hospital_ids: string;
+  hospital_names: string;
   // 	优惠券状态：1=未使用，2=已核销，3=已过期，4=已失效
   status: number;
   // 核销码（32位hex字符串）

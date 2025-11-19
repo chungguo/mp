@@ -75,12 +75,12 @@ createPage({
       }
     },
     applicable_hospital() {
-      const hospitalIds = this.coupon.clinic_ids;
+      const hospitalIds = this.coupon.hospital_ids;
       if (hospitalIds === '*') {
         return '适用医院：全部'
       }
 
-      return `适用医院：${hospitalIds}`;
+      return `适用医院：${this.coupon.hospital_names}`;
     },
   },
 

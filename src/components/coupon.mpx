@@ -42,12 +42,13 @@ createComponent({
       return Math.floor(this.properties.coupon.coupon_amount / 100)
     },
     applicable_hospital() {
-      const hospitalIds = this.properties.coupon.clinic_ids;
+      const hospitalIds = this.properties.coupon.hospital_ids;
+
       if (hospitalIds === '*') {
         return '适用医院：全部'
       }
 
-      return this.properties.coupon.clinic_names;
+      return `适用医院：${this.properties.coupon.hospital_names}`;
     },
     until() {
       const validity_type = this.properties.coupon.validity_type;
