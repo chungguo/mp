@@ -45,7 +45,7 @@
 
       <view class="flex flex-col gap-[36rpx] px-[26rpx] mt-[46rpx]">
         <t-button block size="large" theme="primary">领取0元福利</t-button>
-        <t-button block size="large" theme="primary" variant="outline">邀请好友测一测，你我都能领奖励</t-button>
+        <t-button block size="large" theme="primary" variant="outline" bindtap="invite">邀请好友测一测，你我都能领奖励</t-button>
       </view>
     </view>
   </view>
@@ -53,6 +53,7 @@
 
 <script lang="ts">
 import request from "@/common/request";
+import { useReferralStore } from "@/subpackages/activity/store";
 import mpx, { createPage } from "@mpxjs/core";
 
 interface Detail {
@@ -93,12 +94,21 @@ createPage({
       this.detail = res.data.data;
     },
 
+    async invite() {
+      const store = useReferralStore();
+      const res = await store.participate();
+
+      mpx.navigateTo({
+        url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
+      });
+    },
+
     goBack() {
       mpx.redirectTo({
         url: './result',
       });
-    }
-  }
+    },
+  },
 })
 </script>
 

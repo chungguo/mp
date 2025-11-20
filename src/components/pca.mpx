@@ -1,6 +1,6 @@
 <template>
   <t-picker visible="{{ visible }}" value="{{ area }}" title="选择地区" cancelBtn="取消" confirmBtn="确认"
-    bindchange="onPickerChange" bindpick="onColumnChange" bindcancel="onPickerCancel">
+    bindchange="onPickerChange" bindpick="onColumnChange" bindcancel="onPickerCancel" bindclose="onPickerCancel">
     <t-picker-item options="{{ provinces }}"></t-picker-item>
     <t-picker-item options="{{ cities }}"></t-picker-item>
     <t-picker-item options="{{ counties }}"></t-picker-item>

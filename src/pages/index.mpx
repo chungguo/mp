@@ -171,9 +171,7 @@ createPage({
       url: `./hospital/detail?id=${id}`
     });
   },
-  /**
-   * 导航到优惠券页面
-   */
+
   async onSwiperClick() {
     if (this.freshUser) {
       mpx.navigateTo({

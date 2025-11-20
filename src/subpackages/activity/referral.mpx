@@ -32,7 +32,7 @@
             <view wx:for="{{ rewards }}" wx:key="id"
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
               <text>{{ item.milestone }}位</text>
-              <image class="w-[98rpx]" mode="widthFix" src="{{ item.image }}" />
+              <t-image src="{{ item.image }}" width="98rpx" height="98rpx" shape="circle" />
               <text>{{ item.reward_name }}</text>
               <view class="flex justify-center w-[100rpx] h-[48rpx] border-box py-[4rpx] px-[16rpx] color-white">
                 <view wx:if="{{ item.achieved && item.received }}"
@@ -49,7 +49,8 @@
           </view>
         </view>
 
-        <view class="text-[24rpx] text-center mb-[10rpx] color-[#438DF0]">距离奖励仅差4位好友～</view>
+        <view wx:if="{{ invitation_gap }}" class="text-[24rpx] text-center mb-[10rpx] color-[#438DF0]">
+          距离奖励仅差<text>{{ invitation_gap }}</text>位好友～</view>
       </view>
 
       <!-- 步骤指引 -->
@@ -79,22 +80,22 @@
   </view>
 
   <!-- 邀请按钮 -->
-  <view class="fixed z-10 bottom-0 left-0 right-0 footer px-[56rpx] pt-[40rpx]">
+  <view class="fixed z-2 bottom-0 left-0 right-0 footer px-[56rpx] pt-[40rpx]">
     <t-button open-type="share" block t-class="sharebutton" />
   </view>
 
   <!-- 地址表单 -->
-  <t-popup placement="center" visible="{{ addressFormVisible }}">
+  <t-popup placement="center" visible="{{ addressFormVisible }}" z-index="10" overlay-props="{{ {zIndex: 9} }}">
     <view class="w-[600rpx] form">
-      <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">领取成功，请设置收货地址</view>
+      <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">请设置收货地址</view>
       <view class="px-[40rpx] pb-[64rpx]">
         <view class="flex flex-col gap-[24rpx]">
-          <t-input disabled t-class="rounded-[14rpx]" placeholder="请选择地区" borderless value="{{ areaText }}"
+          <t-input disabled t-class="rounded-[14rpx]" placeholder="详细省、市、区" borderless value="{{ areaText }}"
             bindtap="showAddressPicker">
             <view slot="label" class="w-[140rpx]">地区</view>
           </t-input>
 
-          <t-input t-class="rounded-[14rpx]" placeholder="请输入详细地址" borderless value="{{ form.address }}"
+          <t-input t-class="rounded-[14rpx]" placeholder="填写详细地点名称和门牌号" borderless value="{{ form.address }}"
             bind:change="onAddressTextChange">
             <view slot="label" class="w-[140rpx]">详细地址</view>
           </t-input>
@@ -112,8 +113,17 @@
     </view>
   </t-popup>
 
+  <t-popup placement="center" visible="{{ addressComfirmVisible }}" z-index="20" overlay-props="{{ {zIndex: 19} }}">
+    <view class="confirm-popup border-box w-[560rpx] px-[48rpx] pt-[68rpx] pb-[60rpx] rounded-[24rpx]">
+      <view class="text-center text-[36rpx] font-600">收货地址提交后不可修改</view>
+      <view class="flex items-center gap-[24rpx] mt-[68rpx]">
+        <t-button variant="outline" class="rewrite h-[88rpx] flex-1" bindtap="onRewrite">重新修改</t-button>
+        <t-button class="comfirmed h-[88rpx] flex-1" bindtap="onConfirm">确认提交</t-button>
+      </view>
+    </view>
+  </t-popup>
   <!-- 地址选择器 -->
-  <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange" />
+  <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange" bindcancel="onAddressCancel" />
 
   <!-- 全屏加载 -->
   <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
@@ -122,8 +132,10 @@
 <script lang="ts">
 import mpx, { createPage } from '@mpxjs/core'
 import { mapActions } from '@mpxjs/pinia';
-import { useReferralStore, type Reward } from './store';
+import { useReferralStore, type Reward, type Invitation } from './store';
 import dayjs from 'dayjs';
+
+const STORAGE_KEY = 'referral_address_form';
 
 createPage({
   data: {
@@ -131,6 +143,7 @@ createPage({
     code: '',
     countdowntime: 0,
     invitation_count: 0,
+    invitation_count_target: 0,
     form: {
       area: [],
       address: '',
@@ -140,6 +153,7 @@ createPage({
     loading: false,
     addressPickerVisible: false,
     addressFormVisible: false,
+    addressComfirmVisible: false,
     instructions: [
       {
         title: '邀请好友',
@@ -157,6 +171,7 @@ createPage({
         image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/gift.png'
       },
     ],
+    claimRewardId: 0,
     rewards: [] as (Reward & {
       image: string;
       received: boolean;
@@ -170,11 +185,31 @@ createPage({
       }
       return this.form.area.join('');
     },
+    percent() {
+      if (this.invitation_count_target > 0) {
+        const percent = (this.invitation_count / this.invitation_count_target) * 100;
+        return `${percent > 100 ? 100 : percent}%`;
+      }
+      return 0;
+    },
+    invitation_gap() {
+      // 补全实现逻辑
+      // 计算还差多少邀请人数可以获得下一个奖励
+      // 从 rewards 中按顺序计算当前完成的距离下一个 milestone 还差多少
+      const achievedCount = this.rewards.filter(item => item.achieved).length;
+      if (achievedCount < this.rewards.length) {
+        const nextMilestone = this.rewards[achievedCount].milestone;
+        const gap = nextMilestone - this.invitation_count;
+        return gap > 0 ? gap : 0;
+      }
+      return 0;
+    }
   },
   ...mapActions(useReferralStore, ['progress', 'participate', 'claim']),
   onLoad(options) {
     this.setData(options);
     this.init();
+    this.restoreFormFromStorage();
   },
   methods: {
     async init() {
@@ -182,7 +217,7 @@ createPage({
 
       try {
         const data = await this.progress({ activity_id: this.activity_id });
-        const { participation, rewards } = data;
+        const { participation, rewards, invitations = [] } = data;
 
         if (!participation.expire_time || dayjs().isAfter(dayjs(participation.expire_time))) {
           this.onFinish();
@@ -190,7 +225,8 @@ createPage({
         }
 
         this.countdowntime = Math.abs(dayjs().diff(dayjs(participation.expire_time)));
-        this.invitation_count = participation.invitation_count ?? 0;
+        this.invitation_count = invitations.filter((item: Invitation) => item.status === 2).length;
+        this.invitation_count_target = participation.invitation_count;
 
         const { unlocked = [], locked = [] } = rewards;
 
@@ -199,7 +235,7 @@ createPage({
           reward_name: item.reward_name,
           reward_type: item.reward_type,
           milestone: item.milestone,
-          image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-disabled.png',
+          image: '',
           received: item.is_claimed,
           achieved: true,
         }));
@@ -209,7 +245,7 @@ createPage({
           reward_name: item.reward_name,
           reward_type: item.reward_type,
           milestone: item.milestone,
-          image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/eggs-active.png',
+          image: '',
           received: item.is_claimed,
           achieved: false,
         }));
@@ -244,6 +280,7 @@ createPage({
       // 实物奖品
       if (reward.reward_type === 2) {
         this.addressFormVisible = true;
+        this.claimRewardId = id;
         return;
       }
 
@@ -252,7 +289,7 @@ createPage({
         this.loading = true;
 
         await this.claim({
-          participation_id: this.activity_id,
+          participation_id: Number(this.activity_id),
           reward_id: id,
         });
 
@@ -267,7 +304,7 @@ createPage({
         });
 
         mpx.showToast({
-          title: '奖励已发放至您的账户，请注意查收',
+          title: '优惠券已发放',
           icon: 'success',
         });
       } catch (error) {
@@ -279,9 +316,40 @@ createPage({
         this.loading = true;
       }
     },
+    async onConfirm() {
+      try {
+        this.loading = true;
+
+        await this.claim({
+          participation_id: Number(this.activity_id),
+          reward_id: this.claimRewardId,
+          recipient_name: this.form.recipient_name,
+          recipient_phone: this.form.recipient_phone,
+          recipient_address: `${this.areaText}${this.form.address}`,
+        });
+
+        this.rewards = this.rewards.map(item => {
+          if (item.id === this.claimRewardId) {
+            return {
+              ...item,
+              received: true,
+            };
+          }
+          return item;
+        });
+
+        mpx.showToast({
+          title: '收货地址已提交，预计7日内送达，请耐心等待',
+          icon: 'success',
+        });
+
+        mpx.setStorageSync(STORAGE_KEY, JSON.stringify(this.form));
+      } finally {
+        this.loading = false;
+      }
+    },
     onAddressChange(e: WechatMiniprogram.CustomEvent) {
       this.form.area = e.detail.value;
-      console.log(e.detail.value);
       this.addressPickerVisible = false;
     },
     onSubmit() {
@@ -293,6 +361,32 @@ createPage({
         });
         return;
       }
+
+      if (!this.form.recipient_name) {
+        mpx.showToast({
+          title: '请输入姓名',
+          icon: 'error',
+        });
+        return;
+      }
+
+      if (!this.form.address) {
+        mpx.showToast({
+          title: '请输入详细地址',
+          icon: 'error',
+        });
+        return;
+      }
+
+      if (!this.form.area.length) {
+        mpx.showToast({
+          title: '请选择地区',
+          icon: 'error',
+        });
+        return;
+      }
+
+      this.addressComfirmVisible = true;
     },
     showAddressPicker() {
       this.addressPickerVisible = true;
@@ -326,7 +420,24 @@ createPage({
         path: `/pages/consulation/form?activity_id=${this.activity_id}&code=${this.code}`,
         imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
       }
-    }
+    },
+    onRewrite() {
+      this.addressComfirmVisible = false;
+    },
+    onAddressCancel() {
+      this.addressPickerVisible = false;
+    },
+    restoreFormFromStorage() {
+      try {
+        const storedForm = mpx.getStorageSync(STORAGE_KEY);
+        console.log('恢复地址表单', storedForm);
+        if (storedForm) {
+          this.form = JSON.parse(storedForm);
+        }
+      } catch (error) {
+        console.error('恢复地址表单失败', error);
+      }
+    },
   }
 });
 </script>
@@ -400,6 +511,24 @@ page {
   height: 104rpx !important;
   background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png") !important;
 }
+
+.confirm-popup {
+  background: linear-gradient(180deg, #ECF9FF 0%, #FFFFFF 100%);
+}
+
+
+.rewrite {
+  --td-button-medium-height: 88rpx;
+  --td-button-default-outline-color: #438DF0;
+  --td-button-default-outline-border-color: #438DF0;
+  --td-button-default-outline-bg-color: white;
+}
+
+.comfirmed {
+  --td-button-default-color: white;
+  --td-button-medium-height: 88rpx;
+  background: linear-gradient(214deg, #67D3F7 0%, #0D9CF6 100%) !important;
+}
 </style>
 
 <script type="application/json">
@@ -415,6 +544,7 @@ page {
     "t-input": "tdesign-miniprogram/miniprogram_dist/input/input",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
     "pca": "../../components/pca",
   }
 }
