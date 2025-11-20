@@ -1,78 +1,74 @@
 <template>
   <view class="relative">
 
-    <t-navbar title="健牙宝">
-      <view slot="left" class="flex" style="gap: 12rpx;">
-        <t-icon name="location-filled" size="20" />
-        <text>{{ lbs.city }}</text>
-      </view>
-    </t-navbar>
+    <t-navbar title="健牙宝" />
 
-    <!-- 顶部渐变背景区域 -->
-    <image class="absolute top-0 left-0 right-0" bindtap="navigateToConsultation" mode="widthFix"
-      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385150.png" />
-
-    <!-- 主内容区域 -->
-    <view class="mt-[294rpx] px-[32rpx] relative">
-      <!-- 功能入口卡片 -->
-      <view class="my-[24rpx] bg-white rounded-[24rpx] py-[40rpx]">
-        <t-row gutter="16">
-          <t-col span="8">
-            <view class="flex flex-col flex-items-center gap-xs" bindtap="navigateToAdvantage">
-              <view class="w-[112rpx]">
-                <image mode="widthFix" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/advantage.png" />
-              </view>
-              <text class="text-[28rpx] text-[#333333] font-400">优势项目</text>
+    <view class="hero-cards p-[32rpx]">
+      <view class="flex gap-[22rpx] items-center">
+        <view class="relative w-[302rpx] h-[306rpx] rounded-[26rpx] of-hidden" bindtap="goAitest">
+          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/aitest.png" width="302rpx"
+            height="306rpx" shape="rounded" />
+          <view class="absolute top-0 lef-0 flex flex-col color-white pl-[30rpx] pt-[36rpx] gap-[6rpx]">
+            <text class="text-[30rpx] font-800">AI·牙卫士</text>
+            <text class="text-[24rpx]">测测你的牙齿状况</text>
+          </view>
+        </view>
+        <view class="flex flex-col gap-[22rpx]">
+          <view class="border-box bg-white p-[36rpx] rounded-[22rpx] flex gap-[24rpx] items-center">
+            <t-image width="80rpx" height="80rpx"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E7%88%B1%E7%89%99%E6%97%A0%E5%BF%A7%E5%8C%85.png" />
+            <view>
+              <view class="text-[30rpx] font-bold color-[#1D2129]">爱牙无忧包</view>
+              <view class="text-[24rpx] color-[#86909C]">基础项目安心全包</view>
             </view>
-          </t-col>
-          <t-col span="8">
-            <view class="flex flex-col flex-items-center gap-xs " bindtap="navigateToConsultation">
-              <view class="w-[112rpx]">
-                <image mode="widthFix"
-                  src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/consulation.png" />
-              </view>
-              <text class="text-[28rpx] text-[#333333] font-400">口腔咨询</text>
+          </view>
+          <view class="flex gap-[22rpx]">
+            <view
+              class="border-box rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
+              <view class="color-[#1D2129] text-[28rpx] font-bold">专属客服</view>
+              <t-image width="80rpx" height="80rpx"
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
             </view>
-          </t-col>
-          <t-col span="8">
-            <view class="flex flex-col flex-items-center gap-xs" bindtap="navigateToHospital">
-              <view class="w-[112rpx]">
-                <image mode="widthFix" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital.png" />
-              </view>
-              <text class="text-[28rpx] text-[#333333] font-400">合作医院</text>
+            <view
+              class="border-box rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
+              <view class="color-[#1D2129] text-[28rpx] font-bold">分享领好礼</view>
+              <t-image width="80rpx" height="80rpx"
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E5%88%86%E4%BA%AB%E9%A2%86%E5%A5%BD%E7%A4%BC.png" />
             </view>
-          </t-col>
-        </t-row>
-      </view>
-
-      <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
-        navigation="{{ { type: 'dots-bar' } }}" />
-      <!-- 特惠洗牙券广告 -->
-
-      <view class="my-[24rpx]">
-        <view class="mb-[20rpx]">
-          <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" bottom-line-mode="full"
-            theme="line" t-class="tabs">
-            <t-tab-panel label="医院介绍" value="hospital">
-              <view class="grid grid-cols-2 gap-[24rpx] pb-[20rpx] mt-[20rpx]">
-                <view class="w-full bg-white rounded-[24rpx] overflow-hidden" wx:for="{{ hospitals }}" wx:key="id"
-                  bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
-                  <image class="h-[332rpx]" src="{{ item.images && item.images[0] }}" mode="aspectFill" />
-                  <view class="p-[20rpx] box-border">
-                    <text class="block text-[28rpx] text-black font-700 mb-[8rpx] ellipsis">{{ item.name }}</text>
-                    <text class="text-[24rpx] text-[#999999] font-400 ellipsis">{{ item.address }}</text>
-                  </view>
-                </view>
-              </view>
-            </t-tab-panel>
-            <t-tab-panel disabled label="" value="2"></t-tab-panel>
-            <t-tab-panel disabled label="" value="3"></t-tab-panel>
-            <t-tab-panel disabled label="" value="4"></t-tab-panel>
-            <t-tab-panel disabled label="" value="5"></t-tab-panel>
-          </t-tabs>
+          </view>
         </view>
       </view>
     </view>
+
+    <t-grid column="{{ 5 }}" theme="card">
+      <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.text}} image="{{ item.image }}"
+        url="{{ item.path }}" />
+    </t-grid>
+
+    <view class="p-[32rpx]">
+      <!-- 特惠洗牙券广告 -->
+      <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
+        navigation="{{ { type: 'dots-bar' } }}" />
+
+      <!-- 主内容区域 -->
+      <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
+        <t-tab-panel label="优势项目" value="2"></t-tab-panel>
+        <t-tab-panel label="甄选机构" value="hospital">
+          <view class="grid grid-cols-2 gap-[24rpx] pb-[20rpx] mt-[20rpx]">
+            <view class="w-full bg-white rounded-[24rpx] overflow-hidden" wx:for="{{ hospitals }}" wx:key="id"
+              bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
+              <image class="h-[332rpx]" src="{{ item.images && item.images[0] }}" mode="aspectFill" />
+              <view class="p-[20rpx] box-border">
+                <text class="block text-[28rpx] text-black font-700 mb-[8rpx] ellipsis">{{ item.name }}</text>
+                <text class="text-[24rpx] text-[#999999] font-400 ellipsis">{{ item.address }}</text>
+              </view>
+            </view>
+          </view>
+        </t-tab-panel>
+        <t-tab-panel label="口碑医生" value="3"></t-tab-panel>
+      </t-tabs>
+    </view>
+
   </view>
 </template>
 <script lang="ts">
@@ -82,17 +78,27 @@ import mpx, { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
 import { useReferralStore } from '@/subpackages/activity/store';
 
+const grids = [
+  { text: '儿童齿科', path: '' },
+  { text: '口腔检查', path: '' },
+  { text: '拔牙', path: '' },
+  { text: '根管', path: '' },
+  { text: '洗牙', path: '' },
+  { text: '烤瓷', path: '' },
+  { text: '矫正', path: '' },
+  { text: '种植牙', path: '' },
+  { text: '美白', path: '' },
+  { text: '补牙', path: '' },
+];
+
 createPage({
   data: {
+    grids: grids.map(g => ({ ...g, image: `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/grid/${g.text}.png` })),
     banner: [] as string[],
 
     activeTab: '',
 
     hospitals: [] as Hospital[],
-
-    lbs: {
-      city: '全国',
-    },
   },
   ...mapState(useUserStore, ['newUser']),
   ...mapActions(useHospitalStore, {
@@ -134,6 +140,11 @@ createPage({
     this.activeTab = 'hospital';
   },
 
+  goAitest() {
+    mpx.switchTab({
+      url: './aitest/index',
+    });
+  },
   /**
    * 切换标签页
    */
@@ -202,6 +213,9 @@ createPage({
       "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel",
       "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
       "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
+      "t-grid": "tdesign-miniprogram/miniprogram_dist/grid/grid",
+      "t-grid-item": "tdesign-miniprogram/miniprogram_dist/grid-item/grid-item",
+      "t-image": "tdesign-miniprogram/miniprogram_dist/image/image"
     }
   }
 </script>
@@ -211,17 +225,10 @@ createPage({
 page {
   --td-navbar-color: white;
   --td-tab-nav-bg-color: transparent;
+  --td-navbar-background: linear-gradient(180deg, #317DFF 0%, #3E85FF 100%);
+}
 
-  --td-navbar-background: rgba(255, 255, 255, {
-      {
-      opacity
-    }
-  });
-
---td-navbar-bg-color: rgba(255, 255, 255, {
-    {
-    opacity
-  }
-});
+.hero-cards {
+  background: linear-gradient(180deg, #3E85FF 0%, #F1F3F7 100%);
 }
 </style>

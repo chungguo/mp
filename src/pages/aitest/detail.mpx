@@ -86,9 +86,6 @@ createPage({
       }>({
         url: `/diagnosis/${id}`,
         method: 'GET',
-        params: {
-          id,
-        },
       });
 
       this.detail = res.data.data;

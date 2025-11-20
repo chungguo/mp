@@ -50,7 +50,7 @@
     "process": "^0.11.10",
     "stylus": "^0.55.0",
     "stylus-loader": "^6.2.0",
-    "tdesign-miniprogram": "^1.11.1",
+    "tdesign-miniprogram": "^1.11.2",
     "typescript": "^4.9.5",
     "webpack": "^5.102.1"
   },

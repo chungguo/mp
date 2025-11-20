@@ -130,8 +130,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0(stylus@0.55.0)(webpack@5.102.1)
       tdesign-miniprogram:
-        specifier: ^1.11.1
-        version: 1.11.1
+        specifier: ^1.11.2
+        version: 1.11.2
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -4351,8 +4351,8 @@ packages:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
 
-  tdesign-miniprogram@1.11.1:
-    resolution: {integrity: sha512-FsQ8bdTgf4U5iPhS9XQvCIGWjKol7X4uRv+X1IW6TbCfrGGBB0+QcSkoR1J68xE5rsaLSuCYBwHDX15sdEpzag==}
+  tdesign-miniprogram@1.11.2:
+    resolution: {integrity: sha512-lXcry3vRa9jHzjpOdIxuIAh7F85kImym82VwLbCqr/TkMhycOsOepx+r1S9fum7u2nsWiYRTV+HuvDHN3KlIuA==}
 
   terser-webpack-plugin@5.3.14:
     resolution: {integrity: sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==}
@@ -9625,7 +9625,7 @@ snapshots:
 
   tapable@2.3.0: {}
 
-  tdesign-miniprogram@1.11.1: {}
+  tdesign-miniprogram@1.11.2: {}
 
   terser-webpack-plugin@5.3.14(webpack@5.102.1):
     dependencies:

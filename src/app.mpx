@@ -34,7 +34,7 @@ createApp({
 page {
   --td-brand-color: #3D61F5;
   --primary-color: #3D61F5;
-  background-color: #F5F5F5;
+  background-color: #F1F3F7;
   padding-block-end: calc(env(safe-area-inset-bottom) + 100rpx);
   box-sizing: border-box;
 }
