@@ -213,13 +213,17 @@ createPage({
   // 图片上传处理
   onImageUpload(e: WechatMiniprogram.CustomEvent) {
     const { files } = e.detail;
-    this.imageUrlList = files;
+    this.setData({
+      imageUrlList: files
+    });
   },
 
   // 删除图片
   onImageDelete(e: WechatMiniprogram.CustomEvent) {
     const { index } = e.detail;
-    this.imageUrlList = (this.imageUrlList ?? []).filter((e, i) => index !== i);
+    this.setData({
+      imageUrlList: (this.data.imageUrlList ?? []).filter((e, i) => index !== i)
+    });
   },
 
   onConfirm() {

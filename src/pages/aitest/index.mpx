@@ -1,61 +1,21 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
-
-  <view wx:if="{{ !uploaded }}" class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/banner.png" mode="widthFix" />
-
-    <view class="px-[26rpx]">
-      <view class="text-[36rpx] color-[#1D2129] mt-[10rpx] mb-[52rpx] text-center font-bold">
-        领专属 <text class="color-[#4287FF] text-[66rpx] mx-[20rpx]">0</text> 元福利
-      </view>
-      <view bindtap="startTest">
-        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/test-btn.png" mode="widthFix" />
-      </view>
-      <view class="mt-[10rpx] mb-[66rpx]">
-        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/steps.png" mode="widthFix" />
-      </view>
-
-      <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large"
-        bindtap="goResult">
-        <text slot="content" class="color-[#317DFF]">查看检查结果</text>
-      </t-button>
+  <view class="px-[26rpx] mt-[550rpx]">
+    <view class="text-[36rpx] color-[#1D2129] mt-[10rpx] mb-[52rpx] text-center font-bold">
+      领专属 <text class="color-[#4287FF] text-[66rpx] mx-[20rpx]">0</text> 元福利
     </view>
-  </view>
-
-  <view wx:else class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/gradient.png" mode="widthFix" />
-
-    <view class="flex flex-content-end px-[36rpx] gap-[34rpx] absolute top-[230rpx] left-[0] right-[0]">
-      <view class="color-[#0759E6] flex flex-col gap-[33rpx] flex-justify-end">
-        <view class="text-[38rpx] font-[600]">AI 助手正在检测你的牙齿健康度...</view>
-        <view class="text-[28rpx]">仅需几分钟，即刻领取专属0元福利</view>
-      </view>
-      <view>
-        <image class="w-[226rpx]"
-          src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/robot-detecting.png" mode="widthFix" />
-      </view>
+    <view bindtap="startTest">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/test-btn.png" mode="widthFix"
+        t-class="w-full" />
+    </view>
+    <view class="mt-[10rpx] mb-[66rpx]">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/steps.png" mode="widthFix"
+        t-class="w-full" />
     </view>
 
-    <view class="relative">
-      <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/doctor-avatar.png"
-        mode="widthFix" />
-      <image class="absolute w-[240rpx] z-2 top-[38rpx] left-[94rpx]"
-        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/qrcode.png" mode="widthFix" />
-    </view>
-
-    <view class="px-26rpx">
-      <view class="relative">
-        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-button.png"
-          mode="widthFix" />
-        <view
-          class="absolute top-[-18rpx] left-0 right-0 flex w-full h-full items-center justify-center text-[30rpx] font-[600] color-white">
-          添加企业微信立即领取</view>
-      </view>
-      <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large"
-        bindtap="goResult">
-        <text slot="content" class="color-[#317DFF]">查看检查结果</text>
-      </t-button>
-    </view>
+    <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
+      <text slot="content" class="color-[#317DFF]">查看检查结果</text>
+    </t-button>
   </view>
 
   <t-popup visible="{{ mediaPopup }}" placement="bottom" t-class="relative">
@@ -64,17 +24,17 @@
       <view class="text-center text-[36rpx] mt-[45rpx] font-[800]">{{ popupTitle }}</view>
       <view wx:if="{{ images.length === 0 }}">
         <view class="text-[24rpx] mb-[36rpx] mt-[46rpx] tips">
-          请分别上传你的正面露齿、侧脸不露齿照片，让 A 小助手更清 楚看到你的牙齿状况。未按照规定拍摄或上传图片，可能无法 准确测试出结果。
+          请分别上传你的正面露齿、侧脸不露齿照片，让 AI 小助手更清楚看到你的牙齿状况。未按照规定拍摄或上传图片，可能无法准确测试出结果。
         </view>
         <view class="flex flex-justify-center gap-[38rpx] .w100\%">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <image class="w-[306rpx] h-[306rpx]"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/front.png" mode="widthFix" />
+            <t-image t-class="w-[306rpx] h-[306rpx]"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/real-front.png" mode="widthFix" />
             <text>正面露齿照</text>
           </view>
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <image class="w-[306rpx] h-[306rpx]"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/side.png" mode="widthFix" />
+            <t-image t-class="w-[306rpx] h-[306rpx]"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/real-side.png" mode="widthFix" />
             <text>侧面不露齿照</text>
           </view>
         </view>
@@ -95,13 +55,13 @@
         <view class="flex flex-justify-center gap-[38rpx] .w100\% mt-[46rpx]">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
             <view class="w-[306rpx] h-[306rpx] overflow-hidden">
-              <image class="w-full" src="{{ images[0] }}" mode="widthFix" />
+              <t-image t-class="w-full" src="{{ images[0] }}" mode="widthFix" />
             </view>
             <text>正面露齿照（已上传）</text>
           </view>
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <image class="w-[306rpx] h-[306rpx]"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/side.png" mode="widthFix" />
+            <t-image t-class="w-[306rpx] h-[306rpx]"
+              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/real-side.png" mode="widthFix" />
             <text>侧面不露齿照（示例）</text>
           </view>
         </view>
@@ -137,7 +97,6 @@ import { mapActions, mapState } from '@mpxjs/pinia';
 
 createPage({
   data: {
-    uploaded: false,
     mediaPopup: false,
     mobilePopup: false,
     images: [] as string[],
@@ -205,7 +164,9 @@ createPage({
           return;
         }
 
-        this.images.push(images[0]);
+        this.setData({
+          images: this.images.concat(images[0])
+        });
 
       } catch (error) {
         // 用户取消
@@ -237,13 +198,22 @@ createPage({
           },
         });
 
-        this.mediaPopup = false;
-        this.uploaded = true;
+        this.setData({
+          mediaPopup: false,
+          images: [],
+        });
 
         mpx.showToast({
           title: '操作成功',
           icon: 'success',
+          duration: 2000,
         });
+
+        setTimeout(() => {
+          mpx.navigateTo({
+            url: './wxwork',
+          });
+        }, 1000);
       } catch (error) {
         mpx.showToast({
           title: '操作失败',
@@ -267,7 +237,9 @@ createPage({
     },
 
     reupload() {
-      this.images = [];
+      this.setData({
+        images: []
+      });
     },
 
     goBack() {
@@ -277,8 +249,10 @@ createPage({
     },
 
     closePopup() {
-      this.mediaPopup = false;
-      this.images = [];
+      this.setData({
+        mediaPopup: false,
+        images: []
+      });
     },
 
     goResult() {
@@ -299,6 +273,9 @@ page {
   --td-button-default-active-bg-color: rgba(255, 255, 255, 0.6);
   --td-button-default-active-border-color: #317DFF;
   background-color: #F1F3F7;
+  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/banner.png");
+  background-repeat: no-repeat;
+  background-size: 100%;
 }
 
 .tips {
@@ -325,9 +302,8 @@ page {
     "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
-    "t-steps": "tdesign-miniprogram/miniprogram_dist/steps/steps",
-    "t-step-item": "tdesign-miniprogram/miniprogram_dist/step-item/step-item",
-    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup"
+    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image"
   }
 }
 </script>

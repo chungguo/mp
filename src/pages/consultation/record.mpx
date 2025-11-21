@@ -71,7 +71,9 @@ createPage({
         }
       });
 
-      this.records = records;
+      this.setData({
+        records: records
+      });
     } finally {
       mpx.hideLoading();
       this.loading = false;

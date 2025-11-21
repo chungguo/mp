@@ -67,12 +67,14 @@ createPage({
     try {
       const coupons = await this.query();
 
-      this.coupons = coupons.map((item: Coupon) => ({
-        id: item.id,
-        coupon: item,
-        action: '立即领取',
-        claim_id: null,
-      }));
+      this.setData({
+        coupons: coupons.map((item: Coupon) => ({
+          id: item.id,
+          coupon: item,
+          action: '立即领取',
+          claim_id: null,
+        }))
+      });
     } finally {
       mpx.hideLoading();
     }
@@ -114,15 +116,17 @@ createPage({
 
       const res = await this.claim(id);
 
-      this.coupons = this.coupons.map(c => {
-        if (c.coupon.id === Number(id)) {
-          return {
-            ...c,
-            action: '去使用',
-            claim_id: res.claim_id,
-          };
-        }
-        return c;
+      this.setData({
+        coupons: this.data.coupons.map(c => {
+          if (c.coupon.id === Number(id)) {
+            return {
+              ...c,
+              action: '去使用',
+              claim_id: res.claim_id,
+            };
+          }
+          return c;
+        })
       });
 
       mpx.showToast({

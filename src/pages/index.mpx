@@ -124,15 +124,21 @@ createPage({
     async activeTab(newValue) {
       if (newValue === 'hospital') {
         const hospitals = await this.fetchHospitals();
-        this.hospitals = hospitals;
+        this.setData({
+          hospitals
+        });
       }
     },
     async freshUser(v) {
       if (v === true) {
-        this.banner = ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png'];
+        this.setData({
+          banner: ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png']
+        });
       }
       if (v === false) {
-        this.banner = ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/referral.png'];
+        this.setData({
+          banner: ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/referral.png']
+        });
       }
     },
   },

@@ -44,7 +44,7 @@
       </view>
 
       <view class="flex flex-col gap-[36rpx] px-[26rpx] mt-[46rpx]">
-        <t-button block size="large" theme="primary">领取0元福利</t-button>
+        <t-button block size="large" theme="primary" bindtap="goWxwork">领取0元福利</t-button>
         <t-button block size="large" theme="primary" variant="outline" bindtap="invite">邀请好友测一测，你我都能领奖励</t-button>
       </view>
     </view>
@@ -107,6 +107,11 @@ createPage({
         url: './result',
       });
     },
+    goWxwork() {
+      mpx.navigateTo({
+        url: `././wxwork?score=${this.detail.score ?? 0}`,
+      });
+    }
   },
 })
 </script>

@@ -250,7 +250,9 @@ createPage({
           achieved: false,
         }));
 
-        this.rewards = [...unlockedRewards, ...lockedRewards];
+        this.setData({
+          rewards: unlockedRewards.concat(lockedRewards)
+        });
 
       } catch (error) {
         mpx.showModal({
@@ -293,14 +295,16 @@ createPage({
           reward_id: id,
         });
 
-        this.rewards = this.rewards.map(item => {
-          if (item.id === id) {
-            return {
-              ...item,
-              received: true,
-            };
-          }
-          return item;
+        this.setData({
+          rewards: this.data.rewards.map(item => {
+            if (item.id === id) {
+              return {
+                ...item,
+                received: true,
+              };
+            }
+            return item;
+          })
         });
 
         mpx.showToast({
@@ -328,14 +332,16 @@ createPage({
           recipient_address: `${this.areaText}${this.form.address}`,
         });
 
-        this.rewards = this.rewards.map(item => {
-          if (item.id === this.claimRewardId) {
-            return {
-              ...item,
-              received: true,
-            };
-          }
-          return item;
+        this.setData({
+          rewards: this.data.rewards.map(item => {
+            if (item.id === this.claimRewardId) {
+              return {
+                ...item,
+                received: true,
+              };
+            }
+            return item;
+          })
         });
 
         mpx.showToast({

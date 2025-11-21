@@ -13,8 +13,7 @@
       <block wx:else>
         <view wx:for="{{ records }}" wx:key="id"
           class="bg-[#FFFFFF] p-[26rpx] rounded-[18rpx] color-[#636A73FF] text-[24rpx] flex flex-col gap-[18rpx]">
-          <text
-            class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] rounded-r-[18rpx]"
+          <text class="text-[22rpx] bg-[red] color-[#FFFFFF] px-[22rpx] w-[max-content] ml-[-26rpx] rounded-r-[18rpx]"
             wx:style="{{ {backgroundColor: item.statusconfig.bg} }}">{{ item.statusconfig.name }}</text>
           <view class="text-[28rpx] font-bold color-[#1D2129FF]">牙齿健康度报告</view>
           <view class="flex justify-between items-center">
@@ -39,7 +38,7 @@
         <text class="color-[#86909C] text-[24rpx]">加载中...</text>
       </view>
       <view wx:if="{{ !hasMore && records.length > 0 }}" class="flex justify-center items-center py-[20rpx]">
-        <text class="color-[#86909C] text-[24rpx]">没有更多数据了</text>
+        <text class="color-[#86909C] text-[24rpx]">已经到底了</text>
       </view>
     </view>
   </view>
@@ -93,7 +92,7 @@ createPage({
     this.queryAiTestRecords(true);
   },
   async queryAiTestRecords(isRefresh = false) {
-    if (this.data.loading) {
+    if (this.loading) {
       return;
     }
 
@@ -133,8 +132,8 @@ createPage({
         url: '/diagnosis',
         method: 'GET',
         data: {
-          page: this.data.page,
-          page_size: this.data.pageSize,
+          page: this.page,
+          page_size: this.pageSize,
         },
       });
 
@@ -155,20 +154,20 @@ createPage({
         this.setData({
           records: newRecords,
           total,
-          hasMore: newRecords.length >= this.data.pageSize,
+          hasMore: newRecords.length >= this.pageSize,
         });
       } else {
         this.setData({
-          records: [...this.data.records, ...newRecords],
+          records: this.records.concat(newRecords),
           total,
-          hasMore: newRecords.length >= this.data.pageSize,
+          hasMore: newRecords.length >= this.pageSize,
         });
       }
 
       // 更新页码
       if (newRecords.length > 0) {
         this.setData({
-          page: this.data.page + 1,
+          page: this.page + 1,
         });
       }
     } finally {
@@ -228,7 +227,7 @@ createPage({
   },
 
   onReachBottom() {
-    if (this.data.hasMore && !this.data.loading) {
+    if (this.hasMore && !this.loading) {
       this.queryAiTestRecords(false);
     }
   },

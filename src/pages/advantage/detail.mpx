@@ -33,7 +33,9 @@ createPage({
 
   async onLoad(options) {
     const { id } = options;
-    this.project = advantage.find(item => item.id === id)!;
+    this.setData({
+      project: advantage.find(item => item.id === id)!
+    });
   },
 
   goBack() {

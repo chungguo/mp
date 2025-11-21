@@ -1,0 +1,108 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
+
+  <view class="flex flex-content-end px-[36rpx] gap-[34rpx] mt-[70rpx]">
+    <view class="color-[#0759E6] flex flex-col gap-[33rpx] flex-justify-end">
+      <view class="text-[38rpx] font-[600]">{{ text }}</view>
+      <view class="text-[28rpx]" wx:if="{{ !score }}">仅需几分钟，你也可以即刻领取专属0元福利</view>
+    </view>
+
+    <view>
+      <t-image class="w-[226rpx]"
+        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/robot-detecting.png" mode="widthFix" />
+    </view>
+  </view>
+
+  <view class="relative top-[100rpx]">
+    <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/doctor-avatar.png" mode="widthFix"
+      t-class="w-full" />
+    <view class="absolute w-[240rpx] z-2 top-[38rpx] left-[94rpx]">
+      <t-image t-class="w-full" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/qrcode.png"
+        mode="widthFix" />
+    </view>
+  </view>
+
+  <view class="px-26rpx">
+    <view class="relative">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-button.png" mode="widthFix"
+        class="w-full" />
+      <view
+        class="absolute top-[-24rpx] left-0 right-0 flex w-full h-full items-center justify-center text-[30rpx] font-[600] color-white">
+        添加企业微信立即领取</view>
+    </view>
+    <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
+      <text slot="content" class="color-[#317DFF]">查看检查结果</text>
+    </t-button>
+  </view>
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from "@mpxjs/core";
+
+createPage({
+  data: {
+    score: '',
+  },
+  onLoad(options) {
+    this.score = options.score || '';
+  },
+  computed: {
+    text(): string {
+      if (this.score) {
+        const scoreNum = parseInt(this.score, 10);
+        if (scoreNum >= 70 && scoreNum <= 100) {
+          return '你的牙齿状况良好，记得定期洗牙保持';
+        } else if (scoreNum >= 50 && scoreNum < 70) {
+          return '你的牙齿待改善，客服帮你支支招！';
+        } else if (scoreNum >= 0 && scoreNum < 50) {
+          return '你的牙齿急需就医，立即让医生帮忙诊断！';
+        } else {
+          return '添加企业微信，即刻领取专属0元福利';
+        }
+      } else {
+        return 'AI 助手正在检测你的牙齿健康度...';
+      }
+    }
+  },
+  methods: {
+    goBack() {
+      mpx.navigateBack();
+    },
+    goResult() {
+      if (this.score) {
+        mpx.navigateBack();
+      } else {
+        mpx.navigateTo({
+          url: './result',
+        });
+      }
+    }
+  }
+});
+
+</script>
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "AI 牙齿健康测",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image"
+  }
+}
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-color: black;
+  --td-navbar-background: transparent;
+  --td-button-default-bg-color: rgba(255, 255, 255, 0.6);
+  --td-button-default-active-bg-color: rgba(255, 255, 255, 0.6);
+  --td-button-default-active-border-color: #317DFF;
+  background-image: url('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/gradient.png');
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+</style>

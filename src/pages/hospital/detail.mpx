@@ -76,7 +76,9 @@ createPage({
 
     try {
       const resp = await this.fetchById(id);
-      this.hospital = resp;
+      this.setData({
+        hospital: resp
+      });
     } finally {
       mpx.hideLoading();
     }

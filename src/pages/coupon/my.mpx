@@ -84,7 +84,9 @@ createPage({
       const records = await this.my({
         status: this.activeTab,
       }) as CouponReceived[];
-      this.coupons = records;
+      this.setData({
+        coupons: records
+      });
       this.isLoading = false;
     } finally {
       mpx.hideLoading();

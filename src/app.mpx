@@ -63,6 +63,7 @@ image {
       "./pages/aitest/index",
       "./pages/aitest/result",
       "./pages/aitest/detail",
+      "./pages/aitest/wxwork",
     ],
     "subPackages": [
       {
