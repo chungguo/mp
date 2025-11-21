@@ -8,13 +8,13 @@
         <view class="relative w-[302rpx] h-[306rpx] rounded-[26rpx] of-hidden" bindtap="goAitest">
           <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/aitest.png" width="302rpx"
             height="306rpx" shape="rounded" />
-          <view class="absolute top-0 lef-0 flex flex-col color-white pl-[30rpx] pt-[36rpx] gap-[6rpx]">
+          <view class="absolute top-0 left-0 flex flex-col color-white pl-[30rpx] pt-[36rpx] gap-[6rpx]">
             <text class="text-[30rpx] font-800">AI·牙卫士</text>
             <text class="text-[24rpx]">测测你的牙齿状况</text>
           </view>
         </view>
         <view class="flex flex-col gap-[22rpx]">
-          <view class="border-box bg-white p-[36rpx] rounded-[22rpx] flex gap-[24rpx] items-center">
+          <view class="box-border bg-white p-[36rpx] rounded-[22rpx] flex gap-[24rpx] items-center">
             <t-image width="80rpx" height="80rpx"
               src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E7%88%B1%E7%89%99%E6%97%A0%E5%BF%A7%E5%8C%85.png" />
             <view>
@@ -24,13 +24,13 @@
           </view>
           <view class="flex gap-[22rpx]">
             <view
-              class="border-box rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
+              class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">专属客服</view>
               <t-image width="80rpx" height="80rpx"
                 src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
             </view>
             <view
-              class="border-box rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
+              class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">分享领好礼</view>
               <t-image width="80rpx" height="80rpx"
                 src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E5%88%86%E4%BA%AB%E9%A2%86%E5%A5%BD%E7%A4%BC.png" />
@@ -54,15 +54,23 @@
       <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
         <t-tab-panel label="优势项目" value="2"></t-tab-panel>
         <t-tab-panel label="甄选机构" value="hospital">
-          <view class="grid grid-cols-2 gap-[24rpx] pb-[20rpx] mt-[20rpx]">
-            <view class="w-full bg-white rounded-[24rpx] overflow-hidden" wx:for="{{ hospitals }}" wx:key="id"
-              bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
-              <image class="h-[332rpx]" src="{{ item.images && item.images[0] }}" mode="aspectFill" />
-              <view class="p-[20rpx] box-border">
-                <text class="block text-[28rpx] text-black font-700 mb-[8rpx] ellipsis">{{ item.name }}</text>
-                <text class="text-[24rpx] text-[#999999] font-400 ellipsis">{{ item.address }}</text>
+          <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
+            <view class="w-full box-border bg-white rounded-[22rpx] flex items-center gap-[22rpx] px-[26rpx] py-[36rpx]"
+              wx:for="{{ hospitals }}" wx:key="id" bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
+              <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
+                <t-image src="{{ item.images && item.images[0] }}" width="140rpx" height="140rpx" />
+              </view>
+              <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
+                <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ item.name }}</text>
+                <rate value="{{ Math.ceil(item.rating) }}" />
+                <view class="flex items-center gap-[36rpx] of-hidden flex-nowrap">
+                  <view wx:for="{{ item.tags.split(',') }}" wx:for-item="tag" wx:key="*this"
+                    class="border border-[#4A8DFF] flex-shrink-0 text-[18rpx] color-[#4A8DFF] px-[12rpx] py-[2rpx] rounded-[10rpx]">
+                    {{ tag }}</view>
+                </view>
               </view>
             </view>
+
           </view>
         </t-tab-panel>
         <t-tab-panel label="口碑医生" value="3"></t-tab-panel>
@@ -94,11 +102,18 @@ const grids = [
 createPage({
   data: {
     grids: grids.map(g => ({ ...g, image: `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/grid/${g.text}.png` })),
+
     banner: [] as string[],
 
     activeTab: '',
 
     hospitals: [] as Hospital[],
+
+    icon: [
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAABSlBMVEUAAAD/zDP/v0D/0Ub/v0D/zET/v0D/yUP/wkf/v0n/w0T/xUr/v0j/wUb/w0v/v0f/wkn/xEf/v0r/wkf/wkn/v0j/wkn/w0j/wEv/wkj/wEr/w0r/wEn/wkf/wUj/wkr/wkn/wkn/wEj/wUr/wUn/wkj/wUr/wkj/wEr/wUj/wUn/wUj/wkr/wEn/wUr/wkr/wEj/wUr/wEn/wkn/wEj/wEr/wUn/wEr/wEr/wEn/wEn/wUr/wkn/wEr/wUr/wUn/wkn/wUr/wEn/wUn/wEn/wUn/wEr/wEr/wUn/wUr/wUr/wUr/wEn/wUn/wUn/wUr/wUr/wEn/wEn/wUr/wEn/wEr/wUn/wUn/wUr/wEr/wUr/wEn/wUr/wEn/wUn/wEr/wEr/wEr/wUn/wEr/wEn/wUn/wUr/wUr/wEn/wUr/wEr/wUr/wUn/wUrP+9ddAAAAbXRSTlMABQgLDA8QExkcHh8gISIkKis0Njs8P0BBQ0VISUtOT1BUVVZXWFpcXV9iY2RlZ2hqa21wcXJ0dXl6fn+BhoeIiZWWnZ6go6aoqaytrrW4wcLDx8jLzNHV1tfZ297f4uTn6Orr7O3u9vf5/P3++TRZZQAAAYZJREFUGBntwWtXElEUBuBXMQrUNFPR1MoaCZQszVtZZFe7qNk9TbHwlnje///VtWYNcMA5e2az+tTqefDf39TTg1bN75Plu2jJCH39aMVH+j6gBX0M9EHvPQPvoNZ1ysBpF7Ses+YZlJInrDlOQmeZlkdQaTui5agNGvfYYBoaO2ywA4VFNplHbIs8ZxYxpAeyD3cZYnspO5BGuM7RmZXVzRIjlDZXn94fTaPBG6q8guUtlV6gppdqKVRNUe06qm5Q7Sqq2n9TaQt141Qag6VAlQIaFAxjMwU0yRnGZHI4J2cYi8khhGcYg/EQyjOMVPHg4FUYoXITTrcZYRyCJxQ9huQSRRchOqSgBBklfyC6QlEvJFmKJiBZoagIyQZF65D8omgPgguMkITbNUYYgtsCIzyA22tGeAm3b7R9upNK5T/T9gVutJTz8OXLtMCpnXXFBAKJIuvgtsXAWjcsl9cY+Aq3Cfq+D6HJ8A/6xiCYLJEHcwgxd0j+vAVRIpPpQKiOzCD+DWc2tV1EkCjhVwAAAABJRU5ErkJggg==',
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAAVFBMVEUAAACAj5+Hj5+Fj5qGkp6Hj5uEkZuGj5yGkZyFj52FkZyGj5uHkZ2Fj5uGkJuFj5yFkJyGj5yFj5uGkJyGj5uFkJuGj5yGkJyFj5yFkJyGj5uGkJw7HgmuAAAAG3RSTlMAECAwP0BPUF9gb3B/gI+Qn6Cwv8DP0N/g7/DIEMZ2AAABxElEQVRIx+2W3ZKDIAyFA5ZaK9Raafk57/+ee2Hdoq0R3L3Zmc2VTvgGQk4SiP7tF03K3WjtAFfvYxXgPaB2wXd0RB2GfRtHIqK4a+sbDBGRwW3HRQOCiEgA5Vfeo1985JsI04YSQRTCSah2DL7AwuuSFVwZ2+Dx+vFoimCXrm9wL1I1fPrrUaBwFeYHbRCyZCYPZ33HMrU9cNfnw6paDkd9GRwAAPEtNyaOHjdc9PGwcGo8zdvefAywNr310yqdejrgYU2rqq2oKtUa+wC6WRGowjYhkx9bpiGbbKbKVEDk0pNGtCXsZWwy34rCNZ+9Yq64poC+Ylko+fQ7m09/YnPpz2wevcbm0FfE1cpWMRXtu3WIjPorVuQKYCun5YbLsKFDAaw7nwOIW7DP92O4mvfcuXn+vqjhLuy20b4NN9TMxsSzXJ7rjW4VuGeARODTHPlUCLan2t1BkUkLQ+gABC3SwjDsK+ZVrecwjpZwTpTfs4++6VzKAbYiqizgVFZ/nwQoB8A/EeWBQWYIdHQKDcR2Pl/H0FnYQxOdAtDPciJ6IJyINKd8qgH3DHZRMHb0sOKuPeA/rmhWPekeq/qUm6P/j9gXQnkiwQ/1eg0AAAAASUVORK5CYII='
+    ],
+    texts: ['1分', '2分', '3分', '4分', '5分']
   },
   ...mapState(useUserStore, ['newUser']),
   ...mapActions(useHospitalStore, {
@@ -125,7 +140,7 @@ createPage({
       if (newValue === 'hospital') {
         const hospitals = await this.fetchHospitals();
         this.setData({
-          hospitals
+          hospitals,
         });
       }
     },
@@ -158,30 +173,6 @@ createPage({
     this.activeTab = e.detail.value;
   },
 
-  /**
-   * 导航到口腔咨询页面
-   */
-  navigateToConsultation() {
-    mpx.navigateTo({
-      url: './consultation/form',
-    });
-  },
-
-  /**
-   * 导航到医院页面
-   */
-  navigateToHospital() {
-    mpx.navigateTo({
-      url: './hospital/list',
-    });
-  },
-
-  navigateToAdvantage() {
-    mpx.navigateTo({
-      url: './advantage/list',
-    });
-  },
-
   navigateToHospitalDetail(e: WechatMiniprogram.CustomEvent) {
     const { id } = e.currentTarget.dataset;
     mpx.navigateTo({
@@ -212,16 +203,12 @@ createPage({
     "navigationStyle": "custom",
     "usingComponents": {
       "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
-      "t-row": "tdesign-miniprogram/miniprogram_dist/row/row",
-      "t-col": "tdesign-miniprogram/miniprogram_dist/col/col",
-      "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
       "t-tabs": "tdesign-miniprogram/miniprogram_dist/tabs/tabs",
       "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel",
       "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
       "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
-      "t-grid": "tdesign-miniprogram/miniprogram_dist/grid/grid",
-      "t-grid-item": "tdesign-miniprogram/miniprogram_dist/grid-item/grid-item",
-      "t-image": "tdesign-miniprogram/miniprogram_dist/image/image"
+      "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+      "rate": "../components/rating",
     }
   }
 </script>
@@ -232,6 +219,7 @@ page {
   --td-navbar-color: white;
   --td-tab-nav-bg-color: transparent;
   --td-navbar-background: linear-gradient(180deg, #317DFF 0%, #3E85FF 100%);
+  background-color: #F1F3F7;
 }
 
 .hero-cards {

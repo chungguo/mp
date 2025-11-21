@@ -34,7 +34,7 @@
               <text>{{ item.milestone }}位</text>
               <t-image src="{{ item.image }}" width="98rpx" height="98rpx" shape="circle" />
               <text>{{ item.reward_name }}</text>
-              <view class="flex justify-center w-[100rpx] h-[48rpx] border-box py-[4rpx] px-[16rpx] color-white">
+              <view class="flex justify-center w-[100rpx] h-[48rpx] box-border py-[4rpx] px-[16rpx] color-white">
                 <view wx:if="{{ item.achieved && item.received }}"
                   class="flex items-center justify-center w-full h-full bg-[#D8D8D8] rounded-[10rpx]">
                   已领取</view>
@@ -114,7 +114,7 @@
   </t-popup>
 
   <t-popup placement="center" visible="{{ addressComfirmVisible }}" z-index="20" overlay-props="{{ {zIndex: 19} }}">
-    <view class="confirm-popup border-box w-[560rpx] px-[48rpx] pt-[68rpx] pb-[60rpx] rounded-[24rpx]">
+    <view class="confirm-popup box-border w-[560rpx] px-[48rpx] pt-[68rpx] pb-[60rpx] rounded-[24rpx]">
       <view class="text-center text-[36rpx] font-600">收货地址提交后不可修改</view>
       <view class="flex items-center gap-[24rpx] mt-[68rpx]">
         <t-button variant="outline" class="rewrite h-[88rpx] flex-1" bindtap="onRewrite">重新修改</t-button>

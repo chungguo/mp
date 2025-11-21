@@ -11,8 +11,9 @@ export interface Hospital {
   description: string;
   images: string[];
   business_hours: string;
-  services: string[];
+  tags: string;
   doctors: Doctor[];
+  rating: number;
 }
 
 export interface Doctor {

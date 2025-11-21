@@ -1,0 +1,39 @@
+<template>
+  <t-rate class="rate" value="{{ Math.ceil(value) }}" icon="{{ icon }}" color="#FFC14A" size="30rpx" gap="6rpx"
+    show-text="{{ !!vlaue }}" disabled />
+</template>
+
+<script lang="ts">
+import { createComponent } from '@mpxjs/core';
+
+createComponent({
+  props: {
+    value: {
+      type: Number,
+      value: 0,
+    },
+  },
+  data: {
+    icon: [
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAABSlBMVEUAAAD/zDP/v0D/0Ub/v0D/zET/v0D/yUP/wkf/v0n/w0T/xUr/v0j/wUb/w0v/v0f/wkn/xEf/v0r/wkf/wkn/v0j/wkn/w0j/wEv/wkj/wEr/w0r/wEn/wkf/wUj/wkr/wkn/wkn/wEj/wUr/wUn/wkj/wUr/wkj/wEr/wUj/wUn/wUj/wkr/wEn/wUr/wkr/wEj/wUr/wEn/wkn/wEj/wEr/wUn/wEr/wEr/wEn/wEn/wUr/wkn/wEr/wUr/wUn/wkn/wUr/wEn/wUn/wEn/wUn/wEr/wEr/wUn/wUr/wUr/wUr/wEn/wUn/wUn/wUr/wUr/wEn/wEn/wUr/wEn/wEr/wUn/wUn/wUr/wEr/wUr/wEn/wUr/wEn/wUn/wEr/wEr/wEr/wUn/wEr/wEn/wUn/wUr/wUr/wEn/wUr/wEr/wUr/wUn/wUrP+9ddAAAAbXRSTlMABQgLDA8QExkcHh8gISIkKis0Njs8P0BBQ0VISUtOT1BUVVZXWFpcXV9iY2RlZ2hqa21wcXJ0dXl6fn+BhoeIiZWWnZ6go6aoqaytrrW4wcLDx8jLzNHV1tfZ297f4uTn6Orr7O3u9vf5/P3++TRZZQAAAYZJREFUGBntwWtXElEUBuBXMQrUNFPR1MoaCZQszVtZZFe7qNk9TbHwlnje///VtWYNcMA5e2az+tTqefDf39TTg1bN75Plu2jJCH39aMVH+j6gBX0M9EHvPQPvoNZ1ysBpF7Ses+YZlJInrDlOQmeZlkdQaTui5agNGvfYYBoaO2ywA4VFNplHbIs8ZxYxpAeyD3cZYnspO5BGuM7RmZXVzRIjlDZXn94fTaPBG6q8guUtlV6gppdqKVRNUe06qm5Q7Sqq2n9TaQt141Qag6VAlQIaFAxjMwU0yRnGZHI4J2cYi8khhGcYg/EQyjOMVPHg4FUYoXITTrcZYRyCJxQ9huQSRRchOqSgBBklfyC6QlEvJFmKJiBZoagIyQZF65D8omgPgguMkITbNUYYgtsCIzyA22tGeAm3b7R9upNK5T/T9gVutJTz8OXLtMCpnXXFBAKJIuvgtsXAWjcsl9cY+Aq3Cfq+D6HJ8A/6xiCYLJEHcwgxd0j+vAVRIpPpQKiOzCD+DWc2tV1EkCjhVwAAAABJRU5ErkJggg==',
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAAVFBMVEUAAACAj5+Hj5+Fj5qGkp6Hj5uEkZuGj5yGkZyFj52FkZyGj5uHkZ2Fj5uGkJuFj5yFkJyGj5yFj5uGkJyGj5uFkJuGj5yGkJyFj5yFkJyGj5uGkJw7HgmuAAAAG3RSTlMAECAwP0BPUF9gb3B/gI+Qn6Cwv8DP0N/g7/DIEMZ2AAABxElEQVRIx+2W3ZKDIAyFA5ZaK9Raafk57/+ee2Hdoq0R3L3Zmc2VTvgGQk4SiP7tF03K3WjtAFfvYxXgPaB2wXd0RB2GfRtHIqK4a+sbDBGRwW3HRQOCiEgA5Vfeo1985JsI04YSQRTCSah2DL7AwuuSFVwZ2+Dx+vFoimCXrm9wL1I1fPrrUaBwFeYHbRCyZCYPZ33HMrU9cNfnw6paDkd9GRwAAPEtNyaOHjdc9PGwcGo8zdvefAywNr310yqdejrgYU2rqq2oKtUa+wC6WRGowjYhkx9bpiGbbKbKVEDk0pNGtCXsZWwy34rCNZ+9Yq64poC+Ylko+fQ7m09/YnPpz2wevcbm0FfE1cpWMRXtu3WIjPorVuQKYCun5YbLsKFDAaw7nwOIW7DP92O4mvfcuXn+vqjhLuy20b4NN9TMxsSzXJ7rjW4VuGeARODTHPlUCLan2t1BkUkLQ+gABC3SwjDsK+ZVrecwjpZwTpTfs4++6VzKAbYiqizgVFZ/nwQoB8A/EeWBQWYIdHQKDcR2Pl/H0FnYQxOdAtDPciJ6IJyINKd8qgH3DHZRMHb0sOKuPeA/rmhWPekeq/qUm6P/j9gXQnkiwQ/1eg0AAAAASUVORK5CYII='
+    ],
+    texts: ['1.0', '2.0', '3.0', '4.0', '5.0']
+  },
+});
+</script>
+
+<style lang="less">
+.rate {
+  --td-rate-text-font-size: 22rpx;
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-rate": "tdesign-miniprogram/miniprogram_dist/rate/rate",
+  }
+}
+</script>

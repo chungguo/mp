@@ -1,48 +1,30 @@
+<!-- 医院详情页面 -->
 <template>
-  <!-- 医院详情页面 -->
-  <view>
-    <t-navbar left-arrow bind:go-back="goBack" title="{{ hospital.name }}" />
-    <!-- 医院图片轮播 -->
-    <view class="mb-20rpx rounded-24rpx overflow-hidden">
-      <t-swiper list="{{ hospital.images }}" navigation="{{ { type: 'dots' } }}"
-        image-props="{{ imageProps }}"></t-swiper>
+  <t-navbar left-arrow bind:go-back="goBack" title="{{ hospital.name }}" />
+  <!-- 医院图片轮播 -->
+  <view class="p-26rpx flex flex-col gap-[26rpx]">
+    <view class="rounded-24rpx of-hidden">
+      <t-swiper height="260rpx" list="{{ hospital.images }}" navigation="{{ { type: 'dots' } }}"></t-swiper>
     </view>
-    <view class="px-[30rpx]">
-      <!-- 医院基本信息 -->
-      <view class="bg-white px-[24rpx] py-[30rpx] mb-[20rpx] rounded-[24rpx]">
-        <view class="flex items-center gap-[12rpx] mb-[12rpx]">
-          <view class="px-[16rpx] py-[12rpx] rounded-[8rpx] text-white text-[24rpx]"
-            style="background: linear-gradient(135deg, rgba(255, 55, 55, 1) 0%, rgba(255, 122, 55, 1) 100%);"
-            wx:if="{{ hospital.years }}">
-            {{ hospital.years }}</view>
-          <text class="text-[36rpx] font-[600] text-[#333] flex-1">{{ hospital.name }}</text>
+
+    <!-- 医院基本信息 -->
+    <view class="box-border px-[26rpx] py-[36rpx] rounded-[22rpx] flex flex-col gap-[16rpx] bg-white">
+      <view class="text-[32rpx] font-bold text-[#1D2129]">{{ hospital.name }}</view>
+
+      <rate value="{{ Math.ceil(hospital.rating) }}" />
+
+      <view class="color-[#1D2129] text-[24rpx] mt-[10rpx] flex flex-col gap-[12rpx]">
+        <view class="flex gap-[12rpx] items-center">
+          <t-icon name="location" />
+          <view>{{ hospital.address }}</view>
         </view>
-        <view class="flex gap-[12rpx] flex-wrap" wx:if="{{ hospital.special_services }}">
-          <block wx:for="{{ hospital.special_services }}" wx:key="index">
-            <view
-              class="rounded-[4px] bg-[#F0FFFB] border border-[#00D197] px-[12rpx] py-[4rpx] text-[#00D197] text-[24rpx]">
-              {{ item }}</view>
-          </block>
+        <view class="flex gap-[12rpx] items-center">
+          <t-icon name="time" />
+          <view>{{ hospital.business_hours }}</view>
         </view>
-      </view>
-      <!-- 医院联系方式 -->
-      <t-cell-group bordered="{{ false }}" class="mb-[20rpx] rounded-[24rpx] overflow-hidden">
-        <t-cell title="地址" align="left">
-          <t-link theme="primary" slot="note" bind:tap="navigateToLocation">
-            {{ hospital.address }}
-            <t-icon slot="suffix-icon" name="location" />
-          </t-link>
-        </t-cell>
-        <t-cell wx:if="{{ hospital.business_hours }}" title="营业时间" note="{{ hospital.business_hours }}" align="left" />
-      </t-cell-group>
-      <!-- 医院介绍 -->
-      <view class="mb-[20rpx] rounded-[24rpx] overflow-hidden p-[30rpx] bg-white white-space-pre-wrap">
-        <view class="text-[32rpx] font-[600] text-[#333] mb-[20rpx] pb-[16rpx]">医院介绍</view>
-        <view class="text-[26rpx] text-[#666] leading-[1.6]">{{ hospital.description }}</view>
       </view>
     </view>
   </view>
-
 </template>
 
 <script lang="ts">
@@ -52,13 +34,7 @@ import { mapActions } from '@mpxjs/pinia';
 
 createPage({
   data: {
-    imageProps: {
-      mode: "aspectFit"
-    },
-    hospital: {} as Hospital & {
-      special_services?: string[];
-      years?: string;
-    },
+    hospital: {} as Hospital,
   },
 
   ...mapActions(useHospitalStore, ['fetchById']),
@@ -84,20 +60,18 @@ createPage({
     }
   },
 
-  // 导航到医院
-  navigateToLocation() {
-    const { name, address, longitude, latitude } = this.hospital;
-
-    mpx.openLocation({
-      name,
-      address: address,
-      latitude,
-      longitude,
-    });
-  }
+  goBack() {
+    mpx.navigateBack();
+  },
 });
 
 </script>
+
+<style lang="less">
+page {
+  --td-navbar-background: transparent;
+}
+</style>
 
 <script type="application/json">
 {
@@ -113,7 +87,8 @@ createPage({
     "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
     "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
     "t-link": "tdesign-miniprogram/miniprogram_dist/link/link",
-    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar"
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "rate": "../../components/rating",
   }
 }
 </script>
