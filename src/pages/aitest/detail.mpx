@@ -8,7 +8,7 @@
         <image class="w-full" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/score-bg.png"
           mode="widthFix" />
         <view class="absolute left-0 right-0 top-0 bottom-[58rpx] flex justify-center items-end color-[#FFFFFF]">
-          <text class="text-[68rpx] font-bold">{{ detail.score || 0 }}</text><text class="text-[28rpx]">分</text>
+          <text class="text-[68rpx] font-bold leading-[68rpx]">{{ score }}</text><text class="text-[28rpx]">分</text>
         </view>
       </view>
     </view>
@@ -78,7 +78,11 @@ createPage({
 
     this.queryAiTestDetail(id);
   },
-
+  computed: {
+    score(): number {
+      return this.detail.score || 0;
+    },
+  },
   methods: {
     async queryAiTestDetail(id: string) {
       const res = await request.fetch<{
