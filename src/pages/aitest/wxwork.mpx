@@ -17,8 +17,8 @@
     <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/doctor-avatar.png" mode="widthFix"
       t-class="w-full" />
     <view class="absolute w-[240rpx] z-2 top-[38rpx] left-[94rpx]">
-      <t-image t-class="w-full" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/qrcode.png"
-        mode="widthFix" />
+      <t-image t-class="w-full" show-menu-by-longpress="{{ true }}"
+        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/qrcode.png" mode="widthFix" />
     </view>
   </view>
 
