@@ -32,15 +32,14 @@
             <view wx:for="{{ rewards }}" wx:key="id"
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
               <text>{{ item.milestone }}位</text>
-              <t-image src="{{ item.image }}" width="98rpx" height="98rpx" shape="circle" />
+              <t-image src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" />
               <text>{{ item.reward_name }}</text>
-              <view class="flex justify-center w-[100rpx] h-[48rpx] box-border py-[4rpx] px-[16rpx] color-white">
-                <view wx:if="{{ item.achieved && item.received }}"
-                  class="flex items-center justify-center w-full h-full bg-[#D8D8D8] rounded-[10rpx]">
-                  已领取</view>
-                <view wx:if="{{ item.achieved && !item.received }}" bindtap="onReceive"
+              <view class="flex justify-center w-[100rpx] h-[48rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
+                <view wx:if="{{ item.is_unlocked && item.is_claimed }}"
+                  class="flex items-center justify-center w-full h-full bg-[#D8D8D8] rounded-[10rpx]">已领取</view>
+                <view wx:if="{{ item.is_unlocked && !item.is_claimed }}" bindtap="onReceive"
                   class="w-full h-full flex items-center justify-center rounded-[10rpx] receive"
-                  data-id="{{ item.id }}">领取</view>
+                  data-id="{{ item.reward_id }}">领取</view>
               </view>
             </view>
           </view>
@@ -132,7 +131,7 @@
 <script lang="ts">
 import mpx, { createPage } from '@mpxjs/core'
 import { mapActions } from '@mpxjs/pinia';
-import { useReferralStore, type Reward, type Invitation } from './store';
+import { useReferralStore, type Reward } from './store';
 import dayjs from 'dayjs';
 
 const STORAGE_KEY = 'referral_address_form';
@@ -172,11 +171,7 @@ createPage({
       },
     ],
     claimRewardId: 0,
-    rewards: [] as (Reward & {
-      image: string;
-      received: boolean;
-      achieved: boolean;
-    })[],
+    rewards: [] as Reward[],
   },
   computed: {
     areaText(): string {
@@ -193,10 +188,8 @@ createPage({
       return 0;
     },
     invitation_gap() {
-      // 补全实现逻辑
-      // 计算还差多少邀请人数可以获得下一个奖励
-      // 从 rewards 中按顺序计算当前完成的距离下一个 milestone 还差多少
-      const achievedCount = this.rewards.filter(item => item.achieved).length;
+      const achievedCount = this.rewards.filter(item => item.is_unlocked).length;
+
       if (achievedCount < this.rewards.length) {
         const nextMilestone = this.rewards[achievedCount].milestone;
         const gap = nextMilestone - this.invitation_count;
@@ -217,41 +210,19 @@ createPage({
 
       try {
         const data = await this.progress({ activity_id: this.activity_id });
-        const { participation, rewards, invitations = [] } = data;
+        const { participation_end_time, rewards, invited_count } = data;
 
-        if (!participation.expire_time || dayjs().isAfter(dayjs(participation.expire_time))) {
+        if (!participation_end_time || dayjs().isAfter(dayjs(participation_end_time))) {
           this.onFinish();
           return;
         }
 
-        this.countdowntime = Math.abs(dayjs().diff(dayjs(participation.expire_time)));
-        this.invitation_count = invitations.filter((item: Invitation) => item.status === 2).length;
-        this.invitation_count_target = participation.invitation_count;
-
-        const { unlocked = [], locked = [] } = rewards;
-
-        const unlockedRewards = unlocked.map((item: Reward) => ({
-          id: item.id,
-          reward_name: item.reward_name,
-          reward_type: item.reward_type,
-          milestone: item.milestone,
-          image: '',
-          received: item.is_claimed,
-          achieved: true,
-        }));
-
-        const lockedRewards = locked.map((item: Reward) => ({
-          id: item.id,
-          reward_name: item.reward_name,
-          reward_type: item.reward_type,
-          milestone: item.milestone,
-          image: '',
-          received: item.is_claimed,
-          achieved: false,
-        }));
+        this.countdowntime = Math.abs(dayjs().diff(dayjs(participation_end_time)));
+        this.invitation_count = invited_count;
+        this.invitation_count_target = Math.max(...rewards.map((item: Reward) => item.milestone));
 
         this.setData({
-          rewards: unlockedRewards.concat(lockedRewards)
+          rewards: rewards,
         });
 
       } catch (error) {
@@ -273,9 +244,9 @@ createPage({
     },
     async onReceive(e: WechatMiniprogram.CustomEvent) {
       const { id } = e.currentTarget.dataset;
-      const reward = this.rewards.find(item => item.id === id);
+      const reward = this.rewards.find(item => item.reward_id === id);
 
-      if (!reward || reward.received || !reward.achieved) {
+      if (!reward || reward.is_claimed || !reward.is_unlocked) {
         return;
       }
 
@@ -296,8 +267,8 @@ createPage({
         });
 
         this.setData({
-          rewards: this.data.rewards.map(item => {
-            if (item.id === id) {
+          rewards: this.rewards.map(item => {
+            if (item.reward_id === id) {
               return {
                 ...item,
                 received: true,
@@ -333,8 +304,8 @@ createPage({
         });
 
         this.setData({
-          rewards: this.data.rewards.map(item => {
-            if (item.id === this.claimRewardId) {
+          rewards: this.rewards.map(item => {
+            if (item.reward_id === this.claimRewardId) {
               return {
                 ...item,
                 received: true,

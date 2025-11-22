@@ -45,7 +45,7 @@
         url="{{ item.path }}" />
     </t-grid>
 
-    <view class="p-[32rpx]">
+    <view class="p-[32rpx] pt-0">
       <!-- 特惠洗牙券广告 -->
       <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
         navigation="{{ { type: 'dots-bar' } }}" />
@@ -76,7 +76,6 @@
         <t-tab-panel label="口碑医生" value="3"></t-tab-panel>
       </t-tabs>
     </view>
-
   </view>
 </template>
 <script lang="ts">
@@ -84,7 +83,7 @@ import { type Hospital, useHospitalStore } from '@/store/hospital';
 import { useUserStore } from '@/store/user';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
-import { useReferralStore } from '@/subpackages/activity/store';
+import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
 
 const grids = [
   { text: '儿童齿科', path: '' },
@@ -113,7 +112,8 @@ createPage({
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAABSlBMVEUAAAD/zDP/v0D/0Ub/v0D/zET/v0D/yUP/wkf/v0n/w0T/xUr/v0j/wUb/w0v/v0f/wkn/xEf/v0r/wkf/wkn/v0j/wkn/w0j/wEv/wkj/wEr/w0r/wEn/wkf/wUj/wkr/wkn/wkn/wEj/wUr/wUn/wkj/wUr/wkj/wEr/wUj/wUn/wUj/wkr/wEn/wUr/wkr/wEj/wUr/wEn/wkn/wEj/wEr/wUn/wEr/wEr/wEn/wEn/wUr/wkn/wEr/wUr/wUn/wkn/wUr/wEn/wUn/wEn/wUn/wEr/wEr/wUn/wUr/wUr/wUr/wEn/wUn/wUn/wUr/wUr/wEn/wEn/wUr/wEn/wEr/wUn/wUn/wUr/wEr/wUr/wEn/wUr/wEn/wUn/wEr/wEr/wEr/wUn/wEr/wEn/wUn/wUr/wUr/wEn/wUr/wEr/wUr/wUn/wUrP+9ddAAAAbXRSTlMABQgLDA8QExkcHh8gISIkKis0Njs8P0BBQ0VISUtOT1BUVVZXWFpcXV9iY2RlZ2hqa21wcXJ0dXl6fn+BhoeIiZWWnZ6go6aoqaytrrW4wcLDx8jLzNHV1tfZ297f4uTn6Orr7O3u9vf5/P3++TRZZQAAAYZJREFUGBntwWtXElEUBuBXMQrUNFPR1MoaCZQszVtZZFe7qNk9TbHwlnje///VtWYNcMA5e2az+tTqefDf39TTg1bN75Plu2jJCH39aMVH+j6gBX0M9EHvPQPvoNZ1ysBpF7Ses+YZlJInrDlOQmeZlkdQaTui5agNGvfYYBoaO2ywA4VFNplHbIs8ZxYxpAeyD3cZYnspO5BGuM7RmZXVzRIjlDZXn94fTaPBG6q8guUtlV6gppdqKVRNUe06qm5Q7Sqq2n9TaQt141Qag6VAlQIaFAxjMwU0yRnGZHI4J2cYi8khhGcYg/EQyjOMVPHg4FUYoXITTrcZYRyCJxQ9huQSRRchOqSgBBklfyC6QlEvJFmKJiBZoagIyQZF65D8omgPgguMkITbNUYYgtsCIzyA22tGeAm3b7R9upNK5T/T9gVutJTz8OXLtMCpnXXFBAKJIuvgtsXAWjcsl9cY+Aq3Cfq+D6HJ8A/6xiCYLJEHcwgxd0j+vAVRIpPpQKiOzCD+DWc2tV1EkCjhVwAAAABJRU5ErkJggg==',
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAAVFBMVEUAAACAj5+Hj5+Fj5qGkp6Hj5uEkZuGj5yGkZyFj52FkZyGj5uHkZ2Fj5uGkJuFj5yFkJyGj5yFj5uGkJyGj5uFkJuGj5yGkJyFj5yFkJyGj5uGkJw7HgmuAAAAG3RSTlMAECAwP0BPUF9gb3B/gI+Qn6Cwv8DP0N/g7/DIEMZ2AAABxElEQVRIx+2W3ZKDIAyFA5ZaK9Raafk57/+ee2Hdoq0R3L3Zmc2VTvgGQk4SiP7tF03K3WjtAFfvYxXgPaB2wXd0RB2GfRtHIqK4a+sbDBGRwW3HRQOCiEgA5Vfeo1985JsI04YSQRTCSah2DL7AwuuSFVwZ2+Dx+vFoimCXrm9wL1I1fPrrUaBwFeYHbRCyZCYPZ33HMrU9cNfnw6paDkd9GRwAAPEtNyaOHjdc9PGwcGo8zdvefAywNr310yqdejrgYU2rqq2oKtUa+wC6WRGowjYhkx9bpiGbbKbKVEDk0pNGtCXsZWwy34rCNZ+9Yq64poC+Ylko+fQ7m09/YnPpz2wevcbm0FfE1cpWMRXtu3WIjPorVuQKYCun5YbLsKFDAaw7nwOIW7DP92O4mvfcuXn+vqjhLuy20b4NN9TMxsSzXJ7rjW4VuGeARODTHPlUCLan2t1BkUkLQ+gABC3SwjDsK+ZVrecwjpZwTpTfs4++6VzKAbYiqizgVFZ/nwQoB8A/EeWBQWYIdHQKDcR2Pl/H0FnYQxOdAtDPciJ6IJyINKd8qgH3DHZRMHb0sOKuPeA/rmhWPekeq/qUm6P/j9gXQnkiwQ/1eg0AAAAASUVORK5CYII='
     ],
-    texts: ['1分', '2分', '3分', '4分', '5分']
+    texts: ['1分', '2分', '3分', '4分', '5分'],
+    returningUserActivities: [] as ReturningUserActivity[],
   },
   ...mapState(useUserStore, ['newUser']),
   ...mapActions(useHospitalStore, {
@@ -151,9 +151,7 @@ createPage({
         });
       }
       if (v === false) {
-        this.setData({
-          banner: ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/referral.png']
-        });
+        this.queryReturningUserActivity();
       }
     },
   },
@@ -180,19 +178,42 @@ createPage({
     });
   },
 
-  async onSwiperClick() {
+  async onSwiperClick(e: WechatMiniprogram.CustomEvent) {
     if (this.freshUser) {
       mpx.navigateTo({
         url: './coupon/list',
       });
-    } else {
+      return;
+    }
+    const { index } = e.detail;
+
+    const activity = this.returningUserActivities[index];
+
+    if (!activity) {
+      return;
+    }
+
+    try {
       const store = useReferralStore();
-      const res = await store.participate();
+
+      const res = await store.participate({
+        activity_id: activity.id,
+      });
 
       mpx.navigateTo({
         url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
       });
+    } catch (error) {
+      console.log(error);
     }
+  },
+  async queryReturningUserActivity() {
+    const store = useReferralStore();
+    const res = await store.avaliable();
+    this.setData({
+      returningUserActivities: res,
+      banner: res.map(item => item.banner_image).filter(Boolean),
+    });
   },
 })
 </script>
@@ -208,6 +229,8 @@ createPage({
       "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
       "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
       "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+      "t-grid": "tdesign-miniprogram/miniprogram_dist/grid/grid",
+      "t-grid-item": "tdesign-miniprogram/miniprogram_dist/grid-item/grid-item",
       "rate": "../components/rating",
     }
   }

@@ -1,82 +1,40 @@
 import { defineStore } from '@mpxjs/pinia';
 import request from '@/common/request';
 
-export interface Activity {
-  id: number;
-  /** 活动名称 */
-  name: string;
-  /** 活动描述 */
-  description: string;
-  /** 活动持续天数（从用户参与开始算起） */
-  duration_days: number;
-  /** 活动开始时间（ISO 8601格式） */
-  activity_start_time: string;
-  /** 活动结束时间（ISO 8601格式） */
-  activity_end_time: string;
-  /** 分享标题 */
-  share_title: string;
-  /** 分享描述 */
-  share_description: string;
-  /** 分享图片URL */
-  share_image_url: string;
-  /** 每日奖励领取上限，0表示不限制 */
-  daily_reward_claim_limit: number;
-}
-
-export interface Participation {
-  /** 参与记录ID */
-  id: number;
-  /** 分享码 */
-  share_code: string;
-  /** 邀请人数 */
-  invitation_count: number;
-  /** 参与时间 */
-  participate_time: string;
-  /** 过期时间 */
-  expire_time: string;
-}
-
 export interface Reward {
-  id: number;
-  /** 达成里程碑（邀请人数） */
+  /** 奖励ID */
+  reward_id: number;
+  /** 里程碑（需要邀请的人数） */
   milestone: number;
-  /** 奖励类型：1-虚拟 2-实物 */
+  /** 奖励类型：1=虚拟奖励（优惠券）,2=实物奖励 */
   reward_type: number;
   /** 奖励名称 */
   reward_name: string;
+  /** 奖励图片URL（可能为null） */
+  reward_image: string;
+  /** 是否已解锁（invited_count >= milestone） */
+  is_unlocked: boolean;
   /** 是否已领取 */
-  is_claimed?: boolean;
+  is_claimed: boolean;
 }
 
-export interface Rewards {
-  /** 已解锁的奖励 */
-  unlocked: Reward[];
-  /** 未解锁的奖励 */
-  locked: Reward[];
-}
-
-export interface Invitation {
-  /** 邀请记录ID */
-  id: number;
-  /** 被邀请用户ID */
-  invited_user_id: number;
-  /** 状态：1-已邀请 2-已完成咨询 */
+export interface ActivityProgress {
+  /** 参与记录ID */
+  participation_id: number;
+  /** 活动ID */
+  activity_id: number;
+  /** 活动名称 */
+  activity_name: string;
+  /** 分享码（用于生成邀请链接） */
+  share_code: string;
+  /** 已成功邀请的人数（完成咨询的新用户数） */
+  invited_count: number;
+  /** 参与活动的结束时间（ISO 8601格式） */
+  participation_end_time: string;
+  /** 参与状态：1=进行中,2=已完成,3=已过期 */
   status: number;
-  /** 邀请时间 */
-  invited_at: string;
-  /** 咨询完成时间 */
-  consultation_completed_at: string | null;
-}
-
-export interface ActivityData {
-  /** 活动信息 */
-  activity: Activity;
-  /** 参与信息 */
-  participation: Participation;
-  /** 奖励信息 */
-  rewards: Rewards;
-  /** 邀请记录 */
-  invitations: Invitation[];
+  /** 奖励列表（按里程碑从小到大排序） */
+  rewards: Reward[];
 }
 
 export interface ClaimParams {
@@ -87,11 +45,30 @@ export interface ClaimParams {
   recipient_address?: string;
 }
 
+export interface ReturningUserActivity {
+  id: number;
+  name: string;
+  description: string;
+  banner_image: string;
+  duration_days: number;
+  activity_start_time: string;
+  activity_end_time: string;
+  status: number;
+  status_text: string;
+  can_participate: boolean;
+  rewards: {
+    milestone: number;
+    reward_type: number;
+    reward_name: string;
+    reward_description: string;
+    reward_image: string;
+  }[];
+}
 
 export const useReferralStore = defineStore('referral', () => {
   const progress = async (filter = {}) => {
     const response = await request.fetch<{
-      data: ActivityData[],
+      data: ActivityProgress[],
     }>({
       url: '/referral/progress',
       method: "GET",
@@ -101,7 +78,7 @@ export const useReferralStore = defineStore('referral', () => {
     return response.data?.data ?? {};
   };
 
-  const participate = async () => {
+  const participate = async (data = {}) => {
     const response = await request.fetch<{
       data: {
         participation_id: number;
@@ -109,6 +86,8 @@ export const useReferralStore = defineStore('referral', () => {
       },
     }>({
       url: '/referral/participate',
+      method: 'POST',
+      data,
     });
 
     return response.data?.data ?? {};
@@ -123,10 +102,32 @@ export const useReferralStore = defineStore('referral', () => {
     return response.data ?? {};
   };
 
+  const avaliable = async () => {
+    const response = await request.fetch<{
+      data: ReturningUserActivity[],
+    }>({
+      url: '/referral/activities/available',
+      method: 'GET',
+    });
+    return (response.data.data ?? []).filter(item => item.status === 2 && item.can_participate);
+  };
+
+  const accept = async (data: {
+    share_code: string;
+  }) => {
+    await request.fetch({
+      url: '/referral/invite/click',
+      method: 'POST',
+      data,
+    });
+  };
+
   return {
     participate,
     progress,
     claim,
+    accept,
+    avaliable,
   };
 });
 

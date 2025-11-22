@@ -99,6 +99,7 @@
 <script lang="ts">
 import mpx from '@mpxjs/core';
 import { Gender, useUserStore } from "@/store/user";
+import { useReferralStore } from '@/subpackages/activity/store';
 import { createPage } from "@mpxjs/core";
 import request, { BASE_URL } from '@/common/request';
 import type { } from 'tdesign-miniprogram/miniprogram_dist/upload/type';
@@ -153,11 +154,20 @@ createPage({
       size: 10,
       unit: 'MB',
     },
+
+    options: {} as Partial<{
+      activity_id: string;
+      share_code: string;
+    }>,
   },
 
-  async onLoad() {
+  async onLoad(options = {}) {
     mpx.showLoading({
       title: '加载中...',
+    });
+
+    this.setData({
+      options,
     });
 
     try {
@@ -357,6 +367,13 @@ createPage({
           oral_photos: images,
         },
       });
+
+      if (this.options.share_code) {
+        const store = useReferralStore();
+        await store.accept({
+          share_code: this.options.share_code,
+        });
+      }
 
       this.success = true;
     } finally {
