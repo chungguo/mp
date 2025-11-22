@@ -4,7 +4,8 @@
   <view class="flex flex-content-end px-[36rpx] gap-[34rpx] mt-[70rpx]">
     <view class="color-[#0759E6] flex flex-col gap-[33rpx] flex-justify-end">
       <view class="text-[38rpx] font-[600]">{{ text }}</view>
-      <view class="text-[28rpx]" wx:if="{{ !score }}">仅需几分钟，你也可以即刻领取专属0元福利</view>
+      <view class="text-[28rpx]" wx:style="{{ {visibility: !score ? 'visible' : 'hidden'} }}">仅需几分钟，你也可以即刻领取专属0元福利
+      </view>
     </view>
 
     <view>
