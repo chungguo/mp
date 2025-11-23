@@ -20,8 +20,8 @@
       <view>
         <!-- 手机号授权 -->
         <t-cell title="手机" t-class-center="cell-center" t-class-note="cell-note">
-          <t-button size="small" t-class="p-0 m-0 mobile-btn" theme="primary" variant="text" slot="note" open-type="getPhoneNumber"
-            bind:getphonenumber="onGetPhoneNumber">
+          <t-button size="small" t-class="p-0 m-0 mobile-btn" theme="primary" variant="text" slot="note"
+            open-type="getPhoneNumber" bind:getphonenumber="onGetPhoneNumber">
             <text wx:if="{{ mobile }}">{{ mobile }}</text>
             <text wx:else>授权手机号</text>
           </t-button>
@@ -48,9 +48,9 @@
           <text slot="note">{{ birthday || '请选择' }}</text>
         </t-cell>
 
-        <t-date-time-picker start="1900-01-01" end="{{ maxDate }}" default-value="2000-01-01" name="birthday"
-          auto-close title="选择日期" visible="{{ dateVisible }}" mode="date" format="YYYY-MM-DD"
-          bind:confirm="onBirthDayConfirm" bind:cancel="handleClose" bind:close="handleClose" />
+        <t-date-time-picker start="1900-01-01" end="{{ maxDate }}" default-value="2000-01-01" name="birthday" auto-close
+          title="选择日期" visible="{{ dateVisible }}" mode="date" format="YYYY-MM-DD" bind:confirm="onBirthDayConfirm"
+          bind:cancel="handleClose" bind:close="handleClose" />
       </view>
     </view>
 
@@ -93,12 +93,16 @@ createPage({
 
     try {
       await this.queryProfile();
-      const profile = this.profile().value;
-      this.avatar = profile?.avatarUrl ?? '';
-      this.nickname = profile?.nickname ?? '';
-      this.gender = profile?.gender ?? '';
-      this.mobile = profile?.phone ?? '';
-      this.birthday = profile?.birthday ?? '';
+
+      const profile = this.profile();
+
+      this.setData({
+        avatar: profile?.avatarUrl ?? '',
+        nickname: profile?.nickname ?? '',
+        gender: profile?.gender ?? '',
+        mobile: profile?.phone ?? '',
+        birthday: profile?.birthday ?? '',
+      });
     } finally {
       mpx.hideLoading();
     }
@@ -230,7 +234,7 @@ createPage({
         filePath: this.avatar,
         name: 'file',
         header: {
-          'Authorization': `Bearer ${this.token().value}`,
+          'Authorization': `Bearer ${this.token()}`,
         },
         success: res => {
           try {

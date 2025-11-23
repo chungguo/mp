@@ -11,7 +11,7 @@ const upload = async (url: string) => {
       filePath: url,
       name: 'file',
       header: {
-        'Authorization': `Bearer ${userStore.token.value}`,
+        'Authorization': `Bearer ${userStore.token}`,
       },
     });
     const data = JSON.parse(res.data);

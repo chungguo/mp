@@ -19,7 +19,7 @@ mpx.xfetch.interceptors.request.use(async (config) => {
     method,
     header: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${userStore.token.value}`,
+      'Authorization': `Bearer ${userStore.token}`,
       ...header,
     },
   };

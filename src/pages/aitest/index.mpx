@@ -137,9 +137,8 @@ createPage({
         });
 
         await this.queryProfile();
-        const profile = this.profile().value;
 
-        if (!profile.phone) {
+        if (!this.profile()?.phone) {
           this.mobilePopup = true;
         } else {
           this.mediaPopup = true;

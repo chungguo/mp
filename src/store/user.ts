@@ -1,6 +1,5 @@
-import mpx from '@mpxjs/core';
+import mpx, { ref } from '@mpxjs/core';
 import { defineStore } from '@mpxjs/pinia';
-import { ref } from 'vue';
 import request, { BASE_URL } from '@/common/request';
 
 export enum Gender {

@@ -1,5 +1,7 @@
 import { defineStore } from '@mpxjs/pinia';
 import request from '@/common/request';
+import { ref } from '@mpxjs/core';
+import { isEmpty } from 'lodash-es';
 
 export interface Hospital {
   id: number;
@@ -23,7 +25,13 @@ export interface Doctor {
 }
 
 export const useHospitalStore = defineStore('hospital', () => {
-  const fetchHospitals = async (filter = {}) => {
+  const hospitals = ref<Hospital[]>([]);
+
+  const fetchHospitals = async (params = {}) => {
+    if (isEmpty(params) && !isEmpty(hospitals.value)) {
+      return hospitals.value;
+    }
+
     const response = await request.fetch<{
       data: {
         hospitals: Hospital[];
@@ -31,14 +39,16 @@ export const useHospitalStore = defineStore('hospital', () => {
     }>({
       url: '/hospitals',
       method: "GET",
-      params: {
-        page: 1,
-        page_size: 100,
-        ...filter
-      },
+      params,
     });
 
-    return response.data?.data?.hospitals ?? [];
+    const data = response.data?.data?.hospitals ?? [];
+
+    if (isEmpty(params)) {
+      hospitals.value = data;
+    }
+
+    return data;
   };
 
   const fetchHospitalById = async (id: string) => {

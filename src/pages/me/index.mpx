@@ -2,10 +2,10 @@
   <t-navbar title="我的"></t-navbar>
 
   <view class="relative z-2 flex gap-16rpx text-white text-24rpx px-30rpx" bind:tap="goProfile">
-    <t-avatar size="84rpx" slot="image" image="{{ account.avatar }}" />
+    <t-avatar size="84rpx" slot="image" image="{{ avatar }}" />
     <view class="flex-1 flex items-center justify-between pr-48rpx">
       <view>
-        <text class="text-32rpx font-600">{{ account.nickname }}</text>
+        <text class="text-32rpx font-600">{{ nickname }}</text>
         <view class="mt-12rpx opacity-80">
           <text wx:if="{{ roleName }}">{{ roleName }}</text>
         </view>
@@ -70,20 +70,23 @@ createPage({
   },
 
   computed: {
-    account() {
-      return this.profile().value;
-    },
     showScanCoupon() {
-      const id = this.profile().value?.role_id;
+      const id = this.profile()?.role_id;
       return id && [RoleId.Admin, RoleId.HospitalAdmin, RoleId.HospitalOperator].includes(id);
     },
     roleName() {
-      const id = this.profile().value?.role_id;
+      const id = this.profile()?.role_id;
       if (!id) {
         return '';
       }
 
       return RoleName[id as RoleId] || '';
+    },
+    avatar() {
+      return this.profile()?.avatar || '';
+    },
+    nickname() {
+      return this.profile()?.nickname || '';
     }
   },
 

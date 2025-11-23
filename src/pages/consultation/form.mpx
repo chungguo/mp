@@ -174,10 +174,10 @@ createPage({
       const userStore = useUserStore();
       await userStore.queryProfile();
 
-      if (!userStore.profile.value?.phone) {
+      if (!userStore.profile?.phone) {
         this.popupVisible = true;
       } else {
-        this.mobile = userStore.profile.value.phone;
+        this.mobile = userStore.profile?.phone;
       }
     } finally {
       mpx.hideLoading();
@@ -314,7 +314,7 @@ createPage({
         filePath: url,
         name: 'file',
         header: {
-          'Authorization': `Bearer ${userStore.token.value}`,
+          'Authorization': `Bearer ${userStore.token}`,
         },
         success: res => {
           try {

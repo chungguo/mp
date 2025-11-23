@@ -54,7 +54,28 @@
 
       <!-- 主内容区域 -->
       <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
-        <t-tab-panel label="优势项目" value="item"></t-tab-panel>
+        <t-tab-panel label="优势项目" value="item">
+          <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
+            <view wx:for="{{ items }}" wx:key="id" class="rounded-[22rpx] of-hidden bg-white box-border w-[334rpx]">
+              <t-image src="{{ item.cover_image }}" t-class="w-[334rpx] h-[254rpx]" />
+              <view class="px-[16rpx] py-[14rpx] flex flex-col gap-[16rpx]">
+                <view class="text-ellipsis overflow-hidden whitespace-nowrap text-[28rpx] font-bold">{{ item.name }}
+                </view>
+                <view class="flex items-center">
+                  <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.original_price }}</view>
+                  <view class="text-[24rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.discount_price }}
+                  </view>
+                  <view
+                    class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx] ml-[12rpx]">
+                    {{ item.discountText }}</view>
+                </view>
+                <view class="w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                  <text class="text-[22rpx] color-[#1D2129]">{{ item.hospitals }}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </t-tab-panel>
 
         <t-tab-panel label="甄选机构" value="hospital">
           <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
@@ -65,7 +86,9 @@
                   <t-image src="{{ hospital.images && hospital.images[0] }}" width="140rpx" height="140rpx" />
                 </view>
                 <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
-                  <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ hospital.name }}</text>
+                  <text
+                    class="text-[28rpx] color-[#090E0B] font-bold overflow-hidden whitespace-nowrap text-ellipsis">{{
+                      hospital.name }}</text>
                   <rate value="{{ Math.ceil(hospital.rating) }}" />
                   <view class="flex items-center gap-[36rpx] of-hidden flex-nowrap">
                     <view wx:for="{{ hospital.tags.split(',') }}" wx:for-item="tag" wx:key="*this"
@@ -78,14 +101,17 @@
               <view class="flex flex-col gap-[22rpx]">
                 <view wx:for="{{ hospital.items }}" wx:key="id" class="flex items-center gap-[26rpx]">
                   <view class="color-[#F42020] font-bold text-[28rpx]">￥{{ item.original_price }}</view>
-                  <view class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-[#F42020] rounded-[8rpx]">
+                  <view
+                    class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
                     {{ item.discountText }}</view>
-                  <view class="text-ellipsis color-[#090E0B] text-[22rpx]">{{ item.name }}</view>
+                  <view class="text-ellipsis overflow-hidden whitespace-nowrap color-[#090E0B] text-[22rpx]">{{
+                    item.name }}</view>
                 </view>
               </view>
             </view>
           </view>
         </t-tab-panel>
+
         <t-tab-panel label="口碑医生" value="doctor">
           <view class="flex flex-col gap-[16rpx]">
             <view wx:for="{{ doctors }}" wx:key="id"
@@ -140,6 +166,9 @@ const grids = [
 
 createPage({
   data: {
+    loadingHospital: false,
+    loadingDoctor: false,
+
     grids: grids.map(g => ({ ...g, image: `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/grid/${g.text}.png` })),
 
     banner: [] as string[],
@@ -148,6 +177,13 @@ createPage({
 
     hospitals: [] as (Hospital & {
       items: (Item & { discountText?: string })[]
+    })[],
+
+    items: [] as (Item & {
+      hospitals: string[],
+      discountText?: string,
+      original_price_text: string;
+      discount_price_text: string;
     })[],
 
     icon: [
@@ -171,14 +207,12 @@ createPage({
     },
   },
 
-  computed: {
-    freshUser() {
-      return this.newUser().value;
-    }
-  },
-
   watch: {
     async activeTab(newValue) {
+      if (newValue === 'item') {
+        this.queryItems();
+      }
+
       if (newValue === 'hospital') {
         this.queryHospitals();
       }
@@ -186,12 +220,8 @@ createPage({
       if (newValue === 'doctor') {
         this.queryDoctors();
       }
-
-      if (newValue === 'item') {
-        this.queryItems();
-      }
     },
-    async freshUser(v) {
+    newUser(v) {
       if (v === true) {
         this.setData({
           banner: ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png']
@@ -203,14 +233,9 @@ createPage({
     },
   },
   onLoad() {
-    this.activeTab = 'hospital';
+    this.activeTab = 'item';
   },
 
-  goAitest() {
-    mpx.switchTab({
-      url: './aitest/index',
-    });
-  },
   /**
    * 切换标签页
    */
@@ -233,7 +258,7 @@ createPage({
   },
 
   async onSwiperClick(e: WechatMiniprogram.CustomEvent) {
-    if (this.freshUser) {
+    if (this.newUser) {
       mpx.navigateTo({
         url: './coupon/list',
       });
@@ -261,6 +286,7 @@ createPage({
       console.log(error);
     }
   },
+
   async queryReturningUserActivity() {
     const store = useReferralStore();
     const res = await store.avaliable();
@@ -271,35 +297,74 @@ createPage({
   },
 
   async queryHospitals() {
-    const hospitals = await this.fetchHospitals();
-    const items = await this.fetchItems({
-      hospital_ids: hospitals.map((h: Hospital) => h.id).join(','),
-    });
+    try {
+      mpx.showLoading({
+        title: '加载中...',
+      });
 
-    this.setData({
-      hospitals: hospitals.map((h: Hospital) => ({
-        ...h,
-        items: items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
-          ...i,
-          discountText: this.getDiscount(i),
-        }))
-      })),
-    });
+      const hospitals = await this.fetchHospitals();
+      const items = await this.fetchItems({
+        hospital_ids: hospitals.map((h: Hospital) => h.id).join(','),
+      });
+
+      this.setData({
+        hospitals: hospitals.map((h: Hospital) => ({
+          ...h,
+          items: items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
+            ...i,
+            discountText: this.getDiscount(i),
+          }))
+        })),
+      });
+    } finally {
+      mpx.hideLoading();
+    }
   },
+
   async queryDoctors() {
-    const res = await this.fetchDoctors();
-    this.setData({
-      doctors: res.doctors.map((d: Doctor) => ({
-        ...d,
-        experienceYear: Math.max(Number(dayjs().format('YYYY')) - d.practice_year, 1),
-      })),
-    });
+    try {
+      mpx.showLoading({
+        title: '加载中...',
+      });
+      const res = await this.fetchDoctors();
+      this.setData({
+        doctors: res.doctors.map((d: Doctor) => ({
+          ...d,
+          experienceYear: Math.max(Number(dayjs().format('YYYY')) - d.practice_year, 1),
+        })),
+      });
+    } finally {
+      mpx.hideLoading();
+    }
   },
+
+  async queryItems() {
+    try {
+      mpx.showLoading({
+        title: '加载中...',
+      });
+
+      const items = await this.fetchItems();
+      const hospitals = await this.fetchHospitals();
+
+      this.setData({
+        items: [...items, ...items, ...items].map((item: Item) => ({
+          ...item,
+          hospitals: item.hospital_ids.map((id: number) => hospitals.find((h: Hospital) => h.id === id)).map(h => h.name).join(','),
+          discountText: this.getDiscount(item),
+        })),
+      })
+    } finally {
+      mpx.hideLoading();
+    }
+  },
+
   goConsultation() {
     mpx.navigateTo({
       url: '/pages/consultation/form',
     });
   },
+
   getDiscount(item: Item) {
     if (!item) {
       return;
@@ -312,7 +377,13 @@ createPage({
     }
 
     return `${(discount / original_price).toFixed(2)}折`;
-  }
+  },
+
+  goAitest() {
+    mpx.switchTab({
+      url: './aitest/index',
+    });
+  },
 })
 </script>
 
