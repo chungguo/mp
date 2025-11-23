@@ -127,7 +127,7 @@ createPage({
   methods: {
     async startTest() {
       try {
-        const res = await mpx.requestSubscribeMessage({
+        await mpx.requestSubscribeMessage({
           tmplIds: ['6GU2DEl0DYm60MSwRnane50yrdkn4zG2Hz3ycjXH5lA'],
         });
 

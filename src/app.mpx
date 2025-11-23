@@ -3,8 +3,12 @@ import mpx, { createApp } from '@mpxjs/core';
 import apiProxy from '@mpxjs/api-proxy';
 import { createPinia } from '@mpxjs/pinia';
 import { updateManager } from '@/common/update-manager';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 
 const pinia = createPinia();
+
+dayjs.extend(duration);
 
 mpx.use(pinia);
 mpx.use(apiProxy, {

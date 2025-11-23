@@ -7,7 +7,7 @@
         <view class="color-[#51555E] text-[24rpx] flex-1">
           <view class="flex justify-between items-center mb-[16rpx]">
             <view class="color-[#090E0B] text-[36rpx] font-bold">{{ doctor.name }}</view>
-            <view>从业{{ doctor.practice_year }}年</view>
+            <view>从业{{ experienceYears }}年</view>
           </view>
           <view>{{ doctor.title }} | {{ doctor.department }}</view>
         </view>
@@ -54,6 +54,7 @@ import mpx, { createPage } from "@mpxjs/core";
 import { type Doctor, useDoctorStore } from "@/store/doctor";
 import { type Hospital, useHospitalStore } from "@/store/hospital";
 import { mapActions } from '@mpxjs/pinia';
+import dayjs from "dayjs";
 
 createPage({
   data: {
@@ -88,6 +89,15 @@ createPage({
         }
       },
     },
+  },
+
+  computed: {
+    experienceYears() {
+      if (this.doctor.practice_year) {
+        return Number(dayjs().format('YYYY')) - this.doctor.practice_year;
+      }
+      return '-';
+    }
   },
   async getDoctorDetail(id: string) {
     try {
