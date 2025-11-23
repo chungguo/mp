@@ -58,18 +58,29 @@
 
         <t-tab-panel label="甄选机构" value="hospital">
           <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
-            <view class="w-full box-border bg-white rounded-[22rpx] flex items-center gap-[22rpx] px-[26rpx] py-[36rpx]"
-              wx:for="{{ hospitals }}" wx:key="id" bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
-              <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
-                <t-image src="{{ item.images && item.images[0] }}" width="140rpx" height="140rpx" />
+            <view class="w-full box-border bg-white rounded-[22rpx] px-[26rpx] py-[36rpx]" wx:for="{{ hospitals }}"
+              wx:key="id" wx:for-item="hospital" bindtap="navigateToHospitalDetail" data-id="{{ hospital.id }}">
+              <view class="flex items-center gap-[22rpx]">
+                <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
+                  <t-image src="{{ hospital.images && hospital.images[0] }}" width="140rpx" height="140rpx" />
+                </view>
+                <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
+                  <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ hospital.name }}</text>
+                  <rate value="{{ Math.ceil(hospital.rating) }}" />
+                  <view class="flex items-center gap-[36rpx] of-hidden flex-nowrap">
+                    <view wx:for="{{ hospital.tags.split(',') }}" wx:for-item="tag" wx:key="*this"
+                      class="border border-[#4A8DFF] flex-shrink-0 text-[18rpx] color-[#4A8DFF] px-[12rpx] py-[2rpx] rounded-[10rpx]">
+                      {{ tag }}</view>
+                  </view>
+                </view>
               </view>
-              <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
-                <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ item.name }}</text>
-                <rate value="{{ Math.ceil(item.rating) }}" />
-                <view class="flex items-center gap-[36rpx] of-hidden flex-nowrap">
-                  <view wx:for="{{ item.tags.split(',') }}" wx:for-item="tag" wx:key="*this"
-                    class="border border-[#4A8DFF] flex-shrink-0 text-[18rpx] color-[#4A8DFF] px-[12rpx] py-[2rpx] rounded-[10rpx]">
-                    {{ tag }}</view>
+              <t-divider wx:if="{{ hospital.items.length !== 0 }}" />
+              <view class="flex flex-col gap-[22rpx]">
+                <view wx:for="{{ hospital.items }}" wx:key="id" class="flex items-center gap-[26rpx]">
+                  <view class="color-[#F42020] font-bold text-[28rpx]">￥{{ item.original_price }}</view>
+                  <view class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-[#F42020] rounded-[8rpx]">
+                    {{ item.discountText }}</view>
+                  <view class="text-ellipsis color-[#090E0B] text-[22rpx]">{{ item.name }}</view>
                 </view>
               </view>
             </view>
@@ -110,7 +121,7 @@ import { mapActions, mapState } from '@mpxjs/pinia';
 import { useUserStore } from '@/store/user';
 import { Doctor, useDoctorStore } from '@/store/doctor';
 import { type Hospital, useHospitalStore } from '@/store/hospital';
-import { useItemStore } from '@/store/item';
+import { type Item, useItemStore } from '@/store/item';
 import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
 import dayjs from 'dayjs';
 
@@ -135,7 +146,9 @@ createPage({
 
     activeTab: '',
 
-    hospitals: [] as Hospital[],
+    hospitals: [] as (Hospital & {
+      items: (Item & { discountText?: string })[]
+    })[],
 
     icon: [
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAABSlBMVEUAAAD/zDP/v0D/0Ub/v0D/zET/v0D/yUP/wkf/v0n/w0T/xUr/v0j/wUb/w0v/v0f/wkn/xEf/v0r/wkf/wkn/v0j/wkn/w0j/wEv/wkj/wEr/w0r/wEn/wkf/wUj/wkr/wkn/wkn/wEj/wUr/wUn/wkj/wUr/wkj/wEr/wUj/wUn/wUj/wkr/wEn/wUr/wkr/wEj/wUr/wEn/wkn/wEj/wEr/wUn/wEr/wEr/wEn/wEn/wUr/wkn/wEr/wUr/wUn/wkn/wUr/wEn/wUn/wEn/wUn/wEr/wEr/wUn/wUr/wUr/wUr/wEn/wUn/wUn/wUr/wUr/wEn/wEn/wUr/wEn/wEr/wUn/wUn/wUr/wEr/wUr/wEn/wUr/wEn/wUn/wEr/wEr/wEr/wUn/wEr/wEn/wUn/wUr/wUr/wEn/wUr/wEr/wUr/wUn/wUrP+9ddAAAAbXRSTlMABQgLDA8QExkcHh8gISIkKis0Njs8P0BBQ0VISUtOT1BUVVZXWFpcXV9iY2RlZ2hqa21wcXJ0dXl6fn+BhoeIiZWWnZ6go6aoqaytrrW4wcLDx8jLzNHV1tfZ297f4uTn6Orr7O3u9vf5/P3++TRZZQAAAYZJREFUGBntwWtXElEUBuBXMQrUNFPR1MoaCZQszVtZZFe7qNk9TbHwlnje///VtWYNcMA5e2az+tTqefDf39TTg1bN75Plu2jJCH39aMVH+j6gBX0M9EHvPQPvoNZ1ysBpF7Ses+YZlJInrDlOQmeZlkdQaTui5agNGvfYYBoaO2ywA4VFNplHbIs8ZxYxpAeyD3cZYnspO5BGuM7RmZXVzRIjlDZXn94fTaPBG6q8guUtlV6gppdqKVRNUe06qm5Q7Sqq2n9TaQt141Qag6VAlQIaFAxjMwU0yRnGZHI4J2cYi8khhGcYg/EQyjOMVPHg4FUYoXITTrcZYRyCJxQ9huQSRRchOqSgBBklfyC6QlEvJFmKJiBZoagIyQZF65D8omgPgguMkITbNUYYgtsCIzyA22tGeAm3b7R9upNK5T/T9gVutJTz8OXLtMCpnXXFBAKJIuvgtsXAWjcsl9cY+Aq3Cfq+D6HJ8A/6xiCYLJEHcwgxd0j+vAVRIpPpQKiOzCD+DWc2tV1EkCjhVwAAAABJRU5ErkJggg==',
@@ -190,7 +203,7 @@ createPage({
     },
   },
   onLoad() {
-    this.activeTab = 'doctor';
+    this.activeTab = 'hospital';
   },
 
   goAitest() {
@@ -259,12 +272,18 @@ createPage({
 
   async queryHospitals() {
     const hospitals = await this.fetchHospitals();
-    // const items = await this.fetchItems({
-    //   hospital_ids: hospitals.map((h: Hospital) => h.id).join(','),
-    // });
+    const items = await this.fetchItems({
+      hospital_ids: hospitals.map((h: Hospital) => h.id).join(','),
+    });
 
     this.setData({
-      hospitals,
+      hospitals: hospitals.map((h: Hospital) => ({
+        ...h,
+        items: items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
+          ...i,
+          discountText: this.getDiscount(i),
+        }))
+      })),
     });
   },
   async queryDoctors() {
@@ -280,6 +299,19 @@ createPage({
     mpx.navigateTo({
       url: '/pages/consultation/form',
     });
+  },
+  getDiscount(item: Item) {
+    if (!item) {
+      return;
+    }
+    const { original_price, discount_price } = item;
+    const discount = original_price - discount_price;
+
+    if (!discount) {
+      return;
+    }
+
+    return `${(discount / original_price).toFixed(2)}折`;
   }
 })
 </script>
@@ -297,6 +329,7 @@ createPage({
       "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
       "t-grid": "tdesign-miniprogram/miniprogram_dist/grid/grid",
       "t-grid-item": "tdesign-miniprogram/miniprogram_dist/grid-item/grid-item",
+      "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
       "rate": "../components/rating",
     }
   }

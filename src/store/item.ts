@@ -47,14 +47,10 @@ export const useItemStore = defineStore('item', () => {
     }>({
       url: '/items',
       method: 'GET',
-      params: {
-        page: 1,
-        page_size: 20,
-        ...params,
-      },
+      params,
     });
 
-    return response.data?.data;
+    return response.data?.data?.items ?? [];
   };
 
   const fetchItemById = async (id: string | number) => {
