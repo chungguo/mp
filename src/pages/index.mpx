@@ -348,7 +348,7 @@ createPage({
       const hospitals = await this.fetchHospitals();
 
       this.setData({
-        items: [...items, ...items, ...items].map((item: Item) => ({
+        items: items.map((item: Item) => ({
           ...item,
           hospitals: item.hospital_ids.map((id: number) => hospitals.find((h: Hospital) => h.id === id)).map(h => h.name).join(','),
           discountText: this.getDiscount(item),
