@@ -126,12 +126,16 @@ createPage({
   },
   methods: {
     async startTest() {
-      mpx.showLoading({
-        title: '请稍候...',
-        mask: true,
-      });
-
       try {
+        const res = await mpx.requestSubscribeMessage({
+          tmplIds: ['6GU2DEl0DYm60MSwRnane50yrdkn4zG2Hz3ycjXH5lA'],
+        });
+
+        mpx.showLoading({
+          title: '请稍候...',
+          mask: true,
+        });
+
         await this.queryProfile();
         const profile = this.profile().value;
 
@@ -140,6 +144,8 @@ createPage({
         } else {
           this.mediaPopup = true;
         }
+      } catch (error) {
+        console.log(error);
       } finally {
         mpx.hideLoading();
       }
