@@ -209,11 +209,15 @@ createPage({
           duration: 2000,
         });
 
-        setTimeout(() => {
-          mpx.navigateTo({
-            url: './wxwork',
-          });
-        }, 1000);
+        wx.requestSubscribeMessage({
+          tmplIds: ['6GU2DEl0DYm60MSwRnane50yrdkn4zG2Hz3ycjXH5lA'],
+          success(res) {
+            console.log('res', res);
+            mpx.navigateTo({
+              url: './wxwork',
+            });
+          }
+        });
       } catch (error) {
         mpx.showToast({
           title: '操作失败',
