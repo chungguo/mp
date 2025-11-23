@@ -52,7 +52,8 @@
 
       <!-- 主内容区域 -->
       <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
-        <t-tab-panel label="优势项目" value="2"></t-tab-panel>
+        <t-tab-panel label="优势项目" value="item"></t-tab-panel>
+
         <t-tab-panel label="甄选机构" value="hospital">
           <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
             <view class="w-full box-border bg-white rounded-[22rpx] flex items-center gap-[22rpx] px-[26rpx] py-[36rpx]"
@@ -73,16 +74,42 @@
 
           </view>
         </t-tab-panel>
-        <t-tab-panel label="口碑医生" value="3"></t-tab-panel>
+        <t-tab-panel label="口碑医生" value="doctor">
+          <view class="flex flex-col gap-[16rpx]">
+            <view wx:for="{{ doctors }}" wx:key="id"
+              class="flex items-center bg-white box-border px-[26rpx] py-[36rpx] gap-[22rpx] rounded-[22rpx]"
+              bindtap="navigateToDoctorDetail" data-id="{{ item.id }}">
+              <view class="relative rounded-[16rpx]">
+                <t-image t-class="rounded-[16rpx] of-hidden w-[194rpx] h-[194rpx]" src="{{ item.avatar }}" />
+                <view
+                  class="bg-[#4A8DFF] absolute z-2 bottom-0 left-0 right-0 color-white text-center text-ellipsis rounded-b-[16rpx] text-[22rpx] py-[5rpx]">
+                  {{ item.title }}
+                </view>
+              </view>
+              <view class="flex-1 flex flex-col gap-[14rpx]">
+                <view class="flex justify-between items-center">
+                  <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
+                  <view class="color-[#51555E] text-[24rpx]">从业{{ item.practice_year }}年</view>
+                </view>
+                <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
+                  <view>{{ item.hospital_ids }}</view>
+                  <view>{{ item.department }}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </t-tab-panel>
       </t-tabs>
     </view>
   </view>
 </template>
 <script lang="ts">
-import { type Hospital, useHospitalStore } from '@/store/hospital';
-import { useUserStore } from '@/store/user';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
+import { useUserStore } from '@/store/user';
+import { useDoctorStore } from '@/store/doctor';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
+import { useItemStore } from '@/store/item';
 import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
 
 const grids = [
@@ -116,9 +143,9 @@ createPage({
     returningUserActivities: [] as ReturningUserActivity[],
   },
   ...mapState(useUserStore, ['newUser']),
-  ...mapActions(useHospitalStore, {
-    fetchHospitals: 'fetch',
-  }),
+  ...mapActions(useItemStore, ['fetchItems']),
+  ...mapActions(useDoctorStore, ['fetchDoctors']),
+  ...mapActions(useHospitalStore, ['fetchHospitals']),
   pageLifetimes: {
     show() {
       if (typeof this.getTabBar === 'function') {
@@ -138,10 +165,15 @@ createPage({
   watch: {
     async activeTab(newValue) {
       if (newValue === 'hospital') {
-        const hospitals = await this.fetchHospitals();
-        this.setData({
-          hospitals,
-        });
+        this.queryHospitals();
+      }
+
+      if (newValue === 'doctor') {
+        this.queryDoctors();
+      }
+
+      if (newValue === 'item') {
+        this.queryItems();
       }
     },
     async freshUser(v) {
@@ -156,7 +188,7 @@ createPage({
     },
   },
   onLoad() {
-    this.activeTab = 'hospital';
+    this.activeTab = 'doctor';
   },
 
   goAitest() {
@@ -175,6 +207,13 @@ createPage({
     const { id } = e.currentTarget.dataset;
     mpx.navigateTo({
       url: `./hospital/detail?id=${id}`
+    });
+  },
+
+  navigateToDoctorDetail(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `./doctor/detail?id=${id}`
     });
   },
 
@@ -215,6 +254,23 @@ createPage({
       banner: res.map(item => item.banner_image).filter(Boolean),
     });
   },
+
+  async queryHospitals() {
+    const hospitals = await this.fetchHospitals();
+    // const items = await this.fetchItems({
+    //   hospital_ids: hospitals.map((h: Hospital) => h.id).join(','),
+    // });
+
+    this.setData({
+      hospitals,
+    });
+  },
+  async queryDoctors() {
+    const res = await this.fetchDoctors();
+    this.setData({
+      doctors: res.doctors,
+    });
+  }
 })
 </script>
 

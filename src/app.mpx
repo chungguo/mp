@@ -64,6 +64,7 @@ image {
       "./pages/aitest/result",
       "./pages/aitest/detail",
       "./pages/aitest/wxwork",
+      "./pages/doctor/detail",
     ],
     "subPackages": [
       {

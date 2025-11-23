@@ -1,0 +1,148 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="牙科医生" />
+  <view class="p-[26rpx] flex flex-col gap-[26rpx]">
+    <view class="px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF]">
+      <view class="flex gap-[22rpx] items-center">
+        <t-image t-class="w-[116rpx] h-[116rpx] rounded-[16rpx] of-hidden" src="{{ doctor.avatar }}" />
+        <view class="color-[#51555E] text-[24rpx] flex-1">
+          <view class="flex justify-between items-center mb-[16rpx]">
+            <view class="color-[#090E0B] text-[36rpx] font-bold">{{ doctor.name }}</view>
+            <view>从业{{ doctor.practice_year }}年</view>
+          </view>
+          <view>{{ doctor.title }} | {{ doctor.department }}</view>
+        </view>
+      </view>
+      <view class="my-[26rpx] text-[24rpx]">{{ hospitalNames }}</view>
+      <view class="flex gap-[12rpx] color-[#1D2129] items-center">
+        <view class="text-[30rpx] font-bold">简介</view>
+        <view class="flex-1 text-[24rpx] bg-[#F9FAFB] p-[26rpx] rounded-[22rpx]">{{ doctor.description }}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{ hospitals.length > 0 }}"
+      class="px-[26rpx] py-[26rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF]">
+      <view class="font-bold text-[30rpx] title">所在医院</view>
+      <view class="flex flex-col gap-[36rpx] mt-[16rpx]">
+        <view class="w-full box-border flex items-center gap-[22rpx]" wx:for="{{ hospitals }}" wx:key="id"
+          bindtap="navigateToHospitalDetail" data-id="{{ item.id }}">
+          <view class="w-[134rpx] h-[134rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
+            <t-image src="{{ item.images && item.images[0] }}" width="140rpx" height="140rpx" />
+          </view>
+          <view class="flex flex-col justify-center flex-1 gap-[16rpx]">
+            <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ item.name }}</text>
+            <view class="flex items-center gap-[64rpx]">
+              <view class="flex flex-1 gap-[12rpx] items-start text-[22rpx] color-[#1D2129]">
+                <t-icon name="location" size="26rpx" />
+                <view>{{ item.address }}</view>
+              </view>
+              <t-image t-class="w-[44rpx] h-[44rpx]"
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+                bindtap="goConsultation" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <t-loading wx:if="{{ loading }}" theme="circular" size="40rpx" text="加载中" layout="vertical" fullscreen
+    class="wrapper" />
+
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from "@mpxjs/core";
+import { type Doctor, useDoctorStore } from "@/store/doctor";
+import { type Hospital, useHospitalStore } from "@/store/hospital";
+import { mapActions } from '@mpxjs/pinia';
+
+createPage({
+  data: {
+    doctor: {} as Doctor,
+    hospitals: [] as Hospital[],
+    hospitalNames: '',
+    loading: false,
+  },
+  ...mapActions(useDoctorStore, ['fetchDoctorById']),
+  ...mapActions(useHospitalStore, ['fetchHospitalById']),
+  onLoad(options) {
+    if (!options.id) {
+      mpx.navigateBack();
+    }
+
+    this.getDoctorDetail(options.id);
+  },
+  watch: {
+    doctor: {
+      async handler(val) {
+        if (val.hospital_ids && val.hospital_ids.length > 0) {
+          try {
+            this.loading = true;
+            const hospitals = await Promise.all(val.hospital_ids.map((id: number) => this.fetchHospitalById(id)));
+            this.setData({
+              hospitals,
+              hospitalNames: hospitals.map((item: Hospital) => item.name).join('；')
+            });
+          } finally {
+            this.loading = false;
+          }
+        }
+      },
+    },
+  },
+  async getDoctorDetail(id: string) {
+    try {
+      this.loading = true;
+      const doctor = await this.fetchDoctorById(id);
+      this.setData({
+        doctor,
+      });
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  goConsultation() {
+    mpx.navigateTo({
+      url: '/pages/consultation/form',
+    });
+  },
+  goBack() {
+    mpx.navigateBack();
+  }
+})
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-background: transparent;
+}
+
+.title {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 6rpx;
+    height: 22rpx;
+    left: -26rpx;
+    top: 0;
+    transform: translateY(50%);
+    background-color: #317DFF;
+  }
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "牙科医生",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading"
+  }
+}
+</script>

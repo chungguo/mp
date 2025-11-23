@@ -19,7 +19,7 @@
       t-class="w-full" />
     <view class="absolute w-[240rpx] z-2 top-[38rpx] left-[94rpx]">
       <t-image t-class="w-full" show-menu-by-longpress="{{ true }}"
-        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/qrcode.png" mode="widthFix" />
+        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/1894add49aefc097fc7d20178feb0fe4.PNG" mode="widthFix" />
     </view>
   </view>
 

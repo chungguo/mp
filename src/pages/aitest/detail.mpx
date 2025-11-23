@@ -8,7 +8,8 @@
         <image class="w-full" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/score-bg.png"
           mode="widthFix" />
         <view class="absolute left-0 right-0 top-0 bottom-[58rpx] flex justify-center items-end color-[#FFFFFF]">
-          <text class="text-[68rpx] font-bold leading-[68rpx]">{{ detail.score || 0 }}</text><text class="text-[28rpx]">分</text>
+          <text class="text-[68rpx] font-bold leading-[68rpx]">{{ detail.score || 0 }}</text><text
+            class="text-[28rpx]">分</text>
         </view>
       </view>
     </view>
@@ -95,11 +96,32 @@ createPage({
 
     async invite() {
       const store = useReferralStore();
-      const res = await store.participate();
+      try {
+        const activities = await store.avaliable();
 
-      mpx.navigateTo({
-        url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
-      });
+        if (activities.length === 0) {
+          wx.showToast({
+            title: '暂无可参加活动',
+            icon: 'error',
+          });
+          return;
+        }
+
+        console.log('activities', activities);
+
+        const res = await store.participate({
+          activity_id: activities[0].id,
+        });
+
+        mpx.navigateTo({
+          url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
+        });
+      } catch (e) {
+        mpx.showToast({
+          title: '系统错误',
+          icon: 'error',
+        });
+      }
     },
 
     goBack() {

@@ -37,7 +37,7 @@ createPage({
     hospital: {} as Hospital,
   },
 
-  ...mapActions(useHospitalStore, ['fetchById']),
+  ...mapActions(useHospitalStore, ['fetchHospitalById']),
 
   async onLoad(options) {
     const { id } = options;
@@ -51,7 +51,7 @@ createPage({
     });
 
     try {
-      const resp = await this.fetchById(id);
+      const resp = await this.fetchHospitalById(id);
       this.setData({
         hospital: resp
       });

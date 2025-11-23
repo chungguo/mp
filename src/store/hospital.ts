@@ -23,7 +23,7 @@ export interface Doctor {
 }
 
 export const useHospitalStore = defineStore('hospital', () => {
-  const fetch = async (filter = {}) => {
+  const fetchHospitals = async (filter = {}) => {
     const response = await request.fetch<{
       data: {
         hospitals: Hospital[];
@@ -41,7 +41,7 @@ export const useHospitalStore = defineStore('hospital', () => {
     return response.data?.data?.hospitals ?? [];
   };
 
-  const fetchById = async (id: string) => {
+  const fetchHospitalById = async (id: string) => {
     const response = await request.fetch<{
       data: Hospital
     }>({
@@ -53,8 +53,8 @@ export const useHospitalStore = defineStore('hospital', () => {
   };
 
   return {
-    fetch,
-    fetchById
+    fetchHospitals,
+    fetchHospitalById
   };
 });
 

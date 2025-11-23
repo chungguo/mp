@@ -149,7 +149,7 @@ createPage({
         const res = await mpx.chooseMedia({
           count: 1,
           mediaType: ['image'],
-          sourceType: ['camera'],
+          sourceType: ['camera', 'album'],
           camera: 'front',
         });
 

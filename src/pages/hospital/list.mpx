@@ -15,7 +15,7 @@
             <text class="text-[36rpx] font-[600] text-[#333] flex-[1]">{{ item.name }}</text>
           </view>
           <view class="flex flex-wrap gap-[12rpx]">
-            <block wx:for="{{ item.services }}" wx:key="index" wx:for-item="service">
+            <block wx:for="{{ item.tags }}" wx:key="index" wx:for-item="service">
               <view
                 class="rounded-[4px] bg-[#F0FFFB] border-[1px] border-[#00D197] px-[4rpx] py-[12rpx] text-[#00D197] text-[24rpx]">
                 {{ service }}</view>
@@ -41,7 +41,7 @@ createPage({
   data: {
     hospitals: [] as Hospital[],
   },
-  ...mapActions(useHospitalStore, ['fetch']),
+  ...mapActions(useHospitalStore, ['fetchHospitals']),
 
   async onLoad() {
     mpx.showLoading({
@@ -50,7 +50,7 @@ createPage({
     });
 
     try {
-      const hospitals = await this.fetch();
+      const hospitals = await this.fetchHospitals();
       this.setData({
         hospitals
       });
