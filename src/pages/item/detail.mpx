@@ -1,6 +1,6 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="购买商品" />
-  <t-image src="{{ item.cover_image }}" t-class="w-full h-[568rpx]" mode="heightFix" />
+  <t-image src="{{ item.cover_image }}" t-class="w-full h-[568rpx]" />
   <view class="relative top-[-60rpx] mx-[26rpx] flex flex-col gap-[40rpx]">
     <card>
       <view class="flex items-center gap-[16rpx]">
