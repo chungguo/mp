@@ -31,8 +31,10 @@
 import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
+import navigation from '@/mixins/navigation';
 
 createPage({
+  mixins: [navigation],
   data: {
     hospital: {} as Hospital,
   },
@@ -61,7 +63,7 @@ createPage({
   },
 
   goBack() {
-    mpx.navigateBack();
+    this.safeNavigateBack('/pages/hospital/list');
   },
 });
 

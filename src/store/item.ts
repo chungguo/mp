@@ -57,7 +57,7 @@ export const useItemStore = defineStore('item', () => {
     const response = await request.fetch<{
       data: Item;
     }>({
-      url: `/api/v1/items/${id}`,
+      url: `/items/${id}`,
       method: 'GET',
     });
 

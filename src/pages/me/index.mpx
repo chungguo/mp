@@ -1,7 +1,7 @@
 <template>
   <t-navbar title="我的"></t-navbar>
 
-  <view class="relative z-2 flex gap-16rpx text-white text-24rpx px-30rpx" bind:tap="goProfile">
+  <view class="relative z-2 flex gap-16rpx text-white text-24rpx px-30rpx" bind:tap="navigateToProfile">
     <t-avatar size="84rpx" slot="image" image="{{ avatar }}" />
     <view class="flex-1 flex items-center justify-between pr-48rpx">
       <view>
@@ -10,13 +10,13 @@
           <text wx:if="{{ roleName }}">{{ roleName }}</text>
         </view>
       </view>
-      <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="goProfile" />
+      <t-icon name="setting" size="32rpx" data-name="setting" capture-bind:tap="navigateToProfile" />
     </view>
   </view>
   <view gutter="14" class="px-32rpx mt-64rpx relative z-2 flex gap-32rpx">
     <view
       class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
-      bind:tap="goCoupons">
+      bind:tap="navigateToMyCoupon">
       <view class="relative w-72rpx h-72rpx">
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-coupon.png" class="w-full h-full" />
       </view>
@@ -24,7 +24,7 @@
     </view>
     <view
       class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
-      bind:tap="goConsultationList">
+      bind:tap="navigateToConsultationList">
       <view class="relative w-72rpx h-72rpx">
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-history.png" class="w-full h-full" />
       </view>
@@ -119,21 +119,21 @@ createPage({
     }
   },
 
-  goProfile() {
+  navigateToProfile() {
     mpx.navigateTo({
-      url: './setting',
+      url: '/pages/me/setting',
     });
   },
 
-  goCoupons() {
+  navigateToMyCoupon() {
     mpx.navigateTo({
-      url: '../coupon/my',
+      url: '/pages/coupon/my',
     });
   },
 
-  goConsultationList() {
+  navigateToConsultationList() {
     mpx.navigateTo({
-      url: '../consultation/record',
+      url: '/pages/consultation/record',
     });
   },
 })

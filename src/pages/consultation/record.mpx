@@ -3,14 +3,14 @@
   <view>
     <t-navbar left-arrow bind:go-back="goBack" title="咨询记录" />
     <!-- 空状态 -->
-    <t-empty wx:if="{{ !records.length && !loading }}" icon="info-circle" description="暂无咨询记录" class="mt-32rpx">
+    <t-empty wx:if="{{ !records.length && !loading }}" icon="info-circle" description="暂无咨询记录" class="mt-[32rpx]">
       <t-button block slot="action" theme="primary" bindtap="navigateToConsultation">立即咨询</t-button>
     </t-empty>
     <!-- 咨询订单列表 -->
-    <scroll-view wx:elif="{{ !loading }}" class="p-32rpx box-border" scroll-y>
+    <scroll-view wx:elif="{{ !loading }}" class="p-[32rpx] box-border" scroll-y>
       <block wx:for="{{ records }}" wx:key="id" wx:for-item="record">
-        <view class="p-32rpx rounded-32rpx bg-white flex flex-col text-28rpx mb-24rpx gap-24rpx color-#999">
-          <text class="text-32rpx color-black">{{ record.name }}</text>
+        <view class="p-[32rpx] rounded-[32rpx] bg-white flex flex-col text-[28rpx] mb-[24rpx] gap-[24rpx] color-[#999]">
+          <text class="text-[32rpx] color-black">{{ record.name }}</text>
           <text class="break-all break-words">口腔症状：{{ record.desc }}</text>
           <text class="text-right">{{ record.time }}</text>
         </view>

@@ -61,14 +61,14 @@ createPage({
 
   goBack() {
     mpx.switchTab({
-      url: '../index',
+      url: '/pages/index',
     });
   },
 
   navigateToHospital(e: WechatMiniprogram.CustomEvent) {
     const { id } = e.currentTarget.dataset;
     mpx.navigateTo({
-      url: `../hospital/detail?id=${id}`
+      url: `/pages/hospital/detail?id=${id}`
     });
   }
 });

@@ -59,8 +59,6 @@ image {
       "./pages/consultation/record",
       "./pages/hospital/list",
       "./pages/hospital/detail",
-      "./pages/advantage/list",
-      "./pages/advantage/detail",
       "./pages/coupon/list",
       "./pages/coupon/detail",
       "./pages/coupon/my",
@@ -69,6 +67,7 @@ image {
       "./pages/aitest/detail",
       "./pages/aitest/wxwork",
       "./pages/doctor/detail",
+      "./pages/item/detail",
     ],
     "subPackages": [
       {

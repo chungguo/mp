@@ -5,7 +5,7 @@
 
     <view class="hero-cards p-[32rpx]">
       <view class="flex gap-[22rpx] items-center">
-        <view class="relative w-[302rpx] h-[306rpx] rounded-[26rpx] of-hidden" bindtap="goAitest">
+        <view class="relative w-[302rpx] h-[306rpx] rounded-[26rpx] of-hidden" bindtap="navigateToAiTest">
           <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/aitest.png" width="302rpx"
             height="306rpx" shape="rounded" />
           <view class="absolute top-0 left-0 flex flex-col color-white pl-[30rpx] pt-[36rpx] gap-[6rpx]">
@@ -23,7 +23,7 @@
             </view>
           </view>
           <view class="flex gap-[22rpx]">
-            <view bindtap="goConsultation"
+            <view bindtap="navigateToConsultationForm"
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">专属客服</view>
               <t-image width="80rpx" height="80rpx"
@@ -44,7 +44,6 @@
       <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.text}} url="{{ item.path }}">
         <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
       </t-grid-item>
-
     </t-grid>
 
     <view class="p-[32rpx] pt-0">
@@ -56,7 +55,8 @@
       <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
         <t-tab-panel label="优势项目" value="item">
           <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
-            <view wx:for="{{ items }}" wx:key="id" class="rounded-[22rpx] of-hidden bg-white box-border w-[334rpx]">
+            <view wx:for="{{ items }}" wx:key="id" class="rounded-[22rpx] of-hidden bg-white box-border w-[334rpx]"
+              data-id="{{ item.id }}" bindtap="navigateToItemDetail">
               <t-image src="{{ item.cover_image }}" t-class="w-[334rpx] h-[254rpx]" />
               <view class="px-[16rpx] py-[14rpx] flex flex-col gap-[16rpx]">
                 <view class="text-ellipsis overflow-hidden whitespace-nowrap text-[28rpx] font-bold">{{ item.name }}
@@ -243,20 +243,6 @@ createPage({
     this.activeTab = e.detail.value;
   },
 
-  navigateToHospitalDetail(e: WechatMiniprogram.CustomEvent) {
-    const { id } = e.currentTarget.dataset;
-    mpx.navigateTo({
-      url: `./hospital/detail?id=${id}`
-    });
-  },
-
-  navigateToDoctorDetail(e: WechatMiniprogram.CustomEvent) {
-    const { id } = e.currentTarget.dataset;
-    mpx.navigateTo({
-      url: `./doctor/detail?id=${id}`
-    });
-  },
-
   async onSwiperClick(e: WechatMiniprogram.CustomEvent) {
     if (this.newUser) {
       mpx.navigateTo({
@@ -359,16 +345,11 @@ createPage({
     }
   },
 
-  goConsultation() {
-    mpx.navigateTo({
-      url: '/pages/consultation/form',
-    });
-  },
-
   getDiscount(item: Item) {
     if (!item) {
       return;
     }
+
     const { original_price, discount_price } = item;
     const discount = original_price - discount_price;
 
@@ -378,10 +359,35 @@ createPage({
 
     return `${(discount / original_price).toFixed(2)}折`;
   },
+  navigateToItemDetail(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `/pages/item/detail?id=${id}`
+    });
+  },
 
-  goAitest() {
+  navigateToHospitalDetail(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `/pages/hospital/detail?id=${id}`
+    });
+  },
+
+  navigateToDoctorDetail(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `/pages/doctor/detail?id=${id}`
+    });
+  },
+
+  navigateToAiTest() {
     mpx.switchTab({
-      url: './aitest/index',
+      url: '/pages/aitest/index',
+    });
+  },
+  navigateToConsultationForm() {
+    mpx.navigateTo({
+      url: '/pages/consultation/form',
     });
   },
 })

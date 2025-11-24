@@ -55,8 +55,10 @@ import { type Doctor, useDoctorStore } from "@/store/doctor";
 import { type Hospital, useHospitalStore } from "@/store/hospital";
 import { mapActions } from '@mpxjs/pinia';
 import dayjs from "dayjs";
+import navigation from "@/mixins/navigation";
 
 createPage({
+  mixins: [navigation],
   data: {
     doctor: {} as Doctor,
     hospitals: [] as Hospital[],
@@ -117,7 +119,7 @@ createPage({
     });
   },
   goBack() {
-    mpx.navigateBack();
+    this.safeNavigateBack();
   }
 })
 </script>

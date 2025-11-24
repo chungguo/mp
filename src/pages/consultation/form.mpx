@@ -104,6 +104,7 @@ import { createPage } from "@mpxjs/core";
 import request, { BASE_URL } from '@/common/request';
 import type { } from 'tdesign-miniprogram/miniprogram_dist/upload/type';
 import { getPhoneNumber } from '@/common/phone';
+import navigation from '@/mixins/navigation';
 
 const SYMPTOM = [
   { label: "龋齿", value: "caries" },
@@ -116,6 +117,7 @@ const SYMPTOM = [
 ];
 
 createPage({
+  mixins: [navigation],
   data: {
     mobile: '',
 
@@ -217,7 +219,7 @@ createPage({
 
   // 返回上一页
   goBack() {
-    mpx.navigateBack();
+    this.safeNavigateBack();
   },
 
   // 图片上传处理
@@ -238,7 +240,7 @@ createPage({
 
   onConfirm() {
     mpx.redirectTo({
-      url: './record',
+      url: '/pages/consultation/record',
     });
   },
 
