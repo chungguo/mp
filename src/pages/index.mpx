@@ -113,7 +113,7 @@
         </t-tab-panel>
 
         <t-tab-panel label="口碑医生" value="doctor">
-          <view class="flex flex-col gap-[16rpx]">
+          <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
             <view wx:for="{{ doctors }}" wx:key="id"
               class="flex items-center bg-white box-border px-[26rpx] py-[36rpx] gap-[22rpx] rounded-[22rpx]"
               bindtap="navigateToDoctorDetail" data-id="{{ item.id }}">
@@ -124,13 +124,13 @@
                   {{ item.title }}
                 </view>
               </view>
-              <view class="flex-1 flex flex-col gap-[14rpx]">
+              <view class="flex-1 flex flex-col gap-[14rpx] min-w-0">
                 <view class="flex justify-between items-center">
                   <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
                   <view class="color-[#51555E] text-[24rpx]">从业{{ item.experienceYear }}年</view>
                 </view>
                 <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
-                  <view>{{ item.hospital_ids }}</view>
+                  <view class="text-ellipsis of-hidden whitespace-nowrap">{{ item.hospitals }}</view>
                   <view>{{ item.department }}</view>
                 </view>
               </view>
@@ -313,10 +313,12 @@ createPage({
         title: '加载中...',
       });
       const res = await this.fetchDoctors();
+      const hospitals = await this.fetchHospitals();
       this.setData({
         doctors: res.doctors.map((d: Doctor) => ({
           ...d,
           experienceYear: Math.max(Number(dayjs().format('YYYY')) - d.practice_year, 1),
+          hospitals: d.hospital_ids.map((id: number) => hospitals.find((h: Hospital) => h.id === id)).map(h => h.name).join(','),
         })),
       });
     } finally {

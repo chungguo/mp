@@ -1,0 +1,53 @@
+<template>
+  <view class="flex flex-col gap-[36rpx] mt-[16rpx]">
+    <view class="w-full box-border flex items-center gap-[22rpx]" wx:for="{{ hospitals }}" wx:key="id"
+      data-id="{{ item.id }}">
+      <view class="w-[134rpx] h-[134rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
+        <t-image src="{{ item.images && item.images[0] }}" width="140rpx" height="140rpx" />
+      </view>
+      <view class="flex flex-col justify-center flex-1 gap-[16rpx]">
+        <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ item.name }}</text>
+        <view class="flex items-center gap-[64rpx]">
+          <view class="flex flex-1 gap-[12rpx] items-start text-[22rpx] color-[#1D2129]">
+            <t-icon name="location" size="26rpx" />
+            <view>{{ item.address }}</view>
+          </view>
+          <t-image t-class="w-[44rpx] h-[44rpx]"
+            src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+            bindtap="goConsultation" />
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import { type Hospital } from '@/store/hospital';
+import mpx, { createComponent } from '@mpxjs/core';
+
+createComponent({
+  props: {
+    hospitals: {
+      type: Array,
+      value: [] as Hospital[],
+    },
+  },
+  onReady() {
+    console.log('hospital-list onReady', this.hospitals);
+  },
+  methods: {
+    goConsultation() {
+      mpx.navigateTo({
+        url: '/pages/consultation/form',
+      });
+    },
+  }
+});
+</script>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {}
+}
+</script>

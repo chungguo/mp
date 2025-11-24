@@ -1,0 +1,31 @@
+<template>
+  <view class="fixed-bottom fixed left-0 right-0 bottom-0 bg-white px-[26rpx] pt-[16rpx]" wx:style="{{ {zIndex: zIndex} }}">
+    <slot></slot>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from '@mpxjs/core';
+
+createComponent({
+  props: {
+    zIndex: {
+      type: Number,
+      value: 10,
+    },
+  },
+});
+</script>
+
+<style lang="less">
+.fixed-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 16rpx);
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {}
+}
+</script>

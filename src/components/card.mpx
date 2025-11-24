@@ -1,0 +1,44 @@
+<template>
+  <view class="card px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF]">
+    <view wx:if="{{ !!title }}" class="font-bold text-[30rpx] title mb-[16rpx]">{{ title }}</view>
+    <slot></slot>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from '@mpxjs/core';
+
+createComponent({
+  props: {
+    title: {
+      type: String,
+      value: '',
+    },
+  },
+});
+</script>
+
+<style lang="less">
+.title {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 6rpx;
+    height: 22rpx;
+    left: -26rpx;
+    top: 0;
+    transform: translateY(50%);
+    background-color: #317DFF;
+  }
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {}
+}
+</script>

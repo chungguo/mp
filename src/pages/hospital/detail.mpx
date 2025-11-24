@@ -8,38 +8,51 @@
     </view>
 
     <!-- 医院基本信息 -->
-    <view class="box-border px-[26rpx] py-[36rpx] rounded-[22rpx] flex flex-col gap-[16rpx] bg-white">
-      <view class="text-[32rpx] font-bold text-[#1D2129]">{{ hospital.name }}</view>
+    <card>
+      <view class="flex flex-col gap-[16rpx]">
+        <view class="text-[32rpx] font-bold text-[#1D2129]">{{ hospital.name }}</view>
 
-      <rate value="{{ Math.ceil(hospital.rating) }}" />
+        <rate value="{{ Math.ceil(hospital.rating) }}" />
 
-      <view class="color-[#1D2129] text-[24rpx] mt-[10rpx] flex flex-col gap-[12rpx]">
-        <view class="flex gap-[12rpx] items-center">
-          <t-icon name="location" />
-          <view>{{ hospital.address }}</view>
-        </view>
-        <view class="flex gap-[12rpx] items-center">
-          <t-icon name="time" />
-          <view>{{ hospital.business_hours }}</view>
+        <view class="color-[#1D2129] text-[24rpx] mt-[10rpx] flex flex-col gap-[12rpx]">
+          <view class="flex gap-[12rpx] items-center">
+            <t-icon name="location" />
+            <view>{{ hospital.address }}</view>
+          </view>
+          <view class="flex gap-[12rpx] items-center">
+            <t-icon name="time" />
+            <view>{{ hospital.business_hours }}</view>
+          </view>
         </view>
       </view>
-    </view>
+    </card>
+
+    <card title="适用商品" wx:if="{{ items.length > 0 }}">
+      <item-list items="{{ items }}" />
+    </card>
+
+    <sticky-bottom>
+      <t-button block="{{ true }}" theme="primary" bindtap="goConsultation">咨询门店</t-button>
+    </sticky-bottom>
   </view>
 </template>
 
 <script lang="ts">
-import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 import navigation from '@/mixins/navigation';
+import { type Item, useItemStore } from '@/store/item';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
 
 createPage({
   mixins: [navigation],
   data: {
     hospital: {} as Hospital,
+    items: [] as Item[],
   },
 
   ...mapActions(useHospitalStore, ['fetchHospitalById']),
+  ...mapActions(useItemStore, ['fetchItems']),
 
   async onLoad(options) {
     const { id } = options;
@@ -53,9 +66,11 @@ createPage({
     });
 
     try {
-      const resp = await this.fetchHospitalById(id);
+      const hospitals = await this.fetchHospitalById(id);
+      const items = await this.fetchItems({ hospital_ids: [id] });
       this.setData({
-        hospital: resp
+        hospital: hospitals,
+        items,
       });
     } finally {
       mpx.hideLoading();
@@ -63,8 +78,13 @@ createPage({
   },
 
   goBack() {
-    this.safeNavigateBack('/pages/hospital/list');
+    this.safeNavigateBack();
   },
+  goConsultation() {
+    mpx.navigateTo({
+      url: '/pages/consultation/form',
+    });
+  }
 });
 
 </script>
@@ -82,15 +102,15 @@ page {
   "usingComponents": {
     "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
-    "t-cell": "tdesign-miniprogram/miniprogram_dist/cell/cell",
-    "t-cell-group": "tdesign-miniprogram/miniprogram_dist/cell-group/cell-group",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
-    "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
     "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
     "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
     "t-link": "tdesign-miniprogram/miniprogram_dist/link/link",
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
-    "rate": "../../components/rating",
+    "sticky-bottom": "@/components/sticky-bottom",
+    "item-list": "@/components/item-list",
+    "rate": "@/components/rating",
+    "card": "@/components/card"
   }
 }
 </script>
