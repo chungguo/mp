@@ -68,6 +68,8 @@ image {
       "./pages/aitest/wxwork",
       "./pages/doctor/detail",
       "./pages/item/detail",
+      "./pages/item/list",
+      "./pages/package/insurance",
     ],
     "subPackages": [
       {

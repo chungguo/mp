@@ -50,7 +50,12 @@ export const useItemStore = defineStore('item', () => {
       params,
     });
 
-    return response.data?.data?.items ?? [];
+    return response.data?.data ?? {
+      items: [],
+      page: 1,
+      page_size: 10,
+      total: 0,
+    };
   };
 
   const fetchItemById = async (id: string | number) => {

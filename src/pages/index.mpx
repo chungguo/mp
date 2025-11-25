@@ -14,7 +14,8 @@
           </view>
         </view>
         <view class="flex flex-col gap-[22rpx]">
-          <view class="box-border bg-white p-[36rpx] rounded-[22rpx] flex gap-[24rpx] items-center">
+          <view class="box-border bg-white p-[36rpx] rounded-[22rpx] flex gap-[24rpx] items-center"
+            bindtap="navigateToPackageInsurance">
             <t-image width="80rpx" height="80rpx"
               src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E7%88%B1%E7%89%99%E6%97%A0%E5%BF%A7%E5%8C%85.png" />
             <view>
@@ -41,7 +42,7 @@
     </view>
 
     <t-grid column="{{ 0 }}" theme="card" gutter="{{ 0 }}">
-      <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.text}} url="{{ item.path }}">
+      <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.name}} url="{{ item.path }}">
         <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
       </t-grid-item>
     </t-grid>
@@ -55,25 +56,9 @@
       <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
         <t-tab-panel label="优势项目" value="item">
           <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
-            <view wx:for="{{ items }}" wx:key="id" class="rounded-[22rpx] of-hidden bg-white box-border w-[334rpx]"
-              data-id="{{ item.id }}" bindtap="navigateToItemDetail">
-              <t-image src="{{ item.cover_image }}" t-class="w-[334rpx] h-[254rpx]" />
-              <view class="px-[16rpx] py-[14rpx] flex flex-col gap-[16rpx]">
-                <view class="text-ellipsis overflow-hidden whitespace-nowrap text-[28rpx] font-bold">{{ item.name }}
-                </view>
-                <view class="flex items-center">
-                  <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.original_price }}</view>
-                  <view class="text-[24rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.discount_price }}
-                  </view>
-                  <view
-                    class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx] ml-[12rpx]">
-                    {{ item.discountText }}</view>
-                </view>
-                <view class="w-full overflow-hidden whitespace-nowrap text-ellipsis">
-                  <text class="text-[22rpx] color-[#1D2129]">{{ item.hospitals }}</text>
-                </view>
-              </view>
-            </view>
+            <block wx:for="{{ items }}" wx:key="id">
+              <item item="{{ item }}" />
+            </block>
           </view>
         </t-tab-panel>
 
@@ -148,28 +133,16 @@ import { useUserStore } from '@/store/user';
 import { Doctor, useDoctorStore } from '@/store/doctor';
 import { type Hospital, useHospitalStore } from '@/store/hospital';
 import { type Item, useItemStore } from '@/store/item';
+import { type Category, useCategoryStore } from '@/store/category';
 import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
 import dayjs from 'dayjs';
-
-const grids = [
-  { text: '儿童齿科', path: '' },
-  { text: '口腔检查', path: '' },
-  { text: '拔牙', path: '' },
-  { text: '根管', path: '' },
-  { text: '洗牙', path: '' },
-  { text: '烤瓷', path: '' },
-  { text: '矫正', path: '' },
-  { text: '种植牙', path: '' },
-  { text: '美白', path: '' },
-  { text: '补牙', path: '' },
-];
 
 createPage({
   data: {
     loadingHospital: false,
     loadingDoctor: false,
 
-    grids: grids.map(g => ({ ...g, image: `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/grid/${g.text}.png` })),
+    grids: [] as (Category & { path: string })[],
 
     banner: [] as string[],
 
@@ -197,6 +170,7 @@ createPage({
   ...mapActions(useItemStore, ['fetchItems']),
   ...mapActions(useDoctorStore, ['fetchDoctors']),
   ...mapActions(useHospitalStore, ['fetchHospitals']),
+  ...mapActions(useCategoryStore, ['fetchCategories']),
   pageLifetimes: {
     show() {
       if (typeof this.getTabBar === 'function') {
@@ -234,6 +208,7 @@ createPage({
   },
   onLoad() {
     this.activeTab = 'item';
+    this.fullfillCategory();
   },
 
   /**
@@ -243,6 +218,20 @@ createPage({
     this.activeTab = e.detail.value;
   },
 
+  async fullfillCategory() {
+    try {
+      const data = await this.fetchCategories();
+
+      this.setData({
+        grids: data.filter((item: Category) => item.level === 1).map((item: Category) => ({
+          ...item,
+          path: `/pages/item/list?category_id=${item.id}`,
+        }))
+      });
+    } catch (e) {
+      console.error(e)
+    }
+  },
   async onSwiperClick(e: WechatMiniprogram.CustomEvent) {
     if (this.newUser) {
       mpx.navigateTo({
@@ -289,14 +278,14 @@ createPage({
       });
 
       const hospitals = await this.fetchHospitals();
-      const items = await this.fetchItems({
+      const res = await this.fetchItems({
         hospital_ids: hospitals.map((h: Hospital) => h.id).join(','),
       });
 
       this.setData({
         hospitals: hospitals.map((h: Hospital) => ({
           ...h,
-          items: items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
+          items: res.items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
             ...i,
             discountText: this.getDiscount(i),
           }))
@@ -332,11 +321,11 @@ createPage({
         title: '加载中...',
       });
 
-      const items = await this.fetchItems();
+      const res = await this.fetchItems();
       const hospitals = await this.fetchHospitals();
 
       this.setData({
-        items: items.map((item: Item) => ({
+        items: res.items.map((item: Item) => ({
           ...item,
           hospitals: item.hospital_ids.map((id: number) => hospitals.find((h: Hospital) => h.id === id)).map(h => h.name).join(','),
           discountText: this.getDiscount(item),
@@ -392,6 +381,11 @@ createPage({
       url: '/pages/consultation/form',
     });
   },
+  navigateToPackageInsurance() {
+    mpx.navigateTo({
+      url: '/pages/package/insurance',
+    });
+  }
 })
 </script>
 
@@ -409,7 +403,8 @@ createPage({
       "t-grid": "tdesign-miniprogram/miniprogram_dist/grid/grid",
       "t-grid-item": "tdesign-miniprogram/miniprogram_dist/grid-item/grid-item",
       "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
-      "rate": "../components/rating",
+      "rate": "@/components/rating",
+      "item": "@/components/item",
     }
   }
 </script>

@@ -10,7 +10,7 @@
       <view class="text-[32rpx] font-bold color-[#1D2129]">{{ item.name }}</view>
     </card>
 
-    <card wx:if="{{ hospitals.length > 0 }}" title="适用门店">
+    <card wx:if="{{ hospitals && hospitals.length > 0 }}" title="适用门店">
       <hospital-list hospitals="{{ hospitals }}" />
     </card>
 

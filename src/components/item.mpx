@@ -1,0 +1,80 @@
+<template>
+  <view class="rounded-[22rpx] of-hidden bg-white box-border w-[334rpx]" data-id="{{ item.id }}"
+    bindtap="navigateToItemDetail">
+    <t-image src="{{ item.cover_image }}" t-class="w-[334rpx] h-[254rpx]" />
+    <view class="px-[16rpx] py-[14rpx] flex flex-col gap-[16rpx]">
+      <view class="text-ellipsis overflow-hidden whitespace-nowrap text-[28rpx] font-bold">{{ item.name }}
+      </view>
+      <view class="flex items-center">
+        <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.original_price }}</view>
+        <view class="text-[24rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.discount_price }}
+        </view>
+        <view
+          class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx] ml-[12rpx]">
+          {{ discountText }}</view>
+      </view>
+      <view class="w-full overflow-hidden whitespace-nowrap text-ellipsis">
+        <text class="text-[22rpx] color-[#1D2129]">{{ item.hospitals }}</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import { type Item } from '@/store/item';
+import mpx, { createComponent } from '@mpxjs/core';
+
+createComponent({
+  props: {
+    item: {
+      type: Object,
+      value: {} as Item,
+    },
+  },
+  computed: {
+    discountText() {
+      if (!this.item) {
+        return;
+      }
+
+      const { original_price, discount_price } = this.item;
+      const discount = original_price - discount_price;
+
+      if (!discount) {
+        return;
+      }
+
+      return `${(discount / original_price).toFixed(2)}折`;
+    },
+  },
+  methods: {
+    navigateToItemDetail(e: WechatMiniprogram.CustomEvent) {
+      const { id } = e.currentTarget.dataset;
+      mpx.navigateTo({
+        url: `/pages/item/detail?id=${id}`
+      });
+    },
+  },
+});
+</script>
+
+<style lang="less">
+.buy {
+  --td-button-primary-color: white;
+  --td-button-primary-bg-color: #FF7913;
+  --td-button-primary-border-color: #FF7913;
+  --td-button-primary-active-bg-color: #FF7913;
+  --td-button-primary-active-border-color: #FF7913;
+  --td-button-extra-small-font-size: 24rpx;
+  margin: 0;
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+  }
+}
+</script>

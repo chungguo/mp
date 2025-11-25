@@ -1,0 +1,194 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="商品列表" />
+
+  <view class="px-[26rpx]">
+    <t-tabs bind:change="onCategoryChange" value="{{ selectedCategory }}">
+      <t-tab-panel wx:for="{{ categories }}" wx:key="id" label="{{ item.name }}" value="{{ item.id }}" />
+    </t-tabs>
+
+    <!-- 商品列表 -->
+    <view class="flex flex-col gap-[24rpx]">
+      <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
+        <block wx:for="{{ items }}" wx:key="id">
+          <item item="{{ item }}" />
+        </block>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{ !loading && items.length === 0 }}" class="flex flex-col items-center justify-center py-[120rpx]">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/empty.png" width="200rpx"
+        height="200rpx" />
+      <text class="text-[28rpx] color-[#86909C] mt-[24rpx]">暂无商品</text>
+    </view>
+
+    <!-- 加载更多 -->
+    <view wx:if="{{ hasMore }}" class="flex justify-center py-[32rpx]">
+      <t-button theme="light" size="small" bind:tap="loadMore" loading="{{ loadingMore }}">
+        {{ loadingMore ? '加载中...' : '加载更多' }}
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from '@mpxjs/core';
+import { mapActions } from '@mpxjs/pinia';
+import { type Item, useItemStore } from '@/store/item';
+import { type Category, useCategoryStore } from '@/store/category';
+
+createPage({
+  data: {
+    loading: false,
+    loadingMore: false,
+    selectedCategory: '' as string | number,
+    page: 1,
+    pageSize: 10,
+    total: 0,
+    hasMore: true,
+    items: [] as Item[],
+    categories: [] as Category[],
+  },
+
+  ...mapActions(useItemStore, ['fetchItems']),
+  ...mapActions(useCategoryStore, ['fetchCategories']),
+
+  async onLoad(query: Record<string, string | undefined> = {}) {
+    const { category_id } = query;
+
+    if (category_id) {
+      this.selectedCategory = category_id;
+    }
+
+    await this.loadCategories();
+    await this.loadItems(true);
+  },
+
+  async onPullDownRefresh() {
+    await this.loadItems(true);
+    mpx.stopPullDownRefresh();
+  },
+
+  async onReachBottom() {
+    if (this.hasMore && !this.loadingMore) {
+      await this.loadMore();
+    }
+  },
+
+  methods: {
+    async loadCategories() {
+      try {
+        mpx.showLoading({
+          title: '加载中...',
+        });
+
+        const categories = await this.fetchCategories();
+
+        if (!this.selectedCategory && categories.length) {
+          this.selectedCategory = categories[0]?.id;
+        }
+
+        this.setData({
+          categories: categories.filter((item: Category) => item.level === 1),
+        });
+      } finally {
+        mpx.hideLoading();
+      }
+    },
+
+    async loadItems(reset = false) {
+      if (this.loading) {
+        return;
+      };
+
+      this.loading = true;
+
+      try {
+        if (reset) {
+          this.page = 1;
+          this.hasMore = true;
+        }
+
+        const params: any = {
+          page: this.page,
+          page_size: this.pageSize,
+        };
+
+        if (this.selectedCategory) {
+          params.category_id = this.selectedCategory;
+        }
+
+        const result = await this.fetchItems(params);
+
+        const items = reset ? result.items : [...this.items, ...result.items];
+
+        this.setData({
+          items: items,
+          total: result.total || items.length,
+          hasMore: result.items.length === this.pageSize,
+          page: this.page + 1,
+        });
+      } catch (error) {
+        console.error('加载商品失败:', error);
+        mpx.showToast({
+          title: '加载失败',
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadMore() {
+      if (this.loadingMore || !this.hasMore) {
+        return;
+      }
+
+      this.loadingMore = true;
+
+      try {
+        await this.loadItems(false);
+      } finally {
+        this.loadingMore = false;
+      }
+    },
+
+    onCategoryChange(e: WechatMiniprogram.CustomEvent) {
+      this.selectedCategory = e.detail.value;
+      this.loadItems(true);
+    },
+
+    goBack() {
+      mpx.switchTab({
+        url: '/pages/index',
+      });
+    }
+  }
+});
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-background: transparent;
+  --td-tab-nav-bg-color: transparent;
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "商品列表",
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100,
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-tabs": "tdesign-miniprogram/miniprogram_dist/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "item": "@/components/item",
+  }
+}
+</script>
