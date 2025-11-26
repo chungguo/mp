@@ -1,99 +1,92 @@
 <template>
   <!-- 口腔咨询表单页面 -->
-  <view class="relative">
-    <image class="absolute left-0 top-0"
-      src="https://cloudbase-1gv8bgex8ea7027b-1376872341.tcloudbaseapp.com/resources/2025-10/lowcode-2385147"
-      mode="widthFix" />
+  <t-navbar title="口腔咨询" left-arrow bind:go-back="goBack"></t-navbar>
 
-    <t-navbar title="口腔咨询" left-arrow bind:go-back="goBack"></t-navbar>
+  <view class="mx-[32rpx] mt-[200rpx] p-[32rpx] relative bg-white rounded-[32rpx] min-h-[50vh]" wx:if="{{ !success }}">
 
-    <view class="mx-[32rpx] mt-[200rpx] p-[32rpx] relative bg-white rounded-[32rpx] min-h-[50vh]"
-      wx:if="{{ !success }}">
-
-      <t-notice-bar theme='warning' t-class="rounded-[12rpx]" visible="{{ true }}" prefixIcon="{{ false }}">
-        <view slot="content" class="flex items-center gap-[12rpx]">
-          <view slot="prefix-icon" class="text-[32rpx] circle-icon">
-            <t-icon name="error-circle-filled"></t-icon>
-          </view>
-          <text class="text-[24rpx] leading-[32rpx] text-[#FF8C08]">为了提供更好的咨询服务，请您填写以下信息，届时专业的口腔医生将会联系您。</text>
+    <t-notice-bar theme='warning' t-class="rounded-[12rpx]" visible="{{ true }}" prefixIcon="{{ false }}">
+      <view slot="content" class="flex items-center gap-[12rpx]">
+        <view slot="prefix-icon" class="text-[32rpx] circle-icon">
+          <t-icon name="error-circle-filled"></t-icon>
         </view>
-      </t-notice-bar>
+        <text class="text-[24rpx] leading-[32rpx] text-[#FF8C08]">为了提供更好的咨询服务，请您填写以下信息，届时专业的口腔医生将会联系您。</text>
+      </view>
+    </t-notice-bar>
 
-      <!-- 姓名输入 -->
-      <t-cell title="姓名" required t-class-center="cell-center" t-class-note="cell-note">
-        <t-input slot="note" borderless placeholder="请输入姓名" maxlength="10" bind:change="onNameChange"
-          value="{{ name }}" />
-      </t-cell>
+    <!-- 姓名输入 -->
+    <t-cell title="姓名" required t-class-center="cell-center" t-class-note="cell-note">
+      <t-input slot="note" borderless placeholder="请输入姓名" maxlength="10" bind:change="onNameChange"
+        value="{{ name }}" />
+    </t-cell>
 
-      <!-- 性别选择 -->
-      <t-cell title="性别" required t-class-center="cell-center" t-class-note="cell-note">
-        <t-radio-group slot="note" placement="horizontal" defaultValue="{{ gender }}" bind:change="onGenderChange"
-          t-class="flex items-center items-start gap-[48rpx]">
-          <block wx:for="{{ genderOptions }}" wx:key="value">
-            <t-radio borderless block="{{ false }}" value="{{ item.value }}" label="{{ item.label }}" />
-          </block>
-        </t-radio-group>
-      </t-cell>
+    <!-- 性别选择 -->
+    <t-cell title="性别" required t-class-center="cell-center" t-class-note="cell-note">
+      <t-radio-group slot="note" placement="horizontal" defaultValue="{{ gender }}" bind:change="onGenderChange"
+        t-class="flex items-center items-start gap-[48rpx]">
+        <block wx:for="{{ genderOptions }}" wx:key="value">
+          <t-radio borderless block="{{ false }}" value="{{ item.value }}" label="{{ item.label }}" />
+        </block>
+      </t-radio-group>
+    </t-cell>
 
-      <!-- 口腔症状选择 -->
-      <t-cell title="口腔症状" required t-class-center="cell-center" t-class-note="cell-note">
-        <t-checkbox-group slot="note" t-class="flex flex-col items-start gap-[48rpx]" defaultValue="{{ symptoms }}"
-          bind:change="onSymptomChange">
-          <block wx:for="{{ symptomOptions }}" wx:key="value">
-            <t-checkbox borderless block="{{ false }}" value="{{ item.value }}" label="{{ item.label }}" />
-          </block>
-        </t-checkbox-group>
-      </t-cell>
+    <!-- 口腔症状选择 -->
+    <t-cell title="口腔症状" required t-class-center="cell-center" t-class-note="cell-note">
+      <t-checkbox-group slot="note" t-class="flex flex-col items-start gap-[48rpx]" defaultValue="{{ symptoms }}"
+        bind:change="onSymptomChange">
+        <block wx:for="{{ symptomOptions }}" wx:key="value">
+          <t-checkbox borderless block="{{ false }}" value="{{ item.value }}" label="{{ item.label }}" />
+        </block>
+      </t-checkbox-group>
+    </t-cell>
 
-      <!-- 其他症状输入框 -->
-      <t-cell title="症状描述" wx:if="{{ showOtherSymptom }}" t-class-center="cell-center" t-class-note="cell-note">
-        <t-textarea t-class="w-full" slot="note" placeholder="请详细描述您的其他症状" maxlength="200" bordered
-          bind:change="onOtherSymptomChange" value="{{ symptomDes }}" autosize="{{ {minHeight: '100rpx'} }}" />
-      </t-cell>
+    <!-- 其他症状输入框 -->
+    <t-cell title="症状描述" wx:if="{{ showOtherSymptom }}" t-class-center="cell-center" t-class-note="cell-note">
+      <t-textarea t-class="w-full" slot="note" placeholder="请详细描述您的其他症状" maxlength="200" bordered
+        bind:change="onOtherSymptomChange" value="{{ symptomDes }}" autosize="{{ {minHeight: '100rpx'} }}" />
+    </t-cell>
 
-      <!-- 联系方式授权 -->
-      <t-cell title="联系方式" required t-class-center="cell-center" t-class-note="cell-note">
-        <view slot="note" wx:if="{{ mobile }}">{{ mobile }}</view>
-        <t-icon slot='right-icon' name='swap' bind:tap="onSwap"></t-icon>
-      </t-cell>
+    <!-- 联系方式授权 -->
+    <t-cell title="联系方式" required t-class-center="cell-center" t-class-note="cell-note">
+      <view slot="note" wx:if="{{ mobile }}">{{ mobile }}</view>
+      <t-icon slot='right-icon' name='swap' bind:tap="onSwap"></t-icon>
+    </t-cell>
 
-      <!-- 图片上传 -->
-      <t-cell title="口腔照片" t-class-center="cell-center" t-class-note="cell-note">
-        <view slot="note" class="w-full">
-          <t-upload grid-config="{{ gridConfig }}" mediaType="{{ ['image'] }}" maxCount="{{ 5 }}"
-            size-limit="{{ sizeLimit }}" files="{{ imageUrlList }}" bind:success="onImageUpload"
-            bind:remove="onImageDelete"></t-upload>
-        </view>
-      </t-cell>
-    </view>
-
-    <view wx:else class="form-container flex flex-col justify-center items-center">
-      <t-result theme="success" icon="{{ false }}">
-        <image slot="image" class="w-[144rpx] mb-[48rpx]"
-          src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/success.png" mode="widthFix" />
-        <view slot="title">提交成功</view>
-        <view slot="description">医师评估审核后，将第一时间与您取得联系，请保持通话畅通～</view>
-      </t-result>
-    </view>
-
-    <!-- 提交按钮 -->
-    <view wx:if="{{ !success }}" class="px-[30rpx] py-[40rpx] submit-button">
-      <t-button block variant="primary" bindtap="onSubmit">提交咨询</t-button>
-    </view>
-
-    <view wx:else class="px-[30rpx] py-[40rpx] submit-button">
-      <t-button block variant="primary" bindtap="onConfirm">好的</t-button>
-    </view>
-
-    <t-popup visible="{{ popupVisible }}" close-on-overlay-click="{{ false }}" placement="bottom"
-      t-class="h-[30vh] p-[100rpx] box-border" t-class-content="flex flex-col justify-start">
-      <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
-      <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
-        bindgetphonenumber="onGetPhoneNumber">
-        微信一键登录
-      </t-button>
-    </t-popup>
+    <!-- 图片上传 -->
+    <t-cell title="口腔照片" t-class-center="cell-center" t-class-note="cell-note">
+      <view slot="note" class="w-full">
+        <t-upload grid-config="{{ gridConfig }}" mediaType="{{ ['image'] }}" maxCount="{{ 5 }}"
+          size-limit="{{ sizeLimit }}" files="{{ imageUrlList }}" bind:success="onImageUpload"
+          bind:remove="onImageDelete"></t-upload>
+      </view>
+    </t-cell>
   </view>
+
+  <view wx:else class="form-container flex flex-col justify-center items-center">
+    <t-result theme="success" icon="{{ false }}">
+      <image slot="image" class="w-[144rpx] mb-[48rpx]"
+        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/success.png" mode="widthFix" />
+      <view slot="title">提交成功</view>
+      <view slot="description">医师评估审核后，将第一时间与您取得联系，请保持通话畅通～</view>
+    </t-result>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view wx:if="{{ !success }}" class="px-[30rpx] py-[40rpx] submit-button">
+    <t-button block variant="primary" bindtap="onSubmit">提交咨询</t-button>
+  </view>
+
+  <view wx:else class="px-[30rpx] py-[40rpx] submit-button">
+    <t-button block variant="primary" bindtap="onConfirm">好的</t-button>
+  </view>
+
+  <t-popup visible="{{ popupVisible }}" close-on-overlay-click="{{ false }}" placement="bottom"
+    t-class="h-[30vh] p-[100rpx] box-border" t-class-content="flex flex-col justify-start">
+    <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
+    <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhoneNumber">
+      微信一键登录
+    </t-button>
+  </t-popup>
 </template>
 
 <script lang="ts">
@@ -394,6 +387,8 @@ createPage({
 });
 </script>
 
+
+
 <script type="application/json">
 {
   "navigationBarTitleText": "口腔咨询",
@@ -425,6 +420,9 @@ page {
   --td-navbar-background: transparent;
   --td-input-vertical-padding: 0;
   --td-button-font-weight: normal;
+  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/consultation.webp");
+  background-size: 100%;
+  background-repeat: no-repeat;
 }
 
 .circle-icon {

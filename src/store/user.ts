@@ -55,43 +55,61 @@ export const useUserStore = defineStore('user', () => {
   const token = ref('');
   const newUser = ref<boolean | null>(null);
   const profile = ref<Profile | null>(null);
+  let loginPromise: Promise<string> | null = null;
 
   const login = async () => {
     if (token.value) {
       return token.value;
     }
 
-    const loginRes = await mpx.login();
-
-    if (!loginRes.code) {
-      throw new Error('登录失败');
+    // 如果已经有登录请求在进行中，直接返回该 Promise
+    if (loginPromise) {
+      return loginPromise;
     }
 
-    return new Promise((resolve, reject) => {
-      mpx.request<{
-        data: {
-          is_new_user: boolean;
-          session_token: string;
+    // 创建新的登录 Promise
+    loginPromise = (async () => {
+      try {
+        const loginRes = await mpx.login();
+
+        if (!loginRes.code) {
+          throw new Error('登录失败');
         }
-      }>({
-        url: `${BASE_URL}/auth/login`,
-        method: "POST",
-        data: {
-          code: loginRes.code,
-        },
-        // @ts-expect-error mpx 的 request 方法不支持 usePromise 选项，需要手动设置
-        usePromise: false,
-        success: (res) => {
-          const newToken = res.data.data.session_token;
-          token.value = newToken;
-          newUser.value = res.data.data.is_new_user;
-          resolve(newToken);
-        },
-        fail: (err) => {
-          reject(err);
-        },
-      });
-    });
+
+        const result = await new Promise<string>((resolve, reject) => {
+          mpx.request<{
+            data: {
+              is_new_user: boolean;
+              session_token: string;
+            }
+          }>({
+            url: `${BASE_URL}/auth/login`,
+            method: "POST",
+            data: {
+              code: loginRes.code,
+            },
+            // @ts-expect-error mpx 的 request 方法不支持 usePromise 选项，需要手动设置
+            usePromise: false,
+            success: (res) => {
+              const newToken = res.data.data.session_token;
+              token.value = newToken;
+              newUser.value = res.data.data.is_new_user;
+              resolve(newToken);
+            },
+            fail: (err) => {
+              reject(err);
+            },
+          });
+        });
+
+        return result;
+      } finally {
+        // 登录完成后清除 Promise 缓存
+        loginPromise = null;
+      }
+    })();
+
+    return loginPromise;
   };
 
   const queryProfile = async () => {

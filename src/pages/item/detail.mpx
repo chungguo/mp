@@ -21,7 +21,7 @@
   <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
   <sticky-bottom>
     <view class="flex justify-between">
-      <view class="flex items-center gap-[14rpx]">
+      <view class="flex items-center gap-[14rpx]" bindtap="navigateToConsultation">
         <t-image t-class="w-[44rpx] h-[44rpx]"
           src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
           bindtap="goConsultation" />
@@ -87,6 +87,12 @@ createPage({
     goBack() {
       this.safeNavigateBack('/pages/index')
     },
+
+    navigateToConsultation() {
+      mpx.navigateTo({
+        url: '/pages/consultation/form'
+      })
+    }
   }
 });
 </script>
