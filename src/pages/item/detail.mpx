@@ -19,6 +19,34 @@
     </card>
   </view>
   <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
+
+  <t-popup visible="{{ paymentPopupVisible }}" placement="center" close-on-overlay-click="{{ false }}">
+    <view class="bg-white rounded-[20rpx] p-[40rpx] w-[600rpx]">
+      <view class="text-[36rpx] font-bold text-center mb-[20rpx]">支付参数</view>
+      <view class="text-[24rpx] color-[#999] text-center mb-[30rpx]">请输入完整的支付参数JSON</view>
+
+      <view class="mb-[30rpx]">
+        <t-textarea
+          placeholder='{"timeStamp": "", "nonceStr": "", "package": "", "signType": "MD5", "paySign": ""}'
+          value="{{ paymentJson }}"
+          bind:change="onPaymentJsonChange"
+          t-class="min-h-[200rpx] border-[1rpx] border-[#ddd] rounded-[10rpx] p-[20rpx]"
+        />
+      </view>
+
+      <view class="flex gap-[20rpx]">
+        <view class="flex-1 bg-[#f5f5f5] text-[32rpx] text-center py-[20rpx] rounded-[10rpx]"
+          bindtap="closePaymentPopup">
+          取消
+        </view>
+        <view class="flex-1 bg-[#FF7913] color-white text-[32rpx] text-center py-[20rpx] rounded-[10rpx]"
+          bindtap="confirmPayment">
+          确认支付
+        </view>
+      </view>
+    </view>
+  </t-popup>
+
   <sticky-bottom>
     <view class="flex justify-between">
       <view class="flex items-center gap-[14rpx]" bindtap="navigateToConsultation">
@@ -27,7 +55,7 @@
           bindtap="goConsultation" />
         <text>咨询门诊</text>
       </view>
-      <view
+      <view bindtap="showPaymentPopup"
         class="bg-#FF7913 right-[26rpx] color-white text-[32rpx] rounded-r-[26rpx] flex items-center justify-center gap-[12rpx] w-[422rpx] py-[20rpx]">
         <text>￥{{ item.discount_price }}</text>
         <text>立即购买</text>
@@ -46,6 +74,8 @@ createPage({
   mixins: [navigationMixin],
   data: {
     loading: false,
+    paymentPopupVisible: false,
+    paymentJson: '',
     item: {} as Item,
   },
   async onLoad(options: Partial<Record<'id', string>> = {}) {
@@ -92,6 +122,105 @@ createPage({
       mpx.navigateTo({
         url: '/pages/consultation/form'
       })
+    },
+
+    showPaymentPopup() {
+      this.setData({
+        paymentPopupVisible: true
+      });
+    },
+
+    closePaymentPopup() {
+      this.setData({
+        paymentPopupVisible: false
+      });
+    },
+
+    onPaymentJsonChange(e: any) {
+      const { value } = e.detail;
+      this.setData({
+        paymentJson: value
+      });
+    },
+
+    async confirmPayment() {
+      if (!this.paymentJson.trim()) {
+        mpx.showToast({
+          title: '请输入支付参数JSON',
+          icon: 'error'
+        });
+        return;
+      }
+
+      let paymentParams;
+      try {
+        paymentParams = JSON.parse(this.paymentJson);
+      } catch (error) {
+        mpx.showToast({
+          title: 'JSON格式错误',
+          icon: 'error'
+        });
+        return;
+      }
+
+      // 验证必填参数
+      const { timeStamp, nonceStr, package: pkg, signType, paySign } = paymentParams;
+      if (!timeStamp || !nonceStr || !pkg || !signType || !paySign) {
+        mpx.showToast({
+          title: '缺少必要的支付参数',
+          icon: 'error'
+        });
+        return;
+      }
+
+      this.closePaymentPopup();
+
+      try {
+        await this.requestPayment(paymentParams);
+
+        // 支付成功
+        mpx.showToast({
+          title: '支付成功',
+          icon: 'success'
+        });
+
+        setTimeout(() => {
+          this.safeNavigateBack('/pages/index');
+        }, 1500);
+
+      } catch (error) {
+        console.error('支付失败:', error);
+
+        let errorMessage = '支付失败';
+        if (error instanceof Error) {
+          if (error.message.includes('requestPayment:fail cancel')) {
+            errorMessage = '支付已取消';
+          } else if (error.message.includes('requestPayment:fail')) {
+            errorMessage = '支付调用失败';
+          } else {
+            errorMessage = error.message;
+          }
+        }
+
+        mpx.showToast({
+          title: errorMessage,
+          icon: 'error'
+        });
+      }
+    },
+
+    requestPayment(paymentParams: any): Promise<void> {
+      return new Promise((resolve, reject) => {
+        mpx.requestPayment({
+          ...paymentParams,
+          success: () => {
+            resolve();
+          },
+          fail: (error: any) => {
+            reject(new Error(error.errMsg || '支付失败'));
+          }
+        });
+      });
     }
   }
 });
@@ -124,6 +253,8 @@ createPage({
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
     "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
+    "t-textarea": "tdesign-miniprogram/miniprogram_dist/textarea/textarea",
     "sticky-bottom": "@/components/sticky-bottom",
     "card": "@/components/card",
     "hospital-list": "@/components/hospital-list",
