@@ -48,7 +48,7 @@ import navigationMixin from "@/mixins/navigation";
 createPage({
   mixins: [navigationMixin],
   data: {
-    id: 0,
+    itemId: 0,
     loading: false,
     item: {} as Item,
   },
@@ -63,7 +63,7 @@ createPage({
       });
       return;
     }
-    this.id = id;
+    this.itemId = Number(id);
     this.loadItemDetail();
   },
   methods: {
@@ -72,7 +72,7 @@ createPage({
       try {
         const itemStore = useItemStore();
         const hospitalStore = useHospitalStore();
-        const itemDetail = await itemStore.fetchItemById(this.id);
+        const itemDetail = await itemStore.fetchItemById(this.itemId);
         const hospitals = await hospitalStore.fetchHospitals();
 
         this.setData({
@@ -80,7 +80,6 @@ createPage({
           hospitals: hospitals.filter((h: Hospital) => itemDetail.hospital_ids.includes(h.id)),
         });
       } catch (error) {
-        console.error('加载商品详情失败:', error);
         mpx.showToast({
           title: '加载失败',
           icon: 'error'
@@ -95,7 +94,7 @@ createPage({
         this.loading = true;
 
         const data = await this.preOrder({
-          item_id: this.id,
+          item_id: this.itemId,
           payment_method: 'jsapi',
         });
 
@@ -109,7 +108,7 @@ createPage({
 
         // 验证必填参数
         const paymentKeys = ['timeStamp', 'nonceStr', 'package', 'signType', 'paySign'];
-        
+
         if (paymentKeys.some(k => !data.payment_params[k])) {
           mpx.showToast({
             title: '缺少必要的支付参数',
@@ -145,8 +144,8 @@ createPage({
           title: errorMessage,
           icon: 'error'
         });
-      }  finally {
-          this.loading = false;
+      } finally {
+        this.loading = false;
       }
     },
 
