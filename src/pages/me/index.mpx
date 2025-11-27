@@ -127,7 +127,7 @@ createPage({
     });
     mpx.showModal({
       title: '获取成功',
-      content: `${res.code}\n登录态已失效，需重新启动`,
+      content: `已复制到剪贴板\n${res.code}\n登录态已失效，需重新启动`,
       showCancel: false,
       confirmText: '重启',
       success: () => {
