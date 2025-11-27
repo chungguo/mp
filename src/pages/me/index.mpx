@@ -33,6 +33,7 @@
   </view>
   <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
     <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
+    <t-cell title="获取微信code" leftIcon="login" hover arrow bindtap="onGetWxCode" />
   </t-cell-group>
   <t-dialog visible="{{ scaned }}">
     <view class="flex items-center gap-12rpx" slot="content">
@@ -117,6 +118,24 @@ createPage({
     } finally {
       this.scaned = false;
     }
+  },
+
+  async onGetWxCode() {
+    const res = await mpx.login();
+    await wx.setClipboardData({
+      data: res.code,
+    });
+    mpx.showModal({
+      title: '获取成功',
+      content: `${res.code}\n登录态已失效，需重新启动`,
+      showCancel: false,
+      confirmText: '重启',
+      success: () => {
+        mpx.reLaunch({
+          url: '/pages/me/index',
+        });
+      },
+    });
   },
 
   navigateToProfile() {
