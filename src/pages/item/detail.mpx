@@ -130,14 +130,13 @@ createPage({
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';
-        if (error instanceof Error) {
-          if (error.message.includes('requestPayment:fail cancel')) {
-            errorMessage = '支付已取消';
-          } else if (error.message.includes('requestPayment:fail')) {
-            errorMessage = '支付调用失败';
-          } else {
-            errorMessage = error.message;
-          }
+
+        if (error?.errMsg?.includes('requestPayment:fail cancel')) {
+          errorMessage = '支付已取消';
+        } else if (error?.errMsg?.includes('requestPayment:fail')) {
+          errorMessage = '支付调用失败';
+        } else {
+          errorMessage = error.errMsg;
         }
 
         mpx.showToast({
