@@ -33,7 +33,13 @@
   </view>
   <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
     <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
-    <t-cell title="获取微信code" leftIcon="login" hover arrow bindtap="onGetWxCode" />
+  </t-cell-group>
+
+  <t-cell-group theme="card" title="调试信息">
+    <t-cell title="获取微信code" hover arrow bindtap="onGetWxCode" />
+    <t-cell title="OPENID" hover>
+      <text slot="note" class="text-[22rpx]" selectable>{{ openid }}</text>
+    </t-cell>
   </t-cell-group>
   <t-dialog visible="{{ scaned }}">
     <view class="flex items-center gap-12rpx" slot="content">
@@ -88,6 +94,9 @@ createPage({
     },
     nickname() {
       return this.profile()?.nickname || '';
+    },
+    openid() {
+      return this.profile()?.openid || '';
     }
   },
 
@@ -122,9 +131,11 @@ createPage({
 
   async onGetWxCode() {
     const res = await mpx.login();
+
     await wx.setClipboardData({
       data: res.code,
     });
+
     mpx.showModal({
       title: '获取成功',
       content: `已复制到剪贴板\n${res.code}\n登录态已失效，需重新启动`,
