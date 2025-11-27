@@ -20,33 +20,6 @@
   </view>
   <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
 
-  <t-popup visible="{{ paymentPopupVisible }}" placement="center" close-on-overlay-click="{{ false }}">
-    <view class="bg-white rounded-[20rpx] p-[40rpx] w-[600rpx]">
-      <view class="text-[36rpx] font-bold text-center mb-[20rpx]">支付参数</view>
-      <view class="text-[24rpx] color-[#999] text-center mb-[30rpx]">请输入完整的支付参数JSON</view>
-
-      <view class="mb-[30rpx]">
-        <t-textarea
-          placeholder='{"timeStamp": "", "nonceStr": "", "package": "", "signType": "MD5", "paySign": ""}'
-          value="{{ paymentJson }}"
-          bind:change="onPaymentJsonChange"
-          t-class="min-h-[200rpx] border-[1rpx] border-[#ddd] rounded-[10rpx] p-[20rpx]"
-        />
-      </view>
-
-      <view class="flex gap-[20rpx]">
-        <view class="flex-1 bg-[#f5f5f5] text-[32rpx] text-center py-[20rpx] rounded-[10rpx]"
-          bindtap="closePaymentPopup">
-          取消
-        </view>
-        <view class="flex-1 bg-[#FF7913] color-white text-[32rpx] text-center py-[20rpx] rounded-[10rpx]"
-          bindtap="confirmPayment">
-          确认支付
-        </view>
-      </view>
-    </view>
-  </t-popup>
-
   <sticky-bottom>
     <view class="flex justify-between">
       <view class="flex items-center gap-[14rpx]" bindtap="navigateToConsultation">
@@ -55,7 +28,7 @@
           bindtap="goConsultation" />
         <text>咨询门诊</text>
       </view>
-      <view bindtap="showPaymentPopup"
+      <view bindtap="onBuy"
         class="bg-#FF7913 right-[26rpx] color-white text-[32rpx] rounded-r-[26rpx] flex items-center justify-center gap-[12rpx] w-[422rpx] py-[20rpx]">
         <text>￥{{ item.discount_price }}</text>
         <text>立即购买</text>
@@ -66,18 +39,20 @@
 
 <script lang="ts">
 import mpx, { createPage } from "@mpxjs/core";
+import { mapActions } from '@mpxjs/pinia';
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
+import { usePaymentStore } from "@/store/payment";
 import navigationMixin from "@/mixins/navigation";
 
 createPage({
   mixins: [navigationMixin],
   data: {
+    id: 0,
     loading: false,
-    paymentPopupVisible: false,
-    paymentJson: '',
     item: {} as Item,
   },
+  ...mapActions(usePaymentStore, ['preOrder']),
   async onLoad(options: Partial<Record<'id', string>> = {}) {
     const { id } = options;
 
@@ -88,16 +63,16 @@ createPage({
       });
       return;
     }
-
-    await this.loadItemDetail(id);
+    this.id = id;
+    this.loadItemDetail();
   },
   methods: {
-    async loadItemDetail(id: string) {
+    async loadItemDetail() {
       this.loading = true;
       try {
         const itemStore = useItemStore();
         const hospitalStore = useHospitalStore();
-        const itemDetail = await itemStore.fetchItemById(id);
+        const itemDetail = await itemStore.fetchItemById(this.id);
         const hospitals = await hospitalStore.fetchHospitals();
 
         this.setData({
@@ -114,69 +89,36 @@ createPage({
         this.loading = false;
       }
     },
-    goBack() {
-      this.safeNavigateBack('/pages/index')
-    },
 
-    navigateToConsultation() {
-      mpx.navigateTo({
-        url: '/pages/consultation/form'
-      })
-    },
-
-    showPaymentPopup() {
-      this.setData({
-        paymentPopupVisible: true
-      });
-    },
-
-    closePaymentPopup() {
-      this.setData({
-        paymentPopupVisible: false
-      });
-    },
-
-    onPaymentJsonChange(e: any) {
-      const { value } = e.detail;
-      this.setData({
-        paymentJson: value
-      });
-    },
-
-    async confirmPayment() {
-      if (!this.paymentJson.trim()) {
-        mpx.showToast({
-          title: '请输入支付参数JSON',
-          icon: 'error'
-        });
-        return;
-      }
-
-      let paymentParams;
+    async onBuy() {
       try {
-        paymentParams = JSON.parse(this.paymentJson);
-      } catch (error) {
-        mpx.showToast({
-          title: 'JSON格式错误',
-          icon: 'error'
+        this.loading = true;
+
+        const data = await this.preOrder({
+          item_id: this.id,
+          payment_method: 'jsapi',
         });
-        return;
-      }
 
-      // 验证必填参数
-      const { timeStamp, nonceStr, package: pkg, signType, paySign } = paymentParams;
-      if (!timeStamp || !nonceStr || !pkg || !signType || !paySign) {
-        mpx.showToast({
-          title: '缺少必要的支付参数',
-          icon: 'error'
-        });
-        return;
-      }
+        if (!data.payment_params) {
+          mpx.showToast({
+            title: '支付参数错误',
+            icon: 'error'
+          });
+          return;
+        }
 
-      this.closePaymentPopup();
+        // 验证必填参数
+        const paymentKeys = ['timeStamp', 'nonceStr', 'package', 'signType', 'paySign'];
+        
+        if (paymentKeys.some(k => !data.payment_params[k])) {
+          mpx.showToast({
+            title: '缺少必要的支付参数',
+            icon: 'error'
+          });
+          return;
+        }
 
-      try {
-        await this.requestPayment(paymentParams);
+        await mpx.requestPayment(data.payment_params);
 
         // 支付成功
         mpx.showToast({
@@ -187,10 +129,7 @@ createPage({
         setTimeout(() => {
           this.safeNavigateBack('/pages/index');
         }, 1500);
-
       } catch (error) {
-        console.error('支付失败:', error);
-
         let errorMessage = '支付失败';
         if (error instanceof Error) {
           if (error.message.includes('requestPayment:fail cancel')) {
@@ -206,22 +145,20 @@ createPage({
           title: errorMessage,
           icon: 'error'
         });
+      }  finally {
+          this.loading = false;
       }
     },
 
-    requestPayment(paymentParams: any): Promise<void> {
-      return new Promise((resolve, reject) => {
-        mpx.requestPayment({
-          ...paymentParams,
-          success: () => {
-            resolve();
-          },
-          fail: (error: any) => {
-            reject(new Error(error.errMsg || '支付失败'));
-          }
-        });
-      });
-    }
+    goBack() {
+      this.safeNavigateBack('/pages/index')
+    },
+
+    navigateToConsultation() {
+      mpx.navigateTo({
+        url: '/pages/consultation/form'
+      })
+    },
   }
 });
 </script>
