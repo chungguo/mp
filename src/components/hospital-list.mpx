@@ -48,6 +48,8 @@ createComponent({
 <script type="application/json">
 {
   "component": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+  }
 }
 </script>

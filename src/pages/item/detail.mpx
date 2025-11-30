@@ -1,11 +1,12 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="购买商品" />
-  <t-image src="{{ item.cover_image }}" t-class="w-full h-[568rpx]" />
+  <t-swiper height="568rpx" list="{{ item.detail_images }}" navigation="{{ { type: 'dots' } }}"></t-swiper>
+
   <view class="relative top-[-60rpx] mx-[26rpx] flex flex-col gap-[40rpx]">
     <card>
       <view class="flex items-center gap-[16rpx]">
-        <view class="text-[58rpx] font-bold color-[#F42020]">￥{{ item.original_price }}</view>
-        <view class="text-[36rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.discount_price }}</view>
+        <view class="text-[58rpx] font-bold color-[#F42020]">￥{{ item.discount_price }}</view>
+        <view class="text-[36rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}</view>
       </view>
       <view class="text-[32rpx] font-bold color-[#1D2129]">{{ item.name }}</view>
     </card>
@@ -190,8 +191,10 @@ createPage({
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
     "t-textarea": "tdesign-miniprogram/miniprogram_dist/textarea/textarea",
-    "sticky-bottom": "@/components/sticky-bottom",
+    "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
+    "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
     "card": "@/components/card",
+    "sticky-bottom": "@/components/sticky-bottom",
     "hospital-list": "@/components/hospital-list",
   }
 }
