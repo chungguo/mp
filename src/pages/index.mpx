@@ -50,10 +50,10 @@
     <view class="p-[32rpx] pt-0">
       <!-- 特惠洗牙券广告 -->
       <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
-        navigation="{{ { type: 'dots-bar' } }}" t-class="my-[26rpx]" />
+        navigation="{{ { type: 'dots-bar' } }}" t-class="mt-[26rpx]" />
 
       <!-- 主内容区域 -->
-      <t-tabs value="{{ activeTab }}" bind:change="onTabsChange" theme="line" t-class="tabs">
+      <t-tabs value="{{ activeTab }}" bind:change="onTabsChange" theme="line" t-class="tabs mt-[26rpx]">
         <t-tab-panel label="优势项目" value="item">
           <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
             <block wx:for="{{ items }}" wx:key="id">
@@ -271,7 +271,7 @@ createPage({
 
     this.setData({
       returningUserActivities: activities,
-      banner: activities.map(item => item.banner_image),
+      banner: activities.map(item => item.banner_image).filter(Boolean),
     });
   },
 
