@@ -85,8 +85,8 @@
               <t-divider wx:if="{{ hospital.items.length !== 0 }}" />
               <view class="flex flex-col gap-[22rpx]">
                 <view wx:for="{{ hospital.items }}" wx:key="id" class="flex items-center gap-[26rpx]">
-                  <view class="color-[#F42020] font-bold text-[28rpx]">￥{{ item.original_price }}</view>
-                  <view
+                  <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.discount_price }}</view>
+                  <view wx:if="{{ discountText }}"
                     class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
                     {{ item.discountText }}</view>
                   <view class="text-ellipsis overflow-hidden whitespace-nowrap color-[#090E0B] text-[22rpx]">{{
@@ -113,7 +113,7 @@
                 <view class="flex justify-between items-center">
                   <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
                   <view wx:if="{{ item.experienceYear }}" class="color-[#51555E] text-[24rpx]">从业{{ item.experienceYear
-                    }}年</view>
+                  }}年</view>
                 </view>
                 <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
                   <view class="text-ellipsis of-hidden whitespace-nowrap">{{ item.hospitals }}</view>
@@ -349,7 +349,13 @@ createPage({
       return;
     }
 
-    return `${(discount / original_price).toFixed(2)}折`;
+    const num = ((discount_price / original_price) * 10).toFixed(1);
+
+    if (Number(num) === 0) {
+      return;
+    }
+
+    return `${num}折`;
   },
   navigateToItemDetail(e: WechatMiniprogram.CustomEvent) {
     const { id } = e.currentTarget.dataset;
