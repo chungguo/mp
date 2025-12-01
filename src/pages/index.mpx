@@ -65,7 +65,8 @@
         <t-tab-panel label="甄选机构" value="hospital">
           <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
             <view class="w-full box-border bg-white rounded-[22rpx] px-[26rpx] py-[36rpx]" wx:for="{{ hospitals }}"
-              wx:key="id" wx:for-item="hospital" bindtap="navigateToHospitalDetail" data-id="{{ hospital.id }}">
+              wx:if="{{ hospital.items.length !== 0 }}" wx:key="id" wx:for-item="hospital"
+              bindtap="navigateToHospitalDetail" data-id="{{ hospital.id }}">
               <view class="flex items-center gap-[22rpx]">
                 <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
                   <t-image src="{{ hospital.images && hospital.images[0] }}" width="140rpx" height="140rpx" />
@@ -82,7 +83,7 @@
                   </view>
                 </view>
               </view>
-              <t-divider wx:if="{{ hospital.items.length !== 0 }}" />
+              <t-divider />
               <view class="flex flex-col gap-[22rpx]">
                 <view wx:for="{{ hospital.items }}" wx:key="id" class="flex items-center gap-[26rpx]">
                   <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.discount_price }}</view>
