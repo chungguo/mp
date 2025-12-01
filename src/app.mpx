@@ -38,6 +38,10 @@ createApp({
 page {
   --td-brand-color: #3D61F5;
   --primary-color: #3D61F5;
+  --td-tab-nav-bg-color: transparent;
+  --td-tab-item-color: rgba(29, 33, 41, 0.5);
+  --td-tab-item-active-color: #1D2129;
+  --td-tab-track-color: #4A8DFF;
   background-color: #F1F3F7;
   padding-block-end: calc(env(safe-area-inset-bottom) + 100rpx);
   box-sizing: border-box;

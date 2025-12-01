@@ -7,7 +7,7 @@
         <view class="color-[#51555E] text-[24rpx] flex-1">
           <view class="flex justify-between items-center mb-[16rpx]">
             <view class="color-[#090E0B] text-[36rpx] font-bold">{{ doctor.name }}</view>
-            <view>从业{{ experienceYears }}年</view>
+            <view wx:if="{{ experienceYears !== '-' }}">从业{{ experienceYears }}年</view>
           </view>
           <view>{{ doctor.title }} | {{ doctor.department }}</view>
         </view>

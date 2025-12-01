@@ -8,12 +8,15 @@ export default {
      */
     safeNavigateBack(fallbackPath: string = ''): void {
       mpx.navigateBack({
+        usePromise: false,
         fail: () => {
           mpx.navigateTo({
             url: fallbackPath,
+            usePromise: false,
             fail: () => {
               mpx.switchTab({
                 url: fallbackPath,
+                usePromise: false,
                 fail: () => {
                   // 如果连fallback都失败了，就重定向到首页
                   mpx.reLaunch({

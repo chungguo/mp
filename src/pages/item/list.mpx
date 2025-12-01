@@ -173,10 +173,6 @@ createPage({
 <style lang="less">
 page {
   --td-navbar-background: transparent;
-  --td-tab-nav-bg-color: transparent;
-  --td-tab-item-color: rgba(29, 33, 41, 0.5);
-  --td-tab-item-active-color: #1D2129;
-  --td-tab-track-color: #4A8DFF;
 }
 </style>
 

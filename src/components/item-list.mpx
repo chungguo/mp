@@ -3,7 +3,7 @@
     <view wx:for="{{ items }}" wx:key="id" bindtap="goItemDetail" data-id="{{ item.id }}"
       class="flex items-center gap-[20rpx]">
       <view class="w-[166rpx] h-[126rpx] of-hidden rounded-[16rpx] flex items-center justify-center">
-        <t-image src="{{ item.cover_image }}" width="166rpx" height="126rpx" />
+        <t-image src="{{ item.cover_image }}" t-class="w-[166rpx] h-[126rpx] of-hidden" mode="widthFix" />
       </view>
 
       <view class="flex flex-col flex-1 gap-[22rpx] min-w-0">
@@ -62,6 +62,7 @@ createComponent({
   "component": true,
   "usingComponents": {
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
   }
 }
 </script>

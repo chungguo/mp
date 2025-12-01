@@ -1,7 +1,7 @@
 <template>
   <view class="flex flex-col gap-[36rpx] mt-[16rpx]">
     <view class="w-full box-border flex items-center gap-[22rpx]" wx:for="{{ hospitals }}" wx:key="id"
-      data-id="{{ item.id }}">
+      data-id="{{ item.id }}" bindtap="navigateToHospital">
       <view class="w-[134rpx] h-[134rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
         <t-image src="{{ item.images && item.images[0] }}" width="140rpx" height="140rpx" />
       </view>
@@ -32,15 +32,19 @@ createComponent({
       value: [] as Hospital[],
     },
   },
-  onReady() {
-    console.log('hospital-list onReady', this.hospitals);
-  },
+
   methods: {
     goConsultation() {
       mpx.navigateTo({
         url: '/pages/consultation/form',
       });
     },
+    navigateToHospital(e: WechatMiniprogram.CustomEvent) {
+      const { id } = e.currentTarget.dataset;
+      mpx.navigateTo({
+        url: `/pages/hospital/detail?id=${id}`,
+      });
+    }
   }
 });
 </script>

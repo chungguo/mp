@@ -1,7 +1,7 @@
 import { defineStore } from '@mpxjs/pinia';
 import request from '@/common/request';
 import { ref } from '@mpxjs/core';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, sortBy } from 'lodash-es';
 
 export interface Category {
   id: number;
@@ -32,7 +32,7 @@ export const useCategoryStore = defineStore('category', () => {
       params,
     });
 
-    const data = response.data?.data ?? [];
+    const data = sortBy(response.data?.data ?? [], ['id']);
 
     // 如果没有参数，更新缓存
     if (isEmpty(params)) {

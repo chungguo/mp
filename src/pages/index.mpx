@@ -41,8 +41,8 @@
       </view>
     </view>
 
-    <t-grid column="{{ 0 }}" theme="card" gutter="{{ 0 }}">
-      <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.name}} url="{{ item.path }}">
+    <t-grid column="{{ 0 }}" theme="card">
+      <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.name}} url="{{ item.path }}" t-class="!w-[140rpx]">
         <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
       </t-grid-item>
     </t-grid>
@@ -53,7 +53,7 @@
         navigation="{{ { type: 'dots-bar' } }}" />
 
       <!-- 主内容区域 -->
-      <t-tabs value="{{ activeTab }}" split="{{ false }}" bind:change="onTabsChange" theme="line" t-class="tabs">
+      <t-tabs value="{{ activeTab }}" bind:change="onTabsChange" theme="line" t-class="tabs">
         <t-tab-panel label="优势项目" value="item">
           <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
             <block wx:for="{{ items }}" wx:key="id">
@@ -414,11 +414,8 @@ createPage({
 /* 页面基础样式 */
 page {
   --td-navbar-color: white;
-  --td-tab-nav-bg-color: transparent;
-  --td-tab-item-color: rgba(29, 33, 41, 0.5);
-  --td-tab-item-active-color: #1D2129;
-  --td-tab-track-color: #4A8DFF;
   --td-grid-item-text-font-size: 24rpx;
+  --td-tab-font-size: 32rpx;
   --td-navbar-background: linear-gradient(180deg, #317DFF 0%, #3E85FF 100%);
   background-color: #F1F3F7;
 }
