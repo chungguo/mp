@@ -34,7 +34,8 @@
               <text>{{ item.milestone }}位</text>
               <t-image src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" />
               <text>{{ item.reward_name }}</text>
-              <view class="flex justify-center w-[100rpx] h-[48rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
+              <view
+                class="flex justify-center w-[100rpx] h-[48rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
                 <view wx:if="{{ item.is_unlocked && item.is_claimed }}"
                   class="flex items-center justify-center w-full h-full bg-[#D8D8D8] rounded-[10rpx]">已领取</view>
                 <view wx:if="{{ item.is_unlocked && !item.is_claimed }}" bindtap="onReceive"
@@ -43,7 +44,8 @@
               </view>
             </view>
           </view>
-          <view class="w-full h-[20rpx] bg-[#0000000D] rounded-[12rpx] absolute left-0 top-[140rpx] z-1">
+          <view
+            class="w-full box-border h-[20rpx] bg-[#0000000D] rounded-[12rpx] absolute left-0 top-[140rpx] z-1 px-[30rpx]">
             <view class="progress h-full rounded-[12rpx] z-2" wx:style="{{ {width: percent} }}"></view>
           </view>
         </view>
@@ -121,6 +123,7 @@
       </view>
     </view>
   </t-popup>
+
   <!-- 地址选择器 -->
   <pca visible="{{ addressPickerVisible }}" bindchange="onAddressChange" bindcancel="onAddressCancel" />
 
@@ -131,15 +134,17 @@
 <script lang="ts">
 import mpx, { createPage } from '@mpxjs/core'
 import { mapActions } from '@mpxjs/pinia';
-import { useReferralStore, type Reward } from './store';
+import { ReturningUserActivity, useReferralStore, type Reward } from './store';
 import dayjs from 'dayjs';
+import navigation from '@/mixins/navigation';
+import { isEmpty } from 'lodash-es';
 
 const STORAGE_KEY = 'referral_address_form';
 
 createPage({
+  mixins: [navigation],
   data: {
     activity_id: '',
-    code: '',
     countdowntime: 0,
     invitation_count: 0,
     invitation_count_target: 0,
@@ -183,9 +188,9 @@ createPage({
     percent() {
       if (this.invitation_count_target > 0) {
         const percent = (this.invitation_count / this.invitation_count_target) * 100;
-        return `${percent > 100 ? 100 : percent}%`;
+        return `${Math.max(percent > 100 ? 100 : percent, 0)}%`;
       }
-      return 0;
+      return "0%";
     },
     invitation_gap() {
       const achievedCount = this.rewards.filter(item => item.is_unlocked).length;
@@ -198,33 +203,64 @@ createPage({
       return 0;
     }
   },
-  ...mapActions(useReferralStore, ['progress', 'participate', 'claim']),
-  onLoad(options) {
-    this.setData(options);
-    this.init();
+  ...mapActions(useReferralStore, ['avaliable', 'progress', 'participate', 'claim']),
+  async onLoad(options = {}) {
+    this.setData({
+      activity_id: options.activity_id ?? '',
+      loading: true,
+    });
+
+    try {
+      await this.getActivityInfo();
+      await this.getProgress();
+    } finally {
+      this.loading = false;
+    }
     this.restoreFormFromStorage();
   },
   methods: {
-    async init() {
-      this.loading = true;
+    async getActivityInfo() {
+      const activities = await this.avaliable();
+      const activity = activities.find((item: ReturningUserActivity) => item.id.toString() === this.activity_id);
 
+      if (!activity || activity.status !== 2) {
+        mpx.showModal({
+          title: '错误',
+          content: '活动不存在或已结束',
+          showCancel: false,
+          success: (res) => {
+            if (res.confirm) {
+              this.safeNavigateBack()
+            }
+          },
+        });
+        return;
+      }
+
+      this.countdowntime = Math.abs(dayjs().diff(dayjs(activity.activity_end_time)));
+      this.invitation_count_target = Math.max(...(activity.rewards || []).map((item: Reward) => item.milestone));
+
+      this.setData({
+        rewards: activity.rewards,
+      });
+    },
+    async getProgress() {
       try {
-        const data = await this.progress({ activity_id: this.activity_id });
-        const { participation_end_time, rewards, invited_count } = data;
+        const data = await this.progress({
+          activity_id: Number(this.activity_id),
+        });
 
-        if (!participation_end_time || dayjs().isAfter(dayjs(participation_end_time))) {
-          this.onFinish();
+        if (isEmpty(data)) {
           return;
         }
 
-        this.countdowntime = Math.abs(dayjs().diff(dayjs(participation_end_time)));
+        const { rewards, invited_count } = data;
+
         this.invitation_count = invited_count;
-        this.invitation_count_target = Math.max(...rewards.map((item: Reward) => item.milestone));
 
         this.setData({
           rewards: rewards,
         });
-
       } catch (error) {
         mpx.showModal({
           title: '错误',
@@ -392,10 +428,21 @@ createPage({
       });
     },
     onShareAppMessage() {
+      const promise = new Promise((resolve) => {
+        this.participate({
+          activity_id: this.activity_id,
+        }).then((data: { code: string }) => {
+          resolve({
+            path: `/pages/consultation/form?activity_id=${this.activity_id}&share_code=${data.code}`,
+          });
+        });
+      });
+
       return {
         title: '在线问诊，牙齿问题秒回答',
-        path: `/pages/consulation/form?activity_id=${this.activity_id}&code=${this.code}`,
+        path: `/pages/consultation/form?activity_id=${this.activity_id}`,
         imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+        promise,
       }
     },
     onRewrite() {

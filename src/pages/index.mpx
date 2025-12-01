@@ -30,7 +30,7 @@
               <t-image width="80rpx" height="80rpx"
                 src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
             </view>
-            <view
+            <view bindtap="navigateToActivityReferral"
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">分享领好礼</view>
               <t-image width="80rpx" height="80rpx"
@@ -50,7 +50,7 @@
     <view class="p-[32rpx] pt-0">
       <!-- 特惠洗牙券广告 -->
       <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
-        navigation="{{ { type: 'dots-bar' } }}" />
+        navigation="{{ { type: 'dots-bar' } }}" t-class="my-[26rpx]" />
 
       <!-- 主内容区域 -->
       <t-tabs value="{{ activeTab }}" bind:change="onTabsChange" theme="line" t-class="tabs">
@@ -182,6 +182,11 @@ createPage({
       }
     },
   },
+  computed: {
+    newUserVal() {
+      return this.newUser();
+    }
+  },
 
   watch: {
     async activeTab(newValue) {
@@ -197,7 +202,7 @@ createPage({
         this.queryDoctors();
       }
     },
-    newUser(v) {
+    newUserVal(v) {
       if (v === true) {
         this.setData({
           banner: ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png']
@@ -235,41 +240,38 @@ createPage({
     }
   },
   async onSwiperClick(e: WechatMiniprogram.CustomEvent) {
-    if (this.newUser) {
+    if (this.newUserVal) {
       mpx.navigateTo({
-        url: './coupon/list',
+        url: '/pages/coupon/list',
       });
       return;
     }
+
     const { index } = e.detail;
 
     const activity = this.returningUserActivities[index];
 
     if (!activity) {
+      mpx.showToast({
+        title: '活动不存在',
+        icon: 'error',
+      })
       return;
     }
 
-    try {
-      const store = useReferralStore();
-
-      const res = await store.participate({
-        activity_id: activity.id,
-      });
-
-      mpx.navigateTo({
-        url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    mpx.navigateTo({
+      url: `/subpackages/activity/referral?activity_id=${activity.id}`,
+    });
   },
 
   async queryReturningUserActivity() {
     const store = useReferralStore();
     const res = await store.avaliable();
+    const activities = res.filter(item => item.status === 2 && item.can_participate);
+
     this.setData({
-      returningUserActivities: res,
-      banner: res.map(item => item.banner_image).filter(Boolean),
+      returningUserActivities: activities,
+      banner: activities.map(item => item.banner_image),
     });
   },
 
@@ -393,8 +395,22 @@ createPage({
     mpx.navigateTo({
       url: '/pages/package/insurance',
     });
+  },
+  navigateToActivityReferral() {
+    const activity = this.returningUserActivities[0];
+    if (!activity) {
+      mpx.showToast({
+        title: '活动不存在',
+        icon: 'error',
+      });
+      return;
+    }
+
+    mpx.navigateTo({
+      url: `/subpackages/activity/referral?activity_id=${activity.id}`,
+    });
   }
-})
+});
 </script>
 
 <script type="application/json">
@@ -423,6 +439,7 @@ page {
   --td-navbar-color: white;
   --td-grid-item-text-font-size: 24rpx;
   --td-tab-font-size: 32rpx;
+  --td-tab-item-height: 69rpx;
   --td-navbar-background: linear-gradient(180deg, #317DFF 0%, #3E85FF 100%);
   background-color: #F1F3F7;
 }

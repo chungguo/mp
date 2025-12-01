@@ -109,7 +109,7 @@ export const useReferralStore = defineStore('referral', () => {
       url: '/referral/activities/available',
       method: 'GET',
     });
-    return (response.data.data ?? []).filter(item => item.status === 2 && item.can_participate);
+    return (response.data.data ?? []);
   };
 
   const accept = async (data: {

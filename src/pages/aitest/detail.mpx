@@ -109,14 +109,8 @@ createPage({
           return;
         }
 
-        console.log('activities', activities);
-
-        const res = await store.participate({
-          activity_id: activities[0].id,
-        });
-
         mpx.navigateTo({
-          url: `../../subpackages/activity/referral?code=${res.share_code}&activity_id=${res.participation_id}`,
+          url: `/subpackages/activity/referral?activity_id=${activities[0].id}`,
         });
       } catch (e) {
         mpx.showToast({
