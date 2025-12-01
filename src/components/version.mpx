@@ -1,0 +1,116 @@
+<template>
+  <t-cell-group theme="card" title="调试信息" wx:if="{{ debug }}">
+    <t-cell title="获取微信code" hover arrow bindtap="onGetWxCode" />
+    <t-cell title="OPENID" hover>
+      <text slot="note" class="text-[22rpx]" selectable>{{ openid }}</text>
+    </t-cell>
+  </t-cell-group>
+  <view bindtap="onVersionTap"
+    class="my-[100rpx] text-center text-[22rpx] color-gray flex items-center justify-center gap-[16rpx]">
+    <text>版本号: {{ info.miniProgram?.envVersion }}</text>
+    <text wx:if="{{ info.miniProgram?.version }}">
+      {{ info.miniProgram?.version }}
+    </text>
+  </view>
+</template>
+
+<script lang="ts">
+import { useUserStore } from '@/store/user';
+import mpx, { createComponent } from '@mpxjs/core';
+
+createComponent({
+  data: {
+    info: {} as WechatMiniprogram.AccountInfo,
+    debug: false,
+    count: 0,
+    openid: '',
+    timer: null as number | null,
+  },
+  lifetimes: {
+    ready() {
+      const info = mpx.getAccountInfoSync();
+      this.setData({
+        info,
+      });
+    }
+  },
+  watch: {
+    debug(val) {
+      if (!val) {
+        return;
+      }
+
+      this.loadProfile();
+    }
+  },
+  methods: {
+    async loadProfile() {
+      const { profile } = useUserStore();
+      this.setData({
+        openid: profile?.openid,
+      });
+
+    },
+    onVersionTap() {
+      // 清除之前的定时器
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+
+      // 增加点击次数
+      this.count++;
+
+      // 如果点击次数达到10次，显示debug
+      if (this.count >= 10) {
+        this.setData({
+          debug: true,
+          count: 0,
+        });
+
+        mpx.showToast({
+          title: '调试模式已开启',
+          icon: 'success'
+        });
+        return;
+      }
+
+      // 设置定时器，2秒后重置点击次数
+      this.timer = setTimeout(() => {
+        this.setData({
+          count: 0,
+        });
+        this.timer = null;
+      }, 2000);
+    },
+    async onGetWxCode() {
+      const res = await mpx.login();
+
+      await mpx.setClipboardData({
+        data: res.code,
+      });
+
+      mpx.showModal({
+        title: '获取成功',
+        content: `已复制到剪贴板\n${res.code}\n登录态已失效，需重新启动`,
+        showCancel: false,
+        confirmText: '重启',
+        success: () => {
+          mpx.reLaunch({
+            url: '/pages/me/index',
+          });
+        },
+      });
+    },
+  }
+});
+</script>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-cell": "tdesign-miniprogram/miniprogram_dist/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/miniprogram_dist/cell-group/cell-group",
+  }
+}
+</script>

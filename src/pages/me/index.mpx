@@ -35,18 +35,13 @@
     <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
   </t-cell-group>
 
-  <t-cell-group theme="card" title="调试信息">
-    <t-cell title="获取微信code" hover arrow bindtap="onGetWxCode" />
-    <t-cell title="OPENID" hover>
-      <text slot="note" class="text-[22rpx]" selectable>{{ openid }}</text>
-    </t-cell>
-  </t-cell-group>
   <t-dialog visible="{{ scaned }}">
     <view class="flex items-center gap-12rpx" slot="content">
       <t-loading theme="circular" size="40rpx" />
       正在核销，请稍候...
     </view>
   </t-dialog>
+  <version />
 </template>
 
 <script lang="ts">
@@ -95,9 +90,6 @@ createPage({
     nickname() {
       return this.profile()?.nickname || '';
     },
-    openid() {
-      return this.profile()?.openid || '';
-    }
   },
 
   async onScan() {
@@ -127,26 +119,6 @@ createPage({
     } finally {
       this.scaned = false;
     }
-  },
-
-  async onGetWxCode() {
-    const res = await mpx.login();
-
-    await wx.setClipboardData({
-      data: res.code,
-    });
-
-    mpx.showModal({
-      title: '获取成功',
-      content: `已复制到剪贴板\n${res.code}\n登录态已失效，需重新启动`,
-      showCancel: false,
-      confirmText: '重启',
-      success: () => {
-        mpx.reLaunch({
-          url: '/pages/me/index',
-        });
-      },
-    });
   },
 
   navigateToProfile() {
@@ -195,7 +167,8 @@ page {
     "t-row": "tdesign-miniprogram/miniprogram_dist/row/row",
     "t-col": "tdesign-miniprogram/miniprogram_dist/col/col",
     "t-dialog": "tdesign-miniprogram/miniprogram_dist/dialog/dialog",
-    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading"
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "version": "@/components/version",
   }
 }
 </script>
