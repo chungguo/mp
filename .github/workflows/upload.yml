@@ -1,0 +1,68 @@
+name: 微信小程序自动化发布
+
+on:
+  # 触发条件：master分支推送代码
+  push:
+    branches: [master]
+
+jobs:
+  version-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      # 步骤1：检出代码
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      # 步骤2：设置pnpm环境
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      # 步骤3：安装依赖
+      - name: Install Dependencies
+        run: pnpm install
+
+      # 步骤4：自动更新版本号
+      - name: Auto Update Version
+        id: version
+        run: |
+          # 根据commit类型自动递增版本号
+          CHANGE_TYPE=$(node -p "require('semver').inc(require('./package.json').version, 'patch')")
+          if [ "$CHANGE_TYPE" = "invalid" ]; then
+            CHANGE_TYPE=$(node -p "require('semver').inc(require('./package.json').version, 'minor')")
+          fi
+          NEW_VERSION=$(node -p "require('semver').inc(require('./package.json').version, '$CHANGE_TYPE')")
+          
+          # 更新package.json
+          pnpm version $NEW_VERSION --no-git-tag-version
+          echo "版本号已更新至 $NEW_VERSION"
+          echo "::set-output name=new_version::$NEW_VERSION"
+
+      # 步骤5：构建小程序代码
+      - name: Build Mini Program
+        run: pnpm build
+
+      # 步骤5：获取最新commit message
+      - name: Get Commit Message
+        id: commit_message
+        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+      
+      # 步骤6：上传到微信小程序
+      - name: Upload to WeChat
+        uses: hocgin/action-wechat-miniprogram-upload@v1.0.1
+        with:
+          appid: ${{ secrets.WECHAT_APPID }}
+          privateKey: ${{ secrets.WECHAT_PRIVATE_KEY }}
+          projectPath: dist/wx
+          version: ${{ steps.version.outputs.new_version }}
+          description: ${{ steps.commit_message.outputs.message }}
+          ignore: [".github", "node_modules"]
+
+      # 步骤7：同步Git版本信息
+      - name: Sync Git Tags
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git tag -a "v${{ steps.version.outputs.new_version }}" -m "Release v${{ steps.version.outputs.new_version }}"
+          git push origin "v${{ steps.version.outputs.new_version }}"

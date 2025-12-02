@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "mpx-cli-service serve",
     "build": "mpx-cli-service build",
-    "lint": "eslint --ext .js,.ts,.mpx src/"
+    "lint": "eslint --ext .js,.ts,.mpx src/",
+    "postversion": "git push --follow-tags"
   },
   "dependencies": {
     "@mpxjs/api-proxy": "^2.10.17",
