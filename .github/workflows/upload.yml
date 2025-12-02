@@ -56,7 +56,7 @@ jobs:
           privateKey: ${{ secrets.WECHAT_PRIVATE_KEY }}
           projectPath: dist/wx
           version: ${{ steps.version.outputs.new_version }}
-          description: ${{ steps.commit_message.outputs.message }}
+          description: "${{ steps.commit_message.outputs.message }}"
           ignore: [".github", "node_modules"]
 
       # 步骤7：同步Git版本信息
