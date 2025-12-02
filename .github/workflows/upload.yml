@@ -52,12 +52,10 @@ jobs:
       - name: Upload to WeChat
         uses: hocgin/action-wechat-miniprogram-upload@v1.0.1
         with:
-          appid: ${{ secrets.WECHAT_APPID }}
-          privateKey: ${{ secrets.WECHAT_PRIVATE_KEY }}
-          projectPath: dist/wx
+          upload_key: ${{ secrets.WECHAT_UPLOAD_KEY }}
+          workspace: dist/wx
           version: ${{ steps.version.outputs.new_version }}
-          description: "${{ steps.commit_message.outputs.message }}"
-          ignore: [".github", "node_modules"]
+          description: ${{ steps.commit_message.outputs.message }}
 
       # 步骤7：同步Git版本信息
       - name: Sync Git Tags
