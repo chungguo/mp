@@ -41,11 +41,20 @@
       </view>
     </view>
 
-    <t-grid column="{{ 0 }}" theme="card">
-      <t-grid-item wx:for="{{ grids }}" wx:key="text" text={{item.name}} url="{{ item.path }}" t-class="!w-[140rpx]">
-        <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
-      </t-grid-item>
-    </t-grid>
+    <swiper indicator-dots indicator-color="#D9D9D9" indicator-active-color="#4A8DFF"
+      class="h-[196rpx] bg-white mx-[32rpx] rounded-[22rpx]">
+      <block wx:for="{{ grids }}" wx:key="index" wx:for-item="grid">
+        <swiper-item class="flex justify-between items-center">
+          <block wx:for="{{ grid }}" wx:key="text" wx:for-item="item">
+            <view class="flex flex-col items-center gap-[16rpx]" data-id="{{ item.id }}" bindtap="navigateToCategory"
+              wx:style="margin-left: {{ index === 0 ? '38rpx' : '0'}}; margin-right: {{ index === grid.length - 1 ? '20rpx' : '0'}}">
+              <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
+              <view class="text-[#1D2129] text-[24rpx]">{{ item.name }}</view>
+            </view>
+          </block>
+        </swiper-item>
+      </block>
+    </swiper>
 
     <view class="p-[32rpx] pt-0">
       <!-- 特惠洗牙券广告 -->
@@ -138,13 +147,14 @@ import { type Item, useItemStore } from '@/store/item';
 import { type Category, useCategoryStore } from '@/store/category';
 import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
 import dayjs from 'dayjs';
+import { chunk } from 'lodash-es';
 
 createPage({
   data: {
     loadingHospital: false,
     loadingDoctor: false,
 
-    grids: [] as (Category & { path: string })[],
+    grids: [] as Category[][],
 
     banner: [] as string[],
 
@@ -230,10 +240,7 @@ createPage({
       const data = await this.fetchCategories();
 
       this.setData({
-        grids: data.filter((item: Category) => item.level === 1).map((item: Category) => ({
-          ...item,
-          path: `/pages/item/list?category_id=${item.id}`,
-        }))
+        grids: chunk(data.filter((item: Category) => item.level === 1), 5),
       });
     } catch (e) {
       console.error(e)
@@ -409,7 +416,13 @@ createPage({
     mpx.navigateTo({
       url: `/subpackages/activity/referral?activity_id=${activity.id}`,
     });
-  }
+  },
+  navigateToCategory(e: WechatMiniprogram.CustomEvent) {
+    const { id } = e.currentTarget.dataset;
+    mpx.navigateTo({
+      url: `/pages/item/list?category_id=${id}`
+    });
+  },
 });
 </script>
 
