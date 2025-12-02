@@ -3,7 +3,7 @@ name: 微信小程序自动化发布
 on:
   # 触发条件：master分支推送代码
   push:
-    branches: [master]
+    branches: ["main"]
 
 jobs:
   version-and-upload:
@@ -53,7 +53,7 @@ jobs:
         uses: hocgin/action-wechat-miniprogram-upload@v1.0.1
         with:
           upload_key: ${{ secrets.WECHAT_UPLOAD_KEY }}
-          workspace: dist/wx
+          workspace: ./dist/wx
           version: ${{ steps.version.outputs.new_version }}
           description: ${{ steps.commit_message.outputs.message }}
 
