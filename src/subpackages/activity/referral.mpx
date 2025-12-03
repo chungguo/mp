@@ -430,10 +430,10 @@ createPage({
     onShareAppMessage() {
       const promise = new Promise((resolve) => {
         this.participate({
-          activity_id: this.activity_id,
-        }).then((data: { code: string }) => {
+          activity_id: Number(this.activity_id),
+        }).then((data: { share_code: string }) => {
           resolve({
-            path: `/pages/consultation/form?activity_id=${this.activity_id}&share_code=${data.code}`,
+            path: `/pages/consultation/form?activity_id=${this.activity_id}&share_code=${data.share_code}`,
           });
         });
       });

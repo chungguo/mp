@@ -274,7 +274,7 @@ createPage({
   async queryReturningUserActivity() {
     const store = useReferralStore();
     const res = await store.avaliable();
-    const activities = res.filter(item => item.status === 2 && item.can_participate);
+    const activities = res.filter(item => item.status === 2);
 
     this.setData({
       returningUserActivities: activities,
