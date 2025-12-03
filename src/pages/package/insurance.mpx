@@ -1,26 +1,40 @@
 <template>
   <t-navbar title="爱牙无忧包" left-arrow bind:go-back="goBack"></t-navbar>
   <view class="flex item-center gap-[26rpx] px-[26rpx] box-border mt-[240rpx]">
-    <t-image t-class="flex-1" mode="widthFix"
+    <t-image t-class="flex-1" mode="widthFix" bindtap="receiveCoupon"
       src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/basic.webp" />
-    <t-image t-class="flex-1" mode="widthFix"
+    <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToItemDetail"
       src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/pro.webp" />
-  </view>
-
-  <view class="px-[26rpx] mt-[26rpx]">
-    <card title="使用规则"></card>
   </view>
 </template>
 
 <script>
-import { createPage } from "@mpxjs/core";
+import mpx, { createPage } from "@mpxjs/core";
 import navigation from "@/mixins/navigation";
+import { useCouponStore } from "@/store/coupon";
 
 createPage({
   mixins: [navigation],
   methods: {
     goBack() {
       this.safeNavigateBack();
+    },
+    async receiveCoupon() {
+      mpx.showLoading({
+        title: "领取中..."
+      });
+
+      try {
+        const store = useCouponStore();
+        await store.claim(919);
+      } finally {
+        mpx.hideLoading();
+      }
+    },
+    navigateToItemDetail() {
+      mpx.navigateTo({
+        url: "/pages/item/detail?id=3"
+      });
     }
   }
 })
