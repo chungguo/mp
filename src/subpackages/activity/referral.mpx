@@ -433,6 +433,8 @@ createPage({
           activity_id: Number(this.activity_id),
         }).then((data: { share_code: string }) => {
           resolve({
+            title: '在线问诊，牙齿问题秒回答',
+            imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
             path: `/pages/consultation/form?activity_id=${this.activity_id}&share_code=${data.share_code}`,
           });
         });
