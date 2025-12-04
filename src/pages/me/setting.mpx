@@ -224,7 +224,7 @@ createPage({
    * 将临时地址上传至云端
    */
   async uploadAvatar() {
-    if (!this.avatar || this.avatar.startsWith('cloud://')) {
+    if (!this.avatar || !this.avatar.startsWith('cloud://')) {
       return;
     }
 
