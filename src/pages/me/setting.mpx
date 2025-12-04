@@ -97,7 +97,7 @@ createPage({
       const profile = this.profile();
 
       this.setData({
-        avatar: profile?.avatarUrl ?? '',
+        avatar: profile?.avatar_url ?? '',
         nickname: profile?.nickname ?? '',
         gender: profile?.gender ?? '',
         mobile: profile?.phone ?? '',

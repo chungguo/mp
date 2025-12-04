@@ -85,7 +85,7 @@ createPage({
       return RoleName[id as RoleId] || '';
     },
     avatar() {
-      return this.profile()?.avatar || '';
+      return this.profile()?.avatar_url || '';
     },
     nickname() {
       return this.profile()?.nickname || '';
