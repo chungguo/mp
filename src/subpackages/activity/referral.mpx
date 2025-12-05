@@ -1,5 +1,5 @@
 <template>
-  <t-navbar left-arrow bind:go-back="goBack" title="推荐有礼" />
+  <t-navbar left-arrow bind:go-back="goBack" />
 
   <view class="px-[24rpx] pb-[100rpx] mt-[328rpx] bg-[#E8F6FF]">
     <!-- 倒计时 -->
@@ -27,15 +27,14 @@
       <!-- 进度 -->
       <view class="p-[24rpx] bg-white rounded-[20rpx] text-[28rpx]">
         <view class="relative min-h-[200rpx]" wx:if="{{ rewards.length > 0 }}">
-          <view class="w-full flex p-[40rpx] box-border justify-between items-center relative z-2">
+          <view class="w-full flex p-[40rpx] box-border justify-between items-start relative z-2">
             <!-- 奖品 -->
             <view wx:for="{{ rewards }}" wx:key="id"
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
               <text>{{ item.milestone }}位</text>
               <t-image src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" />
-              <text>{{ item.reward_name }}</text>
-              <view
-                class="flex justify-center w-[100rpx] h-[48rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
+              <view class="w-[120rpx] overflow-hidden whitespace-nowrap text-ellipsis">{{ item.reward_name }}</view>
+              <view class="flex justify-center w-[100rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
                 <view wx:if="{{ item.is_unlocked && item.is_claimed }}"
                   class="flex items-center justify-center w-full h-full bg-[#D8D8D8] rounded-[10rpx]">已领取</view>
                 <view wx:if="{{ item.is_unlocked && !item.is_claimed }}" bindtap="onReceive"
