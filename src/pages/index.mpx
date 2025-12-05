@@ -45,7 +45,7 @@
       class="h-[196rpx] bg-white mx-[32rpx] rounded-[22rpx]">
       <block wx:for="{{ grids }}" wx:key="index" wx:for-item="grid">
         <swiper-item class="flex justify-between items-center">
-          <block wx:for="{{ grid }}" wx:key="text" wx:for-item="item">
+          <block wx:for="{{ grid }}" wx:key="text" wx:for-item="item" wx:for-index="index">
             <view class="flex flex-col items-center gap-[16rpx]" data-id="{{ item.id }}" bindtap="navigateToCategory"
               wx:style="margin-left: {{ index === 0 ? '38rpx' : '0'}}; margin-right: {{ index === grid.length - 1 ? '20rpx' : '0'}}">
               <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
