@@ -64,7 +64,7 @@
       <!-- 主内容区域 -->
       <t-tabs value="{{ activeTab }}" bind:change="onTabsChange" theme="line" t-class="tabs mt-[26rpx]">
         <t-tab-panel label="优势项目" value="item">
-          <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
+          <view class="grid grid-cols-2 gap-[22rpx] mt-[26rpx]">
             <block wx:for="{{ items }}" wx:key="id">
               <item item="{{ item }}" />
             </block>
@@ -84,7 +84,7 @@
                   <text
                     class="text-[28rpx] color-[#090E0B] font-bold overflow-hidden whitespace-nowrap text-ellipsis">{{
                       hospital.name }}</text>
-                  <rate value="{{ Math.ceil(hospital.rating) }}" />
+                  <rate value="{{ hospital.rating }}" />
                   <view class="flex items-center gap-[36rpx] of-hidden flex-nowrap">
                     <view wx:for="{{ hospital.tags.split(',') }}" wx:for-item="tag" wx:key="*this"
                       class="border border-[#4A8DFF] flex-shrink-0 text-[18rpx] color-[#4A8DFF] px-[12rpx] py-[2rpx] rounded-[10rpx]">
@@ -299,7 +299,7 @@ createPage({
           items: res.items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
             ...i,
             discountText: this.getDiscount(i),
-          }))
+          })).slice(0, 2)
         })),
       });
     } finally {
