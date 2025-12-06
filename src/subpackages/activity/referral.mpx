@@ -145,6 +145,7 @@ createPage({
   mixins: [navigation],
   data: {
     activity_id: '',
+    share_text: '',
     countdowntime: 0,
     invitation_count: 0,
     invitation_count_target: 0,
@@ -242,6 +243,7 @@ createPage({
 
       this.setData({
         rewards: activity.rewards,
+        share_text: activity.share_text,
       });
     },
     async getProgress() {
@@ -433,7 +435,7 @@ createPage({
           activity_id: Number(this.activity_id),
         }).then((data: { share_code: string }) => {
           resolve({
-            title: '在线问诊，牙齿问题秒回答',
+            title: this.share_text,
             imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
             path: `/pages/consultation/form?activity_id=${this.activity_id}&share_code=${data.share_code}`,
           });
@@ -441,7 +443,7 @@ createPage({
       });
 
       return {
-        title: '在线问诊，牙齿问题秒回答',
+        title: this.share_text,
         path: `/pages/consultation/form?activity_id=${this.activity_id}`,
         imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
         promise,
