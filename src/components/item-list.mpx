@@ -66,6 +66,8 @@ createComponent({
   --td-button-primary-active-border-color: #FF7913;
   --td-button-extra-small-font-size: 24rpx;
   margin: 0;
+  width: 108rpx;
+  height: 44rpx;
 }
 </style>
 

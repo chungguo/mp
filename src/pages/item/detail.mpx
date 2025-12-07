@@ -7,6 +7,8 @@
       <view class="flex items-center gap-[16rpx]">
         <view class="text-[58rpx] font-bold color-[#F42020]">￥{{ item.discount_price }}</view>
         <view class="text-[36rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}</view>
+        <tag wx:if="{{ tags.length > 0 }}" wx:for="{{ tags }}" wx:for-item="tag" wx:key="index" text="{{ tag }}"
+          backgroundColor="#FFAB61" />
       </view>
       <view class="text-[32rpx] font-bold color-[#1D2129]">{{ item.name }}</view>
     </card>
@@ -52,6 +54,11 @@ createPage({
     itemId: 0,
     loading: false,
     item: {} as Item,
+  },
+  computed: {
+    tags() {
+      return this.item?.tags?.split(',').filter(Boolean);
+    }
   },
   ...mapActions(usePaymentStore, ['preOrder']),
   async onLoad(options: Partial<Record<'id', string>> = {}) {
@@ -196,6 +203,7 @@ createPage({
     "card": "@/components/card",
     "sticky-bottom": "@/components/sticky-bottom",
     "hospital-list": "@/components/hospital-list",
+    "tag": "@/components/tag",
   }
 }
 </script>

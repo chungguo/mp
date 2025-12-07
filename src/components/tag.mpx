@@ -1,0 +1,41 @@
+<template>
+  <view wx:if="{{ text }}" class="relative color-white rounded-[8rpx] px-[10rpx] py-[1rpx] box-border text-[24rpx]"
+    wx:style="backgroundColor: {{backgroundColor}};">
+    {{ text }}
+    <view class="absolute arrow left-[-10rpx] top-[50%] w-0 h-0" wx:style="borderRightColor: {{ backgroundColor }}">
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from "@mpxjs/core";
+
+createComponent({
+  properties: {
+    text: {
+      type: String,
+      value: '',
+    },
+    backgroundColor: {
+      type: String,
+      value: '',
+    },
+  }
+})
+</script>
+
+<style lang="less">
+.arrow {
+  transform: translateY(-50%);
+  border-top: 10rpx solid transparent;
+  border-bottom: 10rpx solid transparent;
+  border-right: 10rpx solid transparent;
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {}
+}
+</script>

@@ -24,6 +24,7 @@ export interface Item {
   status: ItemStatus;
   created_at: string;
   updated_at: string;
+  tags: string;
 }
 
 export interface ItemListQuery {
