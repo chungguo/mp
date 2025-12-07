@@ -1,16 +1,27 @@
+<!--
+  HospitalList 组件
+  用途：医院列表组件，用于展示医院列表和快速操作
+  功能：
+    - 以列表形式展示多个医院
+    - 显示医院封面图、名称、地址信息
+    - 提供快速咨询功能入口
+    - 支持点击跳转到医院详情页
+    - 采用纵向列表布局，信息展示紧凑
+  使用场景：医院搜索结果页、附近医院列表、推荐医院页面等
+-->
 <template>
   <view class="flex flex-col gap-[36rpx] mt-[16rpx]">
     <view class="w-full box-border flex items-center gap-[22rpx]" wx:for="{{ hospitals }}" wx:key="id"
       data-id="{{ item.id }}" bindtap="navigateToHospital">
       <view class="w-[134rpx] h-[134rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
-        <t-image src="{{ item.images && item.images[0] }}" width="140rpx" height="140rpx" />
+        <t-image src="{{ item.images && item.images[0] }}" t-class="w-full" mode="widthFix" />
       </view>
-      <view class="flex flex-col justify-center flex-1 gap-[16rpx]">
-        <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis">{{ item.name }}</text>
+      <view class="flex flex-col justify-center flex-1 gap-[16rpx] min-w-0">
+        <text class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis whitespace-nowrap of-hidden">{{ item.name }}</text>
         <view class="flex items-center gap-[64rpx]">
-          <view class="flex flex-1 gap-[12rpx] items-start text-[22rpx] color-[#1D2129]">
+          <view class="flex flex-1 gap-[12rpx] items-start text-[22rpx] color-[#1D2129] min-w-0">
             <t-icon name="location" size="26rpx" />
-            <view>{{ item.address }}</view>
+            <view class="text-ellipsis of-hidden whitespace-nowrap">{{ item.address }}</view>
           </view>
           <t-image t-class="w-[44rpx] h-[44rpx]"
             src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"

@@ -1,0 +1,57 @@
+<!--
+  Rate 组件
+  用途：评分展示组件，用于显示服务或机构的评分信息
+  功能：
+    - 以星级形式显示评分（支持半星显示）
+    - 显示数值化的评分（如 4.5）
+    - 只读模式，用于展示不可修改的评分
+    - 自动限制评分范围在 0-5 之间
+    - 使用橙色主题色，视觉效果友好
+  使用场景：医院评分展示、服务项目评价、用户反馈显示等
+-->
+<template>
+  <view class="flex items-center gap-[16rpx]">
+    <t-rate class="rate" value="{{ value }}" color="#FFC14A" size="30rpx" gap="6rpx" disabled allow-half />
+    <view class="text-[22rpx] color-[#090E0B]" wx:if="{{ value }}">{{ showText }}</view>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from '@mpxjs/core';
+
+createComponent({
+  properties: {
+    value: {
+      type: Number,
+      value: 0,
+      observer(newVal: number) {
+        if (typeof newVal !== 'number' || newVal < 0) {
+          this.setData({ value: 0 });
+        } else if (newVal > 5) {
+          this.setData({ value: 5 });
+        }
+      }
+    },
+  },
+  computed: {
+    showText() {
+      return (this.value || 0).toFixed(1);
+    }
+  },
+});
+</script>
+
+<style lang="less">
+.rate {
+  --td-rate-text-font-size: 22rpx;
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-rate": "tdesign-miniprogram/miniprogram_dist/rate/rate",
+  }
+}
+</script>

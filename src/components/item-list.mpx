@@ -1,3 +1,15 @@
+<!--
+  ItemList 组件
+  用途：医疗服务项目列表组件，用于展示项目列表和快速购买
+  功能：
+    - 以列表形式展示多个服务项目
+    - 显示项目封面图、名称、价格信息
+    - 提供快捷购买按钮，方便用户快速下单
+    - 支持价格对比展示（原价vs折扣价）
+    - 采用横向卡片布局，信息展示清晰
+    - 点击项目或购买按钮都可跳转到详情页
+  使用场景：项目列表页、推荐项目、搜索结果等
+-->
 <template>
   <view class="flex flex-col gap-[16rpx]">
     <view wx:for="{{ items }}" wx:key="id" bindtap="goItemDetail" data-id="{{ item.id }}"
@@ -11,8 +23,8 @@
           item.name }}</view>
         <view class="flex items-center justify-between">
           <view class="flex items-center gap-[10rpx]">
-            <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.original_price }}</view>
-            <view class="text-[24rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.discount_price }}
+            <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.discount_price }}</view>
+            <view class="text-[24rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}
             </view>
           </view>
           <t-button theme="primary" size="extra-small" t-class="buy" bindtap="goItemDetail"

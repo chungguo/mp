@@ -66,7 +66,7 @@
         <t-tab-panel label="优势项目" value="item">
           <view class="grid grid-cols-2 gap-[22rpx] mt-[26rpx]">
             <block wx:for="{{ items }}" wx:key="id">
-              <item item="{{ item }}" />
+              <item-card item="{{ item }}" />
             </block>
           </view>
         </t-tab-panel>
@@ -76,33 +76,7 @@
             <view class="w-full box-border bg-white rounded-[22rpx] px-[26rpx] py-[36rpx]" wx:for="{{ hospitals }}"
               wx:if="{{ hospital.items.length !== 0 }}" wx:key="id" wx:for-item="hospital"
               bindtap="navigateToHospitalDetail" data-id="{{ hospital.id }}">
-              <view class="flex items-center gap-[22rpx]">
-                <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
-                  <t-image src="{{ hospital.images && hospital.images[0] }}" width="140rpx" height="140rpx" />
-                </view>
-                <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
-                  <text
-                    class="text-[28rpx] color-[#090E0B] font-bold overflow-hidden whitespace-nowrap text-ellipsis">{{
-                      hospital.name }}</text>
-                  <rate value="{{ hospital.rating }}" />
-                  <view class="flex items-center gap-[36rpx] of-hidden flex-nowrap">
-                    <view wx:for="{{ hospital.tags.split(',') }}" wx:for-item="tag" wx:key="*this"
-                      class="border border-[#4A8DFF] flex-shrink-0 text-[18rpx] color-[#4A8DFF] px-[12rpx] py-[2rpx] rounded-[10rpx]">
-                      {{ tag }}</view>
-                  </view>
-                </view>
-              </view>
-              <t-divider />
-              <view class="flex flex-col gap-[22rpx]">
-                <view wx:for="{{ hospital.items }}" wx:key="id" class="flex items-center gap-[26rpx]">
-                  <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.discount_price }}</view>
-                  <view wx:if="{{ discountText }}"
-                    class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
-                    {{ item.discountText }}</view>
-                  <view class="text-ellipsis overflow-hidden whitespace-nowrap color-[#090E0B] text-[22rpx]">{{
-                    item.name }}</view>
-                </view>
-              </view>
+              <hospital-card hospital="{{ hospital }}" />
             </view>
           </view>
         </t-tab-panel>
@@ -367,6 +341,7 @@ createPage({
 
     return `${num}折`;
   },
+
   navigateToItemDetail(e: WechatMiniprogram.CustomEvent) {
     const { id } = e.currentTarget.dataset;
     mpx.navigateTo({
@@ -439,9 +414,8 @@ createPage({
       "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
       "t-grid": "tdesign-miniprogram/miniprogram_dist/grid/grid",
       "t-grid-item": "tdesign-miniprogram/miniprogram_dist/grid-item/grid-item",
-      "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
-      "rate": "@/components/rating",
-      "item": "@/components/item",
+      "item-card": "@/components/item-card",
+      "hospital-card": "@/components/hospital-card",
     }
   }
 </script>

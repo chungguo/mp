@@ -24,7 +24,7 @@
     </view>
   </view>
 
-  <view class="px-26rpx">
+  <view class="px-[26rpx]">
     <view class="relative">
       <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-button.png" mode="widthFix"
         class="w-full" />
@@ -54,14 +54,14 @@ createPage({
     text(): string {
       if (this.score) {
         const scoreNum = parseInt(this.score, 10);
-        if (scoreNum >= 70 && scoreNum <= 100) {
-          return '你的牙齿状况良好，记得定期洗牙保持';
-        } else if (scoreNum >= 50 && scoreNum < 70) {
-          return '你的牙齿待改善，客服帮你支支招！';
-        } else if (scoreNum >= 0 && scoreNum < 50) {
-          return '你的牙齿急需就医，立即让医生帮忙诊断！';
-        } else {
+        if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100) {
           return '添加企业微信，即刻领取专属0元福利';
+        } else if (scoreNum >= 70) {
+          return '你的牙齿状况良好，记得定期洗牙保持';
+        } else if (scoreNum >= 50) {
+          return '你的牙齿待改善，客服帮你支支招！';
+        } else {
+          return '你的牙齿急需就医，立即让医生帮忙诊断！';
         }
       } else {
         return 'AI 助手正在检测你的牙齿健康度...';

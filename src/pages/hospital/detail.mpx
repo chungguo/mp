@@ -109,7 +109,7 @@ page {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "sticky-bottom": "@/components/sticky-bottom",
     "item-list": "@/components/item-list",
-    "rate": "@/components/rating",
+    "rate": "@/components/rate",
     "card": "@/components/card"
   }
 }

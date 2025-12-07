@@ -10,7 +10,7 @@
     <view class="flex flex-col gap-[24rpx]">
       <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
         <block wx:for="{{ items }}" wx:key="id">
-          <item item="{{ item }}" />
+          <item-card item="{{ item }}" />
         </block>
       </view>
     </view>
@@ -187,7 +187,7 @@ page {
     "t-tabs": "tdesign-miniprogram/miniprogram_dist/tabs/tabs",
     "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
-    "item": "@/components/item",
+    "item-card": "@/components/item-card",
   }
 }
 </script>

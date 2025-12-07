@@ -1,3 +1,11 @@
+<!--
+  Card 组件
+  用途：通用卡片容器组件，用于展示带标题的内容区域
+  功能：
+    - 可选的卡片标题，标题左侧有蓝色装饰线
+    - 支持插槽内容，可插入任意内容
+    - 统一的卡片样式（圆角、白色背景、内边距）
+-->
 <template>
   <view class="card px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF]">
     <view wx:if="{{ !!title }}" class="font-bold text-[30rpx] title mb-[16rpx]">{{ title }}</view>
@@ -9,7 +17,7 @@
 import { createComponent } from '@mpxjs/core';
 
 createComponent({
-  props: {
+  properties: {
     title: {
       type: String,
       value: '',

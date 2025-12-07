@@ -137,7 +137,7 @@ createPage({
         },
       });
 
-      const { total, records } = res.data.data ?? {
+      const { total, records } = res.data?.data ?? {
         total: 0,
         records: [],
       };
@@ -145,8 +145,8 @@ createPage({
       const newRecords = records.map(item => ({
         id: item.id,
         status: item.status,
-        statusconfig: statusMap[item.status] ?? statusMap[0],
-        nickname: item.user.nickname,
+        statusconfig: (item.status >= 0 && item.status < statusMap.length) ? statusMap[item.status] : statusMap[0],
+        nickname: item.user?.nickname || '未知用户',
         created_at: dayjs(item.created_at).format('YYYY-MM-DD HH:mm'),
       }));
 
@@ -164,8 +164,8 @@ createPage({
         });
       }
 
-      // 更新页码
-      if (newRecords.length > 0) {
+      // 更新页码 - 只有在加载更多时才递增页码
+      if (newRecords.length > 0 && !isRefresh) {
         this.setData({
           page: this.page + 1,
         });
@@ -215,12 +215,16 @@ createPage({
         method: 'POST',
       });
 
-      mpx.hideLoading();
       mpx.showToast({
         title: '重试成功',
         icon: 'success',
       });
       this.queryAiTestRecords(true);
+    } catch (error) {
+      mpx.showToast({
+        title: '重试失败，请稍后重试',
+        icon: 'error',
+      });
     } finally {
       mpx.hideLoading();
     }

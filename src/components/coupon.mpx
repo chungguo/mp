@@ -1,3 +1,13 @@
+<!--
+  Coupon 组件
+  用途：优惠券展示组件，用于显示优惠券信息和操作按钮
+  功能：
+    - 显示优惠券金额（大字体展示）
+    - 显示优惠券名称、适用医院、有效期等信息
+    - 支持自定义操作按钮文字（如"立即领取"）
+    - 背景采用米黄色设计，视觉效果突出
+    - 点击事件触发优惠券操作
+-->
 <template>
   <view class="coupon-item bg-[#F9F1E6] rounded-[20rpx] relative box-border" bind:tap="onClick">
     <image class="relative z-1" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385847.png"
@@ -39,28 +49,37 @@ createComponent({
   },
   computed: {
     large_text() {
-      return Math.floor(this.properties.coupon.coupon_amount / 100)
+      const amount = this.properties.coupon?.coupon_amount;
+      if (typeof amount !== 'number' || isNaN(amount)) {
+        return '-';
+      }
+      return Math.floor(amount / 100);
     },
     applicable_hospital() {
-      const hospitalIds = this.properties.coupon.hospital_ids;
+      const hospitalIds = this.properties.coupon?.hospital_ids;
+      const hospitalNames = this.properties.coupon?.hospital_names;
 
       if (hospitalIds === '*') {
         return '适用医院：全部'
       }
 
-      return `适用医院：${this.properties.coupon.hospital_names}`;
+      return `适用医院：${hospitalNames || ''}`;
     },
     until() {
-      const validity_type = this.properties.coupon.validity_type;
-      const expire_time = this.properties.coupon.expire_time;
-      const validity_days = this.properties.coupon.validity_days;
+      const validity_type = this.properties.coupon?.validity_type;
+      const expire_time = this.properties.coupon?.expire_time;
+      const validity_days = this.properties.coupon?.validity_days;
 
-      if (validity_type === ValidityType.FixedTime) {
-        return `有效期至：${dayjs(expire_time).format('YYYY-MM-DD')}`
+      if (validity_type === ValidityType.FixedTime && expire_time) {
+        try {
+          return `有效期至：${dayjs(expire_time).format('YYYY-MM-DD')}`;
+        } catch (error) {
+          return '有效期至：--';
+        }
       }
 
-      if (validity_type === ValidityType.AfterDays) {
-        return `领取后${validity_days}天有效`
+      if (validity_type === ValidityType.AfterDays && typeof validity_days === 'number') {
+        return `领取后${validity_days}天有效`;
       }
 
       return '';
@@ -68,7 +87,10 @@ createComponent({
   },
   methods: {
     onClick() {
-      this.triggerEvent('coupon-click', { id: this.properties.coupon.id })
+      const couponId = this.properties.coupon?.id;
+      if (couponId) {
+        this.triggerEvent('coupon-click', { id: couponId });
+      }
     }
   }
 })

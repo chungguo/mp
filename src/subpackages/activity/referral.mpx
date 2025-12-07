@@ -326,7 +326,7 @@ createPage({
           icon: 'error',
         });
       } finally {
-        this.loading = true;
+        this.loading = false;
       }
     },
     async onConfirm() {
@@ -448,6 +448,9 @@ createPage({
         imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
         promise,
       }
+    },
+    goBack() {
+      this.safeNavigateBack();
     },
     onRewrite() {
       this.addressComfirmVisible = false;

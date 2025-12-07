@@ -1,3 +1,15 @@
+<!--
+  PCA 组件（省市区选择器）
+  用途：省市区三级联动地址选择组件，用于用户选择所在地区
+  功能：
+    - 支持省市区三级联动选择
+    - 从远程加载省市区数据（腾讯云存储）
+    - 支持默认值设置和回显
+    - 提供完整的地址信息获取接口
+    - 支持单独获取某省的城市列表或某城市的区县列表
+    - 级联选择：选择省份自动更新城市列表，选择城市自动更新区县列表
+  使用场景：用户注册地址填写、服务地址选择、地区筛选等
+-->
 <template>
   <t-picker visible="{{ visible }}" value="{{ area }}" title="选择地区" cancelBtn="取消" confirmBtn="确认"
     bindchange="onPickerChange" bindpick="onColumnChange" bindcancel="onPickerCancel" bindclose="onPickerCancel">
@@ -53,22 +65,21 @@ createComponent({
         method: 'GET',
       });
 
-      this.pca = res.data;
-
-      this.provinces = this.pca.map(item => ({
-        label: item.name,
-        value: item.name,
-      }));
-
-      this.cities = (this.pca[0]?.children || []).map(item => ({
-        label: item.name,
-        value: item.name,
-      }));
-
-      this.counties = (this.pca[0]?.children?.[0]?.children || []).map(item => ({
-        label: item.name,
-        value: item.name,
-      }));
+      this.setData({
+        pca: res.data,
+        provinces: res.data.map(item => ({
+          label: item.name,
+          value: item.name,
+        })),
+        cities: (res.data[0]?.children || []).map(item => ({
+          label: item.name,
+          value: item.name,
+        })),
+        counties: (res.data[0]?.children?.[0]?.children || []).map(item => ({
+          label: item.name,
+          value: item.name,
+        })),
+      });
 
       // 如果有初始值，设置默认选中
       if (this.properties.value && this.properties.value.length > 0) {
