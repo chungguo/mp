@@ -461,7 +461,6 @@ createPage({
     restoreFormFromStorage() {
       try {
         const storedForm = mpx.getStorageSync(STORAGE_KEY);
-        console.log('恢复地址表单', storedForm);
         if (storedForm) {
           this.form = JSON.parse(storedForm);
         }

@@ -48,6 +48,7 @@
     <!-- 联系方式授权 -->
     <t-cell title="联系方式" required t-class-center="cell-center" t-class-note="cell-note">
       <view slot="note" wx:if="{{ mobile }}">{{ mobile }}</view>
+      <view slot="note" wx:if="{{ !mobile }}">未授权</view>
       <t-icon slot='right-icon' name='swap' bind:tap="onSwap"></t-icon>
     </t-cell>
 
@@ -79,14 +80,7 @@
     <t-button block variant="primary" bindtap="onConfirm">好的</t-button>
   </view>
 
-  <t-popup visible="{{ popupVisible }}" close-on-overlay-click="{{ false }}" placement="bottom"
-    t-class="h-[30vh] p-[100rpx] box-border" t-class-content="flex flex-col justify-start">
-    <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
-    <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
-      bindgetphonenumber="onGetPhoneNumber">
-      微信一键登录
-    </t-button>
-  </t-popup>
+  <phone-popup visible="{{ popupVisible }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
 <script lang="ts">
@@ -95,8 +89,6 @@ import { Gender, useUserStore } from "@/store/user";
 import { useReferralStore } from '@/subpackages/activity/store';
 import { createPage } from "@mpxjs/core";
 import request, { BASE_URL } from '@/common/request';
-import type { } from 'tdesign-miniprogram/miniprogram_dist/upload/type';
-import { getPhoneNumber } from '@/common/phone';
 import navigation from '@/mixins/navigation';
 
 const SYMPTOM = [
@@ -267,7 +259,7 @@ createPage({
 
     if (!mobile) {
       mpx.showToast({
-        title: '请授权获取联系方式',
+        title: '请授权联系方式',
         icon: 'error'
       });
       return false;
@@ -377,12 +369,13 @@ createPage({
   },
 
   // 获取手机号授权
-  async onGetPhoneNumber(e: WechatMiniprogram.ButtonGetPhoneNumber) {
-    const phone = await getPhoneNumber(e);
-    if (phone) {
-      this.mobile = phone;
-      this.popupVisible = false;
-    }
+  async onPhoneConfirmed(e: WechatMiniprogram.CustomEvent) {
+    this.mobile = e.detail.phone;
+    this.popupVisible = false;
+  },
+
+  onPhoneCanceled() {
+    this.popupVisible = false;
   },
 });
 </script>
@@ -409,7 +402,7 @@ createPage({
     "t-notice-bar": "tdesign-miniprogram/miniprogram_dist/notice-bar/notice-bar",
     "t-dialog": "tdesign-miniprogram/miniprogram_dist/dialog/dialog",
     "t-result": "tdesign-miniprogram/miniprogram_dist/result/result",
-    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup"
+    "phone-popup": "@/components/phone-popup",
   }
 }
 </script>

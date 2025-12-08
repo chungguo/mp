@@ -1,11 +1,11 @@
 <template>
-  <t-popup visible="{{ visible }}" placement="bottom" t-class="h-[30vh] p-[100rpx] box-border relative"
-    t-class-content="flex flex-col justify-start">
+  <t-popup visible="{{ visible }}" close-on-overlay-click="{{ false }}" placement="bottom"
+    t-class="h-[30vh] p-[100rpx] box-border relative popup" t-class-content="flex flex-col justify-start">
     <t-icon slot="close-btn" name="close" class="color-[#CCCCCC] relative top-[-80rpx] right-[-80rpx]"
       bindtap="closePopup" />
-    <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
+    <text class="text-center text-[36rpx] font-bold mb-[60rpx]">微信登录健牙宝小程序</text>
     <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
-      bindgetphonenumber="onGetPhoneNumber">
+      bindgetphonenumber="onGetPhoneNumber" t-class="gap-[16rpx] login-button">
       微信一键登录
     </t-button>
   </t-popup>
@@ -44,6 +44,17 @@ createComponent({
   }
 })
 </script>
+
+<style lang="less">
+.popup {
+  background: linear-gradient(180deg, #ECF9FF 0%, #FFFFFF 100%);
+}
+
+.login-button {
+  --td-button-primary-border-color: transparent;
+  background: linear-gradient(214deg, #67D3F7 0%, #0D9CF6 100%) !important;
+}
+</style>
 
 <script type="application/json">
 {
