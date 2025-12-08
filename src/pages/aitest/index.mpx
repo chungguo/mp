@@ -159,6 +159,11 @@ createPage({
           camera: 'front',
         });
 
+        mpx.showLoading({
+          title: '上传中...',
+          mask: true,
+        });
+
         const images: string[] = await uploadImages(res.tempFiles.map((t: { tempFilePath: string }) => t.tempFilePath));
 
         if (!images.length) {
@@ -185,6 +190,8 @@ createPage({
           content: '上传失败，请重试～',
           showCancel: false,
         })
+      } finally {
+        mpx.hideLoading();
       }
     },
 

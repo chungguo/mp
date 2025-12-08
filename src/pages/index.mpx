@@ -58,7 +58,7 @@
 
     <view class="p-[32rpx] pt-0">
       <!-- 特惠洗牙券广告 -->
-      <t-swiper wx:if="{{ banner.length !== 0 }}" list="{{ banner }}" height="184rpx" bind:click="onSwiperClick"
+      <t-swiper wx:if="{{ swiperlist.length !== 0 }}" list="{{ swiperlist }}" height="184rpx" bind:click="onSwiperClick"
         navigation="{{ { type: 'dots-bar' } }}" t-class="mt-[26rpx]" />
 
       <!-- 主内容区域 -->
@@ -130,7 +130,7 @@ createPage({
 
     grids: [] as Category[][],
 
-    banner: [] as string[],
+    banner: [] as Record<'image' | 'path' | 'type', string>[],
 
     activeTab: '',
 
@@ -166,11 +166,6 @@ createPage({
       }
     },
   },
-  computed: {
-    newUserVal() {
-      return this.newUser();
-    }
-  },
 
   watch: {
     async activeTab(newValue) {
@@ -186,20 +181,17 @@ createPage({
         this.queryDoctors();
       }
     },
-    newUserVal(v) {
-      if (v === true) {
-        this.setData({
-          banner: ['https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png']
-        });
-      }
-      if (v === false) {
-        this.queryReturningUserActivity();
-      }
-    },
+  },
+
+  computed: {
+    swiperlist() {
+      return this.banner.map(b => b.image);
+    }
   },
   onLoad() {
     this.activeTab = 'item';
     this.fullfillCategory();
+    this.queryReturningUserActivity();
   },
 
   /**
@@ -221,18 +213,11 @@ createPage({
     }
   },
   async onSwiperClick(e: WechatMiniprogram.CustomEvent) {
-    if (this.newUserVal) {
-      mpx.navigateTo({
-        url: '/pages/coupon/list',
-      });
-      return;
-    }
-
     const { index } = e.detail;
 
-    const activity = this.returningUserActivities[index];
+    const path = this.banner[index]?.path;
 
-    if (!activity) {
+    if (!path) {
       mpx.showToast({
         title: '活动不存在',
         icon: 'error',
@@ -241,18 +226,37 @@ createPage({
     }
 
     mpx.navigateTo({
-      url: `/subpackages/activity/referral?activity_id=${activity.id}`,
+      url: path,
     });
   },
 
   async queryReturningUserActivity() {
     const store = useReferralStore();
     const res = await store.avaliable();
-    const activities = res.filter(item => item.status === 2);
+    const newuser = this.newUser();
+
+    const banner = [];
+
+    if (newuser) {
+      banner.push({
+        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png',
+        path: '/pages/coupon/list',
+        type: 'coupon',
+      });
+    }
+
+    res.filter(item => item.status === 2).forEach(item => {
+      if (item.banner_image && item.id) {
+        banner.push({
+          image: item.banner_image,
+          path: `/subpackages/activity/referral?activity_id=${item.id}`,
+          type: 'referral',
+        });
+      }
+    });
 
     this.setData({
-      returningUserActivities: activities,
-      banner: activities.map(item => item.banner_image).filter(Boolean),
+      banner,
     });
   },
 
@@ -379,7 +383,8 @@ createPage({
     });
   },
   navigateToActivityReferral() {
-    const activity = this.returningUserActivities[0];
+    const activity = this.banner.find(item => item.type === 'referral');
+
     if (!activity) {
       mpx.showToast({
         title: '活动不存在',
@@ -389,7 +394,7 @@ createPage({
     }
 
     mpx.navigateTo({
-      url: `/subpackages/activity/referral?activity_id=${activity.id}`,
+      url: activity.path,
     });
   },
   navigateToCategory(e: WechatMiniprogram.CustomEvent) {

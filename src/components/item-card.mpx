@@ -21,19 +21,20 @@
         <view class="flex items-center">
           <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.discount_price }}</view>
           <view class="text-[24rpx] color-[#1D2129] opacity-40 font-400 line-through mx-[6rpx]">￥{{ item.original_price
-          }}
+            }}
           </view>
           <view wx:if="{{ discountText }}"
             class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx] ml-[12rpx]">
             {{ discountText }}</view>
         </view>
         <view wx:if="{{ tags.length > 0 }}" class="flex items-center gap-[8rpx]">
-          <view wx:for="{{ tags }}" wx:key="*this" class="px-8rpx py-[1rpx] text-[20rpx] color-[#FF9B37] bg-[#FFEFDF] rounded-[8rpx]">
+          <view wx:for="{{ tags }}" wx:key="*this"
+            class="px-8rpx py-[1rpx] text-[20rpx] color-[#FF9B37] bg-[#FFEFDF] rounded-[8rpx]">
             {{ item }}</view>
         </view>
       </view>
-      <view class="w-full overflow-hidden whitespace-nowrap text-ellipsis">
-        <text class="text-[22rpx] color-[#1D2129]">{{ item.hospitals }}</text>
+      <view class="w-full overflow-hidden whitespace-nowrap text-ellipsis text-[22rpx] color-[#1D2129]">
+        {{ item.hospitals }}
       </view>
     </view>
   </view>
