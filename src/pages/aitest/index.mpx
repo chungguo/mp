@@ -76,19 +76,10 @@
       </view>
     </view>
   </t-popup>
-
-  <t-popup visible="{{ mobilePopup }}" placement="bottom" t-class="h-[30vh] p-[100rpx] box-border"
-    t-class-content="flex flex-col justify-start">
-    <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
-    <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
-      bindgetphonenumber="onGetPhoneNumber">
-      微信一键登录
-    </t-button>
-  </t-popup>
+  <phone-popup visible="{{ mobilePopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
 <script lang="ts">
-import { getPhoneNumber } from "@/common/phone";
 import request from "@/common/request";
 import { uploadImages } from "@/common/upload";
 import { useUserStore } from "@/store/user";
@@ -112,7 +103,7 @@ createPage({
     },
   },
   ...mapState(useUserStore, ['profile']),
-  ...mapActions(useUserStore, ['queryProfile', 'updateProfile']),
+  ...mapActions(useUserStore, ['queryProfile']),
   computed: {
     popupTitle() {
       return !this.images.length ? '如何上传' : '上传第二张照片'
@@ -239,16 +230,13 @@ createPage({
       }
     },
 
-    async onGetPhoneNumber(e: WechatMiniprogram.ButtonGetPhoneNumber) {
-      const phone = await getPhoneNumber(e);
+    onPhoneConfirmed() {
+      this.mobilePopup = false;
+      this.mediaPopup = true;
+    },
 
-      if (phone) {
-        await this.updateProfile({
-          phone,
-        });
-        this.mobilePopup = false;
-        this.mediaPopup = true;
-      }
+    onPhoneCanceled() {
+      this.mobilePopup = false;
     },
 
     reupload() {
@@ -320,7 +308,8 @@ page {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
     "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
-    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image"
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "phone-popup": "@/components/phone-popup",
   }
 }
 </script>

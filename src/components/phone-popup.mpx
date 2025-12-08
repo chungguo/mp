@@ -1,0 +1,57 @@
+<template>
+  <t-popup visible="{{ visible }}" placement="bottom" t-class="h-[30vh] p-[100rpx] box-border relative"
+    t-class-content="flex flex-col justify-start">
+    <t-icon slot="close-btn" name="close" class="color-[#CCCCCC] relative top-[-80rpx] right-[-80rpx]"
+      bindtap="closePopup" />
+    <text class="text-center mb-[60rpx]">微信账号登录健牙宝小程序</text>
+    <t-button block shape='round' icon="logo-wechat-stroke" theme="primary" open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhoneNumber">
+      微信一键登录
+    </t-button>
+  </t-popup>
+</template>
+
+<script lang="ts">
+import { createComponent } from "@mpxjs/core";
+import { getPhoneNumber } from "@/common/phone";
+import { useUserStore } from "@/store/user";
+
+createComponent({
+  properties: {
+    visible: {
+      type: Boolean,
+      value: false,
+    },
+  },
+  methods: {
+    async onGetPhoneNumber(e: WechatMiniprogram.ButtonGetPhoneNumber) {
+      const { updateProfile } = useUserStore();
+      const phone = await getPhoneNumber(e);
+      try {
+        if (phone) {
+          await updateProfile({
+            phone,
+          });
+          this.triggerEvent('confirmed', { phone });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    closePopup() {
+      this.triggerEvent('canceled', {});
+    }
+  }
+})
+</script>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
+  }
+}
+</script>
