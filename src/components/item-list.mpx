@@ -49,7 +49,7 @@ createComponent({
   methods: {
     goItemDetail(e: WechatMiniprogram.CustomEvent) {
       const { id } = e.currentTarget.dataset;
-      mpx.navigateTo({
+      mpx.redirectTo({
         url: `/pages/item/detail?id=${id}`
       });
     },
