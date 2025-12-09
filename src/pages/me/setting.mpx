@@ -55,12 +55,16 @@
     </view>
 
     <!-- 保存按钮 -->
-    <button class="absolute left-0 right-0 z-2 m-64rpx bottom-0 text-white bg-#3D61F5" bind:tap="onSubmit">保存</button>
+    <view class="flex flex-col gap-[24rpx] absolute left-0 right-0 z-2 m-64rpx bottom-0 text-white">
+      <t-button block bind:tap="onSubmit" theme="primary">保存</t-button>
+      <t-button block bindtap="onRevoke">解除授权</t-button>
+    </view>
   </view>
 </template>
 
 <script lang="ts">
 import request, { BASE_URL } from '@/common/request';
+import navigation from '@/mixins/navigation';
 import { Gender, GenderOptions, useUserStore } from '@/store/user';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
@@ -68,6 +72,7 @@ import dayjs from 'dayjs';
 import { pickBy } from 'lodash-es';
 
 createPage({
+  mixins: [navigation],
   data: {
     avatar: '',
     nickname: '',
@@ -109,7 +114,7 @@ createPage({
   },
 
   goBack() {
-    mpx.navigateBack();
+    this.safeNavigateBack();
   },
 
   handleClose() {
@@ -253,6 +258,25 @@ createPage({
         },
       });
     });
+  },
+
+  async onRevoke() {
+    mpx.showLoading({
+      title: '正在保存...'
+    });
+    try {
+      await this.updateProfile({
+        avatar: '',
+        nickname: '',
+        gender: 0,
+        mobile: '',
+        birthday: '',
+      });
+
+      this.goBack();
+    } finally {
+      mpx.hideLoading();
+    }
   },
 });
 </script>
