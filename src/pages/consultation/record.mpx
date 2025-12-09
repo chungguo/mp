@@ -23,8 +23,10 @@
 import mpx, { createPage } from "@mpxjs/core";
 import request from '@/common/request';
 import dayjs from 'dayjs';
+import navigation from "@/mixins/navigation";
 
 createPage({
+  mixins: [navigation],
   data: {
     loading: false,
     records: [] as {
@@ -81,9 +83,7 @@ createPage({
   },
 
   goBack() {
-    mpx.navigateTo({
-      url: '../me/index',
-    });
+    this.safeNavigateBack('/pages/aitest/result');
   },
 
   // 跳转到咨询页面
