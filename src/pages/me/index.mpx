@@ -85,10 +85,10 @@ createPage({
       return RoleName[id as RoleId] || '';
     },
     avatar() {
-      return this.profile()?.avatar_url || '';
+      return this.profile()?.avatar_url || 'https://wx.qlogo.cn/mmhead/JiavaWZxX4YvKdD0CxJ2bCdULLk9icoE0U1v1hhPCvVyHrNm5bKNap9MXUgiavH769tLs0seAAeRGE/0';
     },
     nickname() {
-      return this.profile()?.nickname || '';
+      return this.profile()?.nickname || '点击完成登录';
     },
   },
 
