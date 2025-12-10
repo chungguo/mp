@@ -343,6 +343,13 @@ createPage({
         title: '正在保存...',
       });
 
+      if (this.options.share_code) {
+        const store = useReferralStore();
+        await store.accept({
+          share_code: this.options.share_code,
+        });
+      }
+
       await request.fetch({
         url: '/profiles',
         data: {
@@ -354,13 +361,6 @@ createPage({
           oral_photos: images,
         },
       });
-
-      if (this.options.share_code) {
-        const store = useReferralStore();
-        await store.accept({
-          share_code: this.options.share_code,
-        });
-      }
 
       this.success = true;
     } finally {
