@@ -83,7 +83,7 @@ createPage({
   },
 
   goBack() {
-    this.safeNavigateBack('/pages/aitest/result');
+    this.safeNavigateBack('/pages/consultation/form');
   },
 
   // 跳转到咨询页面
