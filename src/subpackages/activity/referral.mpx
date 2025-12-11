@@ -217,10 +217,12 @@ createPage({
     this.checkProfile();
   },
   methods: {
-    checkProfile() {
-      const { profile } = useUserStore();
+    async checkProfile() {
+      const store = useUserStore();
 
-      if (!profile?.phone) {
+      await store.queryProfile();
+
+      if (!store.profile?.phone) {
         this.phonepopup = true;
         return;
       }
