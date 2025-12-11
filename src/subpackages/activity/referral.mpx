@@ -129,6 +129,8 @@
 
   <!-- 全屏加载 -->
   <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
+
+  <phone-popup visible="{{ phonepopup }}" bind:canceled="onPhonePopupClose" bind:confirmed="onPhoneConfirmed" />
 </template>
 
 <script lang="ts">
@@ -138,6 +140,7 @@ import { ReturningUserActivity, useReferralStore, type Reward } from './store';
 import dayjs from 'dayjs';
 import navigation from '@/mixins/navigation';
 import { isEmpty } from 'lodash-es';
+import { useUserStore } from '@/store/user';
 
 const STORAGE_KEY = 'referral_address_form';
 
@@ -178,6 +181,7 @@ createPage({
     ],
     claimRewardId: 0,
     rewards: [] as Reward[],
+    phonepopup: false,
   },
   computed: {
     areaText(): string {
@@ -208,18 +212,31 @@ createPage({
   async onLoad(options = {}) {
     this.setData({
       activity_id: options.activity_id ?? '',
-      loading: true,
     });
 
-    try {
-      await this.getActivityInfo();
-      await this.getProgress();
-    } finally {
-      this.loading = false;
-    }
-    this.restoreFormFromStorage();
+    this.checkProfile();
   },
   methods: {
+    checkProfile() {
+      const { profile } = useUserStore();
+
+      if (!profile?.phone) {
+        this.phonepopup = true;
+        return;
+      }
+
+      this.init();
+    },
+    async init() {
+      try {
+        this.loading = true;
+        await this.getActivityInfo();
+        await this.getProgress();
+        this.restoreFormFromStorage();
+      } finally {
+        this.loading = false;
+      }
+    },
     async getActivityInfo() {
       const activities = await this.avaliable();
       const activity = activities.find((item: ReturningUserActivity) => item.id.toString() === this.activity_id);
@@ -449,6 +466,16 @@ createPage({
         promise,
       }
     },
+    onPhonePopupClose() {
+      mpx.showToast({
+        title: '请先完成登录',
+        icon: 'error',
+      })
+    },
+    onPhoneConfirmed() {
+      this.phonepopup = false;
+      this.checkProfile();
+    },
     goBack() {
       this.safeNavigateBack();
     },
@@ -575,7 +602,8 @@ page {
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
-    "pca": "../../components/pca",
+    "pca": "@/components/pca",
+    "phone-popup": "@/components/phone-popup",
   }
 }
 </script>

@@ -52,6 +52,8 @@ createComponent({
 
 .login-button {
   --td-button-primary-border-color: transparent;
+  --td-button-primary-active-border-color: transparent;
+  --td-button-primary-active-bg-color: linear-gradient(214deg, #67D3F7 0%, #0D9CF6 100%);
   background: linear-gradient(214deg, #67D3F7 0%, #0D9CF6 100%) !important;
 }
 </style>
