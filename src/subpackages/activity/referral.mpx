@@ -33,7 +33,7 @@
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
               <text>{{ item.milestone }}位</text>
               <t-image src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" mode="widthFix"
-                wx:style="opacity: {{item.is_unlocked && !item.is_claimed ? 1 : 0.5}}" />
+                wx:style="opacity: {{(item.is_unlocked && !item.is_claimed) ? 1 : 0.85}}" />
               <view class="w-[120rpx] overflow-hidden whitespace-nowrap text-ellipsis">{{ item.reward_name }}</view>
               <view class="flex justify-center w-[100rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
                 <view wx:if="{{ item.is_unlocked && item.is_claimed }}"
@@ -46,7 +46,7 @@
           </view>
           <view
             class="w-full box-border h-[20rpx] bg-[#0000000D] rounded-[12rpx] absolute left-0 top-[140rpx] z-1 px-[30rpx]">
-            <view class="progress h-full rounded-[12rpx] z-2" wx:style="{{ {width: percent} }}"></view>
+            <view class="progress h-full rounded-[12rpx] z-2 left-[-30rpx]" wx:style="{{ {width: percent} }}"></view>
           </view>
         </view>
 
@@ -193,9 +193,9 @@ createPage({
     percent() {
       if (this.invitation_count_target > 0) {
         const percent = (this.invitation_count / this.invitation_count_target) * 100;
-        return `${Math.max(percent > 100 ? 100 : percent, 0)}%`;
+        return percent ? `calc(${Math.max(percent > 100 ? 100 : percent, 0)}% + 60rpx)` : '30rpx';
       }
-      return "0%";
+      return "30rpx";
     },
     invitation_gap() {
       const achievedCount = this.rewards.filter(item => item.is_unlocked).length;
