@@ -76,7 +76,7 @@
       </view>
     </view>
   </t-popup>
-  <phone-popup visible="{{ mobilePopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
+  <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
 <script lang="ts">
@@ -89,7 +89,7 @@ import { mapActions, mapState } from '@mpxjs/pinia';
 createPage({
   data: {
     mediaPopup: false,
-    mobilePopup: false,
+    phonepopup: false,
     images: [] as string[],
     isDiagnosing: false,
   },
@@ -131,7 +131,7 @@ createPage({
         await this.queryProfile();
 
         if (!this.profile()?.phone) {
-          this.mobilePopup = true;
+          this.phonepopup = true;
         } else {
           this.mediaPopup = true;
         }
@@ -231,12 +231,12 @@ createPage({
     },
 
     onPhoneConfirmed() {
-      this.mobilePopup = false;
+      this.phonepopup = false;
       this.mediaPopup = true;
     },
 
     onPhoneCanceled() {
-      this.mobilePopup = false;
+      this.phonepopup = false;
     },
 
     reupload() {
@@ -264,7 +264,7 @@ createPage({
       await this.queryProfile();
 
       if (!this.profile()?.phone) {
-        this.mobilePopup = true;
+        this.phonepopup = true;
       } else {
         mpx.redirectTo({
           url: './result',

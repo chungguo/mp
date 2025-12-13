@@ -16,7 +16,7 @@
   <view gutter="14" class="px-32rpx mt-64rpx relative z-2 flex gap-32rpx">
     <view
       class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
-      bind:tap="navigateToMyCoupon">
+      bind:tap="onClickMyCoupon">
       <view class="relative w-72rpx h-72rpx">
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-coupon.png" class="w-full h-full" />
       </view>
@@ -24,7 +24,7 @@
     </view>
     <view
       class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
-      bind:tap="navigateToConsultationList">
+      bind:tap="onClickConsultationHistory">
       <view class="relative w-72rpx h-72rpx">
         <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-history.png" class="w-full h-full" />
       </view>
@@ -42,6 +42,7 @@
     </view>
   </t-dialog>
   <version />
+  <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
 <script lang="ts">
@@ -53,6 +54,8 @@ import { mapState, mapActions } from '@mpxjs/pinia';
 createPage({
   data: {
     scaned: false,
+    phonepopup: false,
+    callback: '',
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
@@ -68,9 +71,12 @@ createPage({
   },
 
   onShow() {
+    this.callback = '';
     this.queryProfile();
   },
-
+  onUnload() {
+    this.callback = '';
+  },
   computed: {
     showScanCoupon() {
       const id = this.profile()?.role_id;
@@ -121,6 +127,36 @@ createPage({
     }
   },
 
+  onClickMyCoupon() {
+    this.callback = 'navigateToMyCoupon';
+    this.checkProfile();
+  },
+
+  onClickConsultationHistory() {
+    this.callback = 'navigateToConsultationList';
+    this.checkProfile();
+  },
+
+  async checkProfile() {
+    if (!this.profile()?.phone) {
+      this.phonepopup = true;
+      return false;
+    }
+    this.onPhoneConfirmed();
+  },
+
+  onPhoneConfirmed() {
+    if (!this.callback) {
+      return;
+    }
+
+    this[this.callback]();
+  },
+
+  onPhoneCanceled() {
+    this.phonepopup = false;
+  },
+
   navigateToProfile() {
     mpx.navigateTo({
       url: '/pages/me/setting',
@@ -169,6 +205,7 @@ page {
     "t-dialog": "tdesign-miniprogram/miniprogram_dist/dialog/dialog",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "version": "@/components/version",
+    "phone-popup": "@/components/phone-popup",
   }
 }
 </script>

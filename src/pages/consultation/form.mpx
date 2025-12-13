@@ -80,7 +80,7 @@
     <t-button block variant="primary" bindtap="onConfirm">好的</t-button>
   </view>
 
-  <phone-popup visible="{{ popupVisible }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
+  <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
 <script lang="ts">
@@ -110,7 +110,7 @@ createPage({
     success: false,
 
     // 授权手机号浮层
-    popupVisible: false,
+    phonepopup: false,
 
     // 其他症状是否显示
     showOtherSymptom: false,
@@ -162,7 +162,7 @@ createPage({
       await userStore.queryProfile();
 
       if (!userStore.profile?.phone) {
-        this.popupVisible = true;
+        this.phonepopup = true;
       } else {
         this.mobile = userStore.profile?.phone;
       }
@@ -199,7 +199,7 @@ createPage({
 
   // 切换手机号
   onSwap() {
-    this.popupVisible = true;
+    this.phonepopup = true;
   },
 
   // 返回上一页
@@ -371,11 +371,11 @@ createPage({
   // 获取手机号授权
   async onPhoneConfirmed(e: WechatMiniprogram.CustomEvent) {
     this.mobile = e.detail.phone;
-    this.popupVisible = false;
+    this.phonepopup = false;
   },
 
   onPhoneCanceled() {
-    this.popupVisible = false;
+    this.phonepopup = false;
   },
 });
 </script>
