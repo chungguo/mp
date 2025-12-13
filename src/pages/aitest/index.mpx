@@ -260,10 +260,16 @@ createPage({
       });
     },
 
-    goResult() {
-      mpx.redirectTo({
-        url: './result',
-      });
+    async goResult() {
+      await this.queryProfile();
+
+      if (!this.profile()?.phone) {
+        this.mobilePopup = true;
+      } else {
+        mpx.redirectTo({
+          url: './result',
+        });
+      }
     }
   }
 });

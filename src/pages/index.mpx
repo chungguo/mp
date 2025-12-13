@@ -97,7 +97,7 @@
                 <view class="flex justify-between items-center">
                   <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
                   <view wx:if="{{ item.experienceYear }}" class="color-[#51555E] text-[24rpx]">从业{{ item.experienceYear
-                  }}年</view>
+                    }}年</view>
                 </view>
                 <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
                   <view class="text-ellipsis of-hidden whitespace-nowrap">{{ item.hospitals }}</view>
@@ -233,17 +233,12 @@ createPage({
   async queryReturningUserActivity() {
     const store = useReferralStore();
     const res = await store.avaliable();
-    const newuser = this.newUser();
 
-    const banner = [];
-
-    if (newuser) {
-      banner.push({
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png',
-        path: '/pages/coupon/list',
-        type: 'coupon',
-      });
-    }
+    const banner = [{
+      image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png',
+      path: '/pages/coupon/list',
+      type: 'coupon',
+    }];
 
     res.filter(item => item.status === 2).forEach(item => {
       if (item.banner_image && item.id) {

@@ -1,12 +1,15 @@
 import mpx from '@mpxjs/core';
 import mpxFetch from '@mpxjs/fetch';
 import { useUserStore } from '@/store/user';
+import { log } from './log';
 
 export const BASE_URL = 'https://yesmilesh.com/api/v1';
 
 mpx.use(mpxFetch);
 
 mpx.xfetch.interceptors.request.use(async (config) => {
+  log.info('request', config);
+
   const { url = '', method = "POST", header } = config;
 
   const userStore = useUserStore();
@@ -26,6 +29,8 @@ mpx.xfetch.interceptors.request.use(async (config) => {
 });
 
 mpx.xfetch.interceptors.response.use((res) => {
+  log.info('response', res);
+
   if (res.data.error) {
     mpx.showModal({
       title: '提示',

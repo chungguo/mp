@@ -38,11 +38,14 @@
       </view>
     </view>
   </sticky-bottom>
+
+  <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
 <script lang="ts">
 import mpx, { createPage } from "@mpxjs/core";
 import { mapActions } from '@mpxjs/pinia';
+import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
 import { usePaymentStore } from "@/store/payment";
@@ -54,6 +57,7 @@ createPage({
     itemId: 0,
     loading: false,
     item: {} as Item,
+    phonepopup: false,
   },
   computed: {
     tags() {
@@ -96,8 +100,7 @@ createPage({
         this.loading = false;
       }
     },
-
-    async onBuy() {
+    async makeOrder() {
       try {
         this.loading = true;
 
@@ -155,6 +158,15 @@ createPage({
         this.loading = false;
       }
     },
+    async onBuy() {
+      const store = useUserStore();
+      await store.queryProfile();
+      if (!store.profile?.phone) {
+        this.phonepopup = true;
+      } else {
+        this.makeOrder();
+      }
+    },
 
     goBack() {
       this.safeNavigateBack('/pages/index')
@@ -164,6 +176,13 @@ createPage({
       mpx.navigateTo({
         url: '/pages/consultation/form'
       })
+    },
+    onPhoneConfirmed() {
+      this.phonepopup = false;
+      this.makeOrder();
+    },
+    onPhoneCanceled() {
+      this.phonepopup = false;
     },
   }
 });
@@ -204,6 +223,7 @@ createPage({
     "sticky-bottom": "@/components/sticky-bottom",
     "hospital-list": "@/components/hospital-list",
     "tag": "@/components/tag",
+    "phone-popup": "@/components/phone-popup",
   }
 }
 </script>
