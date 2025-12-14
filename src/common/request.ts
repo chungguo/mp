@@ -7,9 +7,9 @@ export const BASE_URL = 'https://yesmilesh.com/api/v1';
 
 mpx.use(mpxFetch);
 
-mpx.xfetch.interceptors.request.use(async (config) => {
-  log.info('request', config);
+const info = mpx.getAccountInfoSync();
 
+mpx.xfetch.interceptors.request.use(async (config) => {
   const { url = '', method = "POST", header } = config;
 
   const userStore = useUserStore();
@@ -29,9 +29,12 @@ mpx.xfetch.interceptors.request.use(async (config) => {
 });
 
 mpx.xfetch.interceptors.response.use((res) => {
-  log.info('response', res);
+  if (info.miniProgram.envVersion !== 'release') {
+    log.info(res.requestConfig ?? {}, res.statusCode || res.status, res.data ?? {});
+  }
 
   if (res.data.error) {
+    log.error(res.requestConfig ?? {}, res.statusCode || res.status, res.data ?? {});
     mpx.showModal({
       title: '提示',
       content: res.data.details || res.data.error,
@@ -41,6 +44,7 @@ mpx.xfetch.interceptors.response.use((res) => {
   }
 
   if (!isNaN(res.status) && (res.status < 200 || res.status >= 300)) {
+    log.error(res.requestConfig ?? {}, res.statusCode || res.status, res.data ?? {});
     mpx.showModal({
       title: '提示',
       content: res.data || '系统异常，请稍候再试～',
