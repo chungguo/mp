@@ -2,7 +2,7 @@
   <!-- 口腔咨询表单页面 -->
   <t-navbar title="口腔咨询" left-arrow bind:go-back="goBack"></t-navbar>
 
-  <view class="mx-[32rpx] mt-[200rpx] p-[32rpx] relative bg-white rounded-[32rpx] min-h-[50vh]" wx:if="{{ !success }}">
+  <view class="mx-[32rpx] mt-[200rpx] p-[32rpx] relative bg-white rounded-[32rpx] min-h-[50vh]">
 
     <t-notice-bar theme='warning' t-class="rounded-[12rpx]" visible="{{ true }}" prefixIcon="{{ false }}">
       <view slot="content" class="flex items-center gap-[12rpx]">
@@ -62,22 +62,9 @@
     </t-cell>
   </view>
 
-  <view wx:else class="form-container flex flex-col justify-center items-center">
-    <t-result theme="success" icon="{{ false }}">
-      <image slot="image" class="w-[144rpx] mb-[48rpx]"
-        src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/success.png" mode="widthFix" />
-      <view slot="title">提交成功</view>
-      <view slot="description">医师评估审核后，将第一时间与您取得联系，请保持通话畅通～</view>
-    </t-result>
-  </view>
-
   <!-- 提交按钮 -->
-  <view wx:if="{{ !success }}" class="px-[30rpx] py-[40rpx] submit-button">
+  <view class="px-[30rpx] py-[40rpx] submit-button">
     <t-button block variant="primary" bindtap="onSubmit">提交咨询</t-button>
-  </view>
-
-  <view wx:else class="px-[30rpx] py-[40rpx] submit-button">
-    <t-button block variant="primary" bindtap="onConfirm">好的</t-button>
   </view>
 
   <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
@@ -105,9 +92,6 @@ createPage({
   mixins: [navigation],
   data: {
     mobile: '',
-
-    // 提交成功
-    success: false,
 
     // 授权手机号浮层
     phonepopup: false,
@@ -362,7 +346,9 @@ createPage({
         },
       });
 
-      this.success = true;
+      mpx.navigateTo({
+        url: '/pages/consultation/wxwork',
+      });
     } finally {
       mpx.hideLoading();
     }
@@ -400,8 +386,6 @@ createPage({
     "t-upload": "tdesign-miniprogram/miniprogram_dist/upload/upload",
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "t-notice-bar": "tdesign-miniprogram/miniprogram_dist/notice-bar/notice-bar",
-    "t-dialog": "tdesign-miniprogram/miniprogram_dist/dialog/dialog",
-    "t-result": "tdesign-miniprogram/miniprogram_dist/result/result",
     "phone-popup": "@/components/phone-popup",
   }
 }
@@ -441,15 +425,5 @@ page {
   border-radius: 12px;
   height: 104rpx;
   font-weight: bold;
-}
-
-.form-container {
-  margin-inline: 32rpx;
-  margin-block-start: 200rpx;
-  padding: 32rpx;
-  position: relative;
-  background-color: white;
-  border-radius: 32rpx;
-  min-height: 50vh;
 }
 </style>

@@ -62,6 +62,7 @@ image {
       "./pages/me/setting",
       "./pages/consultation/form",
       "./pages/consultation/record",
+      "./pages/consultation/wxwork",
       "./pages/hospital/list",
       "./pages/hospital/detail",
       "./pages/coupon/list",

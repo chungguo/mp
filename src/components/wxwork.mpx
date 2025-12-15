@@ -1,0 +1,52 @@
+<template>
+  <view class="container relative mt-[46rpx] px-[40rpx] box-border text-[#1D2129]">
+    <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/aitest-wxwork.webp" t-class="w-full"
+      mode="widthFix" />
+    <view class="font-bold text-[30rpx] text-white absolute top-[133rpx] left-[300rpx]">0 元领官方限时福利</view>
+    <view class="absolute left-[80rpx] top-[280rpx] w-[380rpx] text-center text-[42rpx] font-bold text-[#4A8DFF]">{{
+      title }}</view>
+    <view
+      class="absolute top-[570rpx] left-[50%] translate-x-[-50%] flex flex-col justify-center items-center gap-[16rpx]">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-qrcode.png"
+        t-class="w-[278rpx]" mode="widthFix" />
+      <view class="text-[28rpx]">长按保存扫码添加</view>
+    </view>
+    <view wx:if="{{ benefits.length > 0 }}" class="absolute left-0 right-0 bottom-[10rpx] px-[76rpx] py-[36rpx]">
+      <card>
+        <view class="flex flex-col gap-[16rpx]">
+          <view wx:for="{{ benefits }}" wx:key="index" class="flex items-center gap-[12rpx]">
+            <view class="text-[6rpx] text-[#4A8DFF]">●</view>
+            <view class="text-[24rpx] flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">{{ item }}</view>
+          </view>
+        </view>
+      </card>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from "@mpxjs/core";
+
+createComponent({
+  properties: {
+    title: {
+      type: String,
+      value: '添加牙科小助理，获取专属建议'
+    },
+    benefits: {
+      type: Array,
+      value: [],
+    }
+  },
+})
+</script>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "card": "@/components/card",
+  }
+}
+</script>

@@ -1,10 +1,11 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack"></t-navbar>
 
-  <wxwork title="{{ text }}" benefits="{{ benefits }}" />
+  <wxwork title="咨询已提交添加牙科小助理获取专属建议" benefits="{{ benefits }}" />
+
   <view class="px-[76rpx] mt-[56rpx]">
     <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
-      <text slot="content" class="color-[#1D2129] text-[28rpx]">查看检测结果</text>
+      <text slot="content" class="color-[#1D2129] text-[28rpx]">查看咨询记录</text>
     </t-button>
   </view>
 </template>
@@ -16,41 +17,19 @@ import navigation from '@/mixins/navigation';
 createPage({
   mixins: [navigation],
   data: {
-    score: '',
     benefits: [
       '福利1：免费口腔全面检查',
       '福利2：优惠洗牙与美白项目',
       '福利3：专家一对一咨询'
     ]
   },
-  onLoad(options) {
-    this.score = options.score || '';
-  },
-  computed: {
-    text(): string {
-      if (this.score) {
-        const scoreNum = parseInt(this.score, 10);
-        if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100) {
-          return '添加牙科小助理，获取专属建议';
-        } else if (scoreNum >= 70) {
-          return '你的牙齿状况良好，记得定期洗牙保持，添加小助理获取专属建议';
-        } else if (scoreNum >= 50) {
-          return '你的牙齿待改善，客服帮你支支招！添加小助理获取专属建议';
-        } else {
-          return '你的牙齿急需就医，立即让医生帮忙诊断！添加小助理获取专属建议';
-        }
-      } else {
-        return '检测报告生成中，可直接添加牙科小助理获取专属建议';
-      }
-    }
-  },
   methods: {
     goBack() {
-      this.safeNavigateBack('/pages/aitest/index');
+      this.safeNavigateBack('/pages/consultation/form');
     },
     goResult() {
       mpx.redirectTo({
-        url: '/pages/aitest/result',
+        url: '/pages/consultation/record',
       });
     }
   }
@@ -61,7 +40,7 @@ createPage({
 <script type="application/json">
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "AI 牙齿健康测",
+  "navigationBarTitleText": "口腔咨询",
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
