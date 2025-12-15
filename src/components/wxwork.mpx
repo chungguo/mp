@@ -8,7 +8,7 @@
     <view
       class="absolute top-[570rpx] left-[50%] translate-x-[-50%] flex flex-col justify-center items-center gap-[16rpx]">
       <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-qrcode.png"
-        t-class="w-[278rpx]" mode="widthFix" />
+        t-class="w-[278rpx]" mode="widthFix" show-menu-by-longpress="{{ true }}" />
       <view class="text-[28rpx]">长按保存扫码添加</view>
     </view>
     <view wx:if="{{ benefits.length > 0 }}" class="absolute left-0 right-0 bottom-[10rpx] px-[76rpx] py-[36rpx]">
