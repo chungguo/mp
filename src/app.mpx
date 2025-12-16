@@ -36,9 +36,9 @@ createApp({
 
 <style lang="less">
 page {
-  @brand-color: #3D61F5;
-  --td-brand-color: #3D61F5;
-  --primary-color: #3D61F5;
+  @brand-color: #4A8DFF;
+  --td-brand-color: #4A8DFF;
+  --primary-color: #4A8DFF;
   --td-tab-nav-bg-color: transparent;
   --td-tab-item-color: rgba(29, 33, 41, 0.5);
   --td-tab-item-active-color: #1D2129;
@@ -77,6 +77,8 @@ image {
       "./pages/item/list",
       "./pages/package/insurance",
       "./pages/package/success",
+      "./pages/order/list",
+      "./pages/order/success",
     ],
     "subPackages": [
       {

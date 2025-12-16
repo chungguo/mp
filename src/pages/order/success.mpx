@@ -1,0 +1,46 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack"></t-navbar>
+  <view class="mt-[66rpx] text-[46rpx] text-[#14C64C] font-bold text-center">核销成功</view>
+
+  <view class="mt-[600rpx] px-[160rpx]">
+    <view class="text-center text-[#86909C] text-[28rpx]">可在PC管理端查看核销记录</view>
+    <t-button block t-class="mt-[46rpx]" theme="primary" bindtap="goBack">知道了</t-button>
+  </view>
+</template>
+
+<script lang="ts">
+import navigation from "@/mixins/navigation";
+import { createPage } from "@mpxjs/core";
+
+createPage({
+  mixins: [navigation],
+  data: {
+
+  },
+  methods: {
+    goBack() {
+      this.safeNavigateBack('/pages/me/index');
+    },
+  }
+})
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-background: transparent;
+  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/success.webp");
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "订单核销",
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+  }
+}
+</script>
