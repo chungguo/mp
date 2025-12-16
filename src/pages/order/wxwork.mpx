@@ -1,0 +1,64 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack"></t-navbar>
+
+  <wxwork title="{{ text }}" benefits="{{ benefits }}" />
+
+  <view class="px-[76rpx] mt-[56rpx]">
+    <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
+      <text slot="content" class="color-[#1D2129] text-[28rpx]">查看订单</text>
+    </t-button>
+  </view>
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from "@mpxjs/core";
+import navigation from '@/mixins/navigation';
+
+createPage({
+  mixins: [navigation],
+  data: {
+    benefits: []
+  },
+  computed: {
+    text() {
+      return '添加牙科小助理，获取专属建议';
+    }
+  },
+  methods: {
+    goBack() {
+      this.safeNavigateBack('/pages/order/list');
+    },
+    goResult() {
+      mpx.redirectTo({
+        url: '/pages/order/list',
+      });
+    }
+  }
+});
+
+</script>
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "医院客服",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "wxwork": "@/components/wxwork",
+  }
+}
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-color: black;
+  --td-navbar-background: transparent;
+  --td-button-default-bg-color: rgba(255, 255, 255, 0.6);
+  --td-button-default-active-bg-color: rgba(255, 255, 255, 0.6);
+  --td-button-default-active-border-color: #317DFF;
+  background-image: url('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/gradient.png');
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+</style>

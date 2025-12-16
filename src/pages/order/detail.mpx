@@ -1,0 +1,32 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="订单详情" />
+  <order-footer />
+</template>
+
+<script lang="ts">
+import navigation from '@/mixins/navigation';
+import mpx, { createPage } from '@mpxjs/core';
+
+createPage({
+  mixins: [navigation],
+  data: {
+  },
+  methods: {
+    goBack() {
+      this.safeNavigateBack('/pages/order/list');
+    },
+  }
+});
+</script>
+
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "订单详情",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "order-footer": "@/components/order/footer",
+  }
+}
+</script>

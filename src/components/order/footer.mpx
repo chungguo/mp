@@ -1,0 +1,102 @@
+<template>
+  <sticky-bottom>
+    <view wx:if="{{ status === 'pending' }}" class="flex items-center justify-between">
+      <view class="flex items-center gap-[76rpx]">
+        <view class="small-btn" bindtap="onMakePhoneCall">
+          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
+            t-class="w-[40rpx]" mode="widthFix" />
+          医院电话
+        </view>
+
+        <view class="small-btn">
+          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+            t-class="w-[40rpx]" mode="widthFix" />
+          医院客服
+        </view>
+      </view>
+      <t-button theme="primary" t-class="m-0 w-[326rpx] pay">立即支付</t-button>
+    </view>
+
+    <view wx:else class="flex items-center justify-between">
+      <view class="large-btn" bindtap="onMakePhoneCall">
+        <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
+          t-class="w-[40rpx]" mode="widthFix" />
+        医院电话
+      </view>
+
+      <view class="large-btn" bindtap="onConsultation">
+        <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+          t-class="w-[40rpx]" mode="widthFix" />
+        医院客服
+      </view>
+    </view>
+  </sticky-bottom>
+</template>
+
+<script lang="ts">
+import mpx, { createComponent } from "@mpxjs/core";
+
+createComponent({
+  properties: {
+    status: {
+      type: String,
+      value: '',
+    }
+  },
+  methods: {
+    onMakePhoneCall() {
+      mpx.makePhoneCall({
+        phoneNumber: '13000000000'
+      });
+    },
+    onConsultation() {
+      mpx.navigateTo({
+        url: '/pages/order/wxwork',
+      });
+    },
+  }
+})
+</script>
+
+<style>
+.large-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 36rpx;
+  width: 310rpx;
+  border: 1rpx solid #5392FF;
+  padding-block: 16rpx;
+  gap: 12rpx;
+  font-size: 30rpx;
+  color: #5392FF;
+  font-weight: bold;
+}
+
+.small-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  font-size: 22rpx;
+}
+
+.pay {
+  --td-button-border-radius: 40rpx;
+  --td-button-primary-bg-color: #FF7913;
+  --td-button-primary-border-color: #FF7913;
+  --td-button-primary-active-bg-color: #FF7913;
+  --td-button-primary-active-border-color: #FF7913;
+}
+</style>
+
+<script type="application/json">
+{
+  "component": true,
+  "usingComponents": {
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "sticky-bottom": "@/components/sticky-bottom",
+  }
+}
+</script>
