@@ -9,106 +9,72 @@
   </t-tabs>
 
   <view class="px-[26rpx] py-[16rpx] flex flex-col gap-[16rpx]">
-    <order-item wx:for="{{ orders }}" wx:key="id" order="{{ item }}" />
+    <order-item wx:for="{{ screenOrders }}" wx:key="id" order="{{ item }}" />
 
     <!-- 空状态 -->
-    <view wx:if="{{ filteredOrders.length === 0 }}" class="flex justify-center items-center py-[100rpx] px-[10rpx]">
+    <view wx:if="{{ screenOrders.length === 0 }}" class="flex justify-center items-center py-[100rpx] px-[10rpx]">
       <t-empty wx:if="{{ activeTab === 'all' }}" icon="cart" description="暂无订单" />
       <t-empty wx:elif="{{ activeTab === 'pending' }}" icon="time" description="暂无待付款订单" />
       <t-empty wx:elif="{{ activeTab === 'unused' }}" icon="shop" description="暂无待使用订单" />
       <t-empty wx:elif="{{ activeTab === 'refunded' }}" icon="close-circle" description="暂无退款订单" />
     </view>
   </view>
+
+  <t-loading wx:if="{{ loading }}" fullscreen />
 </template>
 
 <script lang="ts">
-import { createPage } from '@mpxjs/core'
+import { createPage } from '@mpxjs/core';
+import { type OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
+import { mapActions } from '@mpxjs/pinia';
 
 createPage({
   data: {
     activeTab: 'all',
-    orders: [
-      {
-        id: '1',
-        productImage: 'https://tdesign.gtimg.com/miniprogram/images/example1.png',
-        productName: '口腔洁牙套餐',
-        paymentTime: '2024-01-15',
-        status: 'pending'
-      },
-      {
-        id: '2',
-        productImage: 'https://tdesign.gtimg.com/miniprogram/images/example2.png',
-        productName: '牙齿矫正咨询',
-        paymentTime: '2024-01-14',
-        status: 'unused'
-      },
-      {
-        id: '3',
-        productImage: 'https://tdesign.gtimg.com/miniprogram/images/example3.png',
-        productName: '儿童口腔检查',
-        paymentTime: '2024-01-13',
-        status: 'refunded'
-      },
-      {
-        id: '4',
-        productImage: 'https://tdesign.gtimg.com/miniprogram/images/example4.png',
-        productName: '美白牙齿套餐',
-        paymentTime: '2024-01-12',
-        status: 'cancelled'
-      },
-      {
-        id: '5',
-        productImage: 'https://tdesign.gtimg.com/miniprogram/images/example5.png',
-        productName: '根管治疗套餐',
-        paymentTime: '2024-01-11',
-        status: 'used'
-      }
-    ]
+    orders: [] as OrderItem[],
+    loading: true,
   },
-
+  ...mapActions(usePaymentStore, ['queryOrders']),
   computed: {
-    filteredOrders() {
-      switch (this.data.activeTab) {
+    screenOrders() {
+      switch (this.activeTab) {
         case 'pending':
-          return this.data.orders.filter(order => order.status === 'pending')
+          return this.orders.filter(order => order.status === OrderStatus.PENDING);
         case 'unused':
-          return this.data.orders.filter(order => order.status === 'unused')
+          return this.orders.filter(order => order.status === OrderStatus.PAID);
         case 'refunded':
-          return this.data.orders.filter(order => order.status === 'refunded')
+          return this.orders.filter(order => order.status === OrderStatus.REFUNDED);
         default:
-          return this.data.orders
+          return this.orders;
       }
     }
+  },
+
+  onLoad() {
+    this.fetchOrders();
   },
 
   methods: {
+    async fetchOrders() {
+      this.loading = true;
+      try {
+        const res = await this.queryOrders({
+          page: 1,
+          page_size: 100,
+        });
+
+        this.setData({
+          orders: res.orders,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
     onTabChange(e: any) {
       this.setData({
         activeTab: e.detail.value
-      })
+      });
     },
-
-    getStatusText(status: string): string {
-      const statusMap: Record<string, string> = {
-        pending: '待付款',
-        unused: '待使用',
-        refunded: '已退款',
-        cancelled: '已取消',
-        used: '已使用'
-      }
-      return statusMap[status] || status
-    },
-
-    getStatusTheme(status: string): string {
-      const themeMap: Record<string, string> = {
-        pending: 'warning',
-        unused: 'primary',
-        refunded: 'danger',
-        cancelled: 'default',
-        used: 'success'
-      }
-      return themeMap[status] || 'default'
-    }
   },
 })
 </script>
@@ -137,6 +103,7 @@ page {
     "t-tab-panel": "tdesign-miniprogram/miniprogram_dist/tab-panel/tab-panel",
     "t-empty": "tdesign-miniprogram/miniprogram_dist/empty/empty",
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "order-item": "@/components/order/list-item",
   }
 }

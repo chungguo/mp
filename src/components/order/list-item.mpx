@@ -1,47 +1,48 @@
 <template>
   <view class="bg-white rounded-[20rpx] px-[26rpx] py-[30rpx] flex gap-[20rpx]">
     <!-- 商品图片 -->
-    <t-image src="{{ order.productImage }}" t-class="w-[178rpx] h-[136rpx] rounded-[16rpx] overflow-hidden"
+    <t-image src="{{ order.item_cover_image }}" t-class="w-[178rpx] h-[136rpx] rounded-[16rpx] overflow-hidden"
       mode="widthFix" />
 
     <!-- 商品信息 -->
     <view class="flex-1 flex justify-between items-center">
       <!-- 左：名称 + 时间 -->
       <view class="flex-1 flex flex-col gap-[16rpx]">
-        <view class="text-[30rpx] text-[#1D2129] font-bold">{{ order.productName }}</view>
+        <view class="text-[30rpx] text-[#1D2129] font-bold">{{ order.item_name }}</view>
         <view class="text-[22rpx] text-[#A4A6A9]">
-          <view wx:if="{{ status === 'unused' }}">付款：{{ order.paymentTime }}</view>
-          <view wx:if="{{ status === 'refunded' }}">退款：{{ order.paymentTime }}</view>
-          <view wx:if="{{ status === 'used' }}">使用：{{ order.paymentTime }}</view>
-          <view wx:if="{{ status === 'pending' }}" class="flex items-center gap-[6rpx] text-[#1D2129]">
+          <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx] text-[#1D2129]">
             请在
             <t-count-down t-class="text-[#FF7913] text-[22rpx]" size="small" content="default" format="mm:ss"
               time="{{ time }}" splitWithUnit bindfinish="onFinish" />
             内付款
           </view>
+          <view wx:if="{{ status === 1 }}">付款：{{ payTime }}</view>
+          <view wx:if="{{ status === 2 }}">退款：{{ refundTime }}</view>
+          <view wx:if="{{ status === 4 }}">使用：{{ useTime }}</view>
         </view>
       </view>
       <!-- 右：状态 + 操作 -->
       <view class="h-full flex flex-col justify-between items-end">
         <view class="text-[#1D2129] font-bold text-[30rpx]" wx:class="{{ {
-                refunded: status === 'refunded',
-                pending: status === 'pending',
-                cancelled: status === 'cancelled',
-                unused: status === 'unused'
+                pending: status === 0,
+                unused: status === 1,
+                refunded: status === 2,
+                cancelled: status === 3,
               } }}">
-          已使用</view>
-        <view wx:class="{{ { 'unused-button': status === 'unused', 'pending-button': status === 'pending'} }}">
+          {{ statusText }}</view>
+        <view wx:class="{{ { 'unused-button': status === 1, 'pending-button': status === 0} }}">
           <t-button theme="default" variant="outline" size="extra-small" bindtap="navigateToOrderDetail">{{ buttonText
-          }}</t-button>
+            }}</t-button>
         </view>
       </view>
     </view>
   </view>
 </template>
 
-
 <script lang="ts">
+import { OrderStatus } from "@/store/payment";
 import mpx, { createComponent } from "@mpxjs/core";
+import dayjs from "dayjs";
 
 createComponent({
   props: {
@@ -51,11 +52,36 @@ createComponent({
     }
   },
   data: {
-    status: '',
+    status: -1,
   },
   computed: {
     time() {
-      return 1 * 3 * 1000;
+      const diff = dayjs(this.order.created_at).add(10, 'minute').diff(dayjs(), 'millisecond');
+
+      if (diff < 0) {
+        this.status = OrderStatus.CLOSED;
+      }
+
+      return diff;
+    },
+    payTime() {
+      return this.order.paid_at ? dayjs(this.order.paid_at).format('YYYY-MM-DD') : '-';
+    },
+    refundTime() {
+      return this.order.refund_at ? dayjs(this.order.refund_at).format('YYYY-MM-DD') : '-';
+    },
+    useTime() {
+      return this.order.used_at ? dayjs(this.order.used_at).format('YYYY-MM-DD') : '-';
+    },
+    statusText() {
+      const statusMap: Record<string, string> = {
+        [OrderStatus.CLOSED]: '已取消',
+        [OrderStatus.PAID]: '待使用',
+        [OrderStatus.PENDING]: '待支付',
+        [OrderStatus.REFUNDED]: '已退款',
+        [OrderStatus.USED]: '已使用'
+      }
+      return statusMap[this.status] || '-'
     },
     buttonText() {
       return {
@@ -74,7 +100,7 @@ createComponent({
   },
   methods: {
     onFinish() {
-      this.status = 'cancelled';
+      this.status = OrderStatus.CLOSED;
     },
     navigateToOrderDetail() {
       mpx.redirectTo({

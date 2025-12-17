@@ -1,17 +1,172 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="订单详情" />
+  <view class="text-[#1D2129]">
+    <view class="flex items-center justify-center gap-[16rpx] pt-[46rpx] pb-[16rpx]">
+      <t-image src="{{ statusIcon }}" t-class="w-[36rpx]" mode="widthFix" />
+      <view class="text-[36rpx] font-bold">{{ statusText }}</view>
+    </view>
+    <!-- 待使用 -->
+    <view wx:if="{{ status === 1 && expireTime }}" class="text-center text-[24rpx]">
+      {{ expireTime }} 到期
+    </view>
+
+    <!-- 已退款 -->
+    <view wx:if="{{ status === 2 }}">已退回原付款账户</view>
+
+    <!-- 待支付 -->
+    <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx]">
+      <view>订单在</view>
+      <t-count-down t-class="text-[#FF7913] text-[22rpx]" size="small" content="default" format="mm:ss"
+        time="{{ time }}" splitWithUnit bindfinish="onFinish" />
+      <view>后失效</view>
+    </view>
+
+    <view class="px-[26rpx] flex flex-col gap-[26rpx] mt-[36rpx]">
+      <!-- 商品详情 -->
+      <view class="bg-white rounded-[20rpx] px-[26rpx] py-[36rpx]">
+        <view class="flex items-center">
+          <view class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap text-[30rpx] font-bold">
+            {{ order.hospital_name }}
+          </view>
+          <view class="flex items-center text-[#A4A6A9] text-[22rpx]">
+            更多可用医院
+            <t-icon name="chevron-right" size="22rpx" />
+          </view>
+        </view>
+        <t-divider />
+        <view class="flex items-center gap-[26rpx]">
+          <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
+            mode="aspectFill" />
+          <view class="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap flex flex-col gap-[10rpx]">
+            <view class="text-[28rpx] font-bold">{{ order.item_name }}</view>
+            <view class="text-[22rpx] text-[#A4A6A9]">随时退，过期退</view>
+          </view>
+          <!-- 已取消 -->
+          <view wx:if="{{ status !== 3 }}" class="flex items-baseline font-bold text-[22rpx]"
+            wx:class="{{ {'line-through': status === 2} }}">
+            <view>付款：</view>
+            <view class="text-[36rpx]">100</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 订单信息 -->
+      <view class="bg-white rounded-[20rpx] px-[26rpx] py-[36rpx]">
+        <view class="flex items-start justify-between">
+          <view class="text-[30rpx] font-bold">订单信息</view>
+          <!-- 已支付，待使用 -->
+          <t-button wx:if="{{ status === 1 }}" t-class="refund-btn" theme="default" variant="outline">申请退款</t-button>
+        </view>
+        <view class="flex flex-col gap-[18rpx] text-[#090E0B] text-[24rpx] mt-[22rpx]">
+          <view>订单编号：{{ order.order_no }}</view>
+          <!-- 待支付 -->
+          <view wx:if="{{ status === 0 }}">下单时间：{{ createTime }}</view>
+          <!-- 待使用 -->
+          <view wx:if="{{ status === 1 }}">付款时间：{{ paidTime }}</view>
+          <!-- 已退款 -->
+          <view wx:if="{{ status === 2 }}">退款时间：{{ refundTime }}</view>
+          <!-- 已使用 -->
+          <view wx:if="{{ status === 4 }}">使用时间：{{ usedTime }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <t-loading wx:if="{{ loading }}" fullscreen />
   <order-footer />
 </template>
 
 <script lang="ts">
 import navigation from '@/mixins/navigation';
-import mpx, { createPage } from '@mpxjs/core';
+import { OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
+import { createPage } from '@mpxjs/core';
+import { mapActions } from '@mpxjs/pinia';
+import dayjs from 'dayjs';
 
 createPage({
   mixins: [navigation],
   data: {
+    id: '',
+    status: -1,
+    loading: false,
+    order: {} as OrderItem,
+  },
+  ...mapActions(usePaymentStore, ['queryOrderDetail']),
+  watch: {
+    order: {
+      handler(newVal) {
+        this.status = newVal.status;
+      },
+      immediate: true,
+    }
+  },
+  computed: {
+    statusText() {
+      const statusMap: Record<string, string> = {
+        [OrderStatus.CLOSED]: '已取消',
+        [OrderStatus.PAID]: '待使用',
+        [OrderStatus.PENDING]: '待支付',
+        [OrderStatus.REFUNDED]: '已退款',
+        [OrderStatus.USED]: '已使用'
+      }
+      return statusMap[this.order.status] || '-';
+    },
+    statusIcon() {
+      const statusMap: Record<string, string> = {
+        [OrderStatus.CLOSED]: 'cancelled',
+        [OrderStatus.PAID]: 'unused',
+        [OrderStatus.PENDING]: 'pending',
+        [OrderStatus.REFUNDED]: 'refund',
+        [OrderStatus.USED]: 'used'
+      };
+      const name = statusMap[this.order.status];
+
+      return name ? `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/icon/${name}.webp` : '';
+    },
+    paidTime() {
+      return this.order.paid_at ? dayjs(this.order.paid_at).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
+    expireTime() {
+      return this.order.expire_at ? dayjs(this.order.expire_at).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
+    createTime() {
+      return this.order.created_at ? dayjs(this.order.created_at).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
+    refundTime() {
+      return this.order.refund_at ? dayjs(this.order.refund_at).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
+    usedTime() {
+      return this.order.used_at ? dayjs(this.order.used_at).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
+    time() {
+      const diff = dayjs(this.order.created_at).add(10, 'minute').diff(dayjs(), 'millisecond');
+
+      if (diff < 0) {
+        this.status = OrderStatus.CLOSED;
+      }
+
+      return diff;
+    }
+  },
+  onLoad(options) {
+    if (!options.id) {
+      this.safeNavigateBack('/pages/order/list');
+      return;
+    }
+    this.id = options.id;
+    this.queryDetail();
   },
   methods: {
+    async queryDetail() {
+      try {
+        this.loading = true;
+        const order = await this.queryOrderDetail(this.id);
+        this.setData({
+          order,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
     goBack() {
       this.safeNavigateBack('/pages/order/list');
     },
@@ -19,6 +174,16 @@ createPage({
 });
 </script>
 
+<style lang="less">
+.refund-btn {
+  margin: 0;
+  --td-button-font-weight: normal;
+  --td-button-medium-font-size: 28rpx;
+  --td-button-medium-height: 54rpx;
+  --td-button-border-radius: 24rpx;
+  --td-button-default-outline-color: #A4A6A9;
+}
+</style>
 
 <script type="application/json">
 {
@@ -26,6 +191,11 @@ createPage({
   "navigationBarTitleText": "订单详情",
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "order-footer": "@/components/order/footer",
   }
 }
