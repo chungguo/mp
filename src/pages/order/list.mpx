@@ -1,5 +1,5 @@
 <template>
-  <t-navbar title="我的订单"></t-navbar>
+  <t-navbar left-arrow bind:go-back="goBack" title="我的订单"></t-navbar>
 
   <t-tabs value="{{ activeTab }}" bind:change="onTabChange">
     <t-tab-panel value="all" label="全部订单" />
@@ -27,8 +27,10 @@
 import { createPage } from '@mpxjs/core';
 import { type OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
 import { mapActions } from '@mpxjs/pinia';
+import navigation from '@/mixins/navigation';
 
 createPage({
+  mixins: [navigation],
   data: {
     activeTab: 'all',
     orders: [] as OrderItem[],
@@ -74,6 +76,9 @@ createPage({
       this.setData({
         activeTab: e.detail.value
       });
+    },
+    goBack() {
+      this.safeNavigateBack('/pages/index');
     },
   },
 })

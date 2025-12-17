@@ -1,19 +1,22 @@
 <template>
   <t-navbar title="爱牙无忧包" left-arrow bind:go-back="goBack"></t-navbar>
   <view class="flex item-center gap-[26rpx] px-[26rpx] box-border mt-[240rpx]">
-    <t-image t-class="flex-1" mode="widthFix" bindtap="onReceive"
-      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/basic.webp" />
-    <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToItemDetail"
-      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/pro.webp" />
+    <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToBasicItemDetail"
+      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/basic-package.webp" />
+    <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToPremiumItemDetail"
+      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/premium-package.webp" />
   </view>
-  <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
+  <view class="px-[26rpx] mt-[26rpx] text-[22rpx]">
+    <card title="爱牙无忧包使用规则">
+      <view>1、购买爱牙无忧包后，需在指定口腔医院使用。</view>
+      <view>2、基础包购买后有效期90天；升级包购买后有效期365天，可随时申请退款，过期后自动退款。</view>
+    </card>
+  </view>
 </template>
 
 <script>
 import mpx, { createPage } from "@mpxjs/core";
 import navigation from "@/mixins/navigation";
-import { useUserStore } from "@/store/user";
-import { useCouponStore } from "@/store/coupon";
 
 createPage({
   mixins: [navigation],
@@ -24,36 +27,13 @@ createPage({
     goBack() {
       this.safeNavigateBack();
     },
-    async onReceive() {
-      const store = useUserStore();
-      await store.queryProfile();
 
-      if (!store.profile?.phone) {
-        this.phonepopup = true;
-      } else {
-        this.receiveCoupon();
-      }
-    },
-    onPhoneCanceled() {
-      this.phonepopup = false;
-    },
-    onPhoneConfirmed() {
-      this.phonepopup = false;
-      this.receiveCoupon();
-    },
-    async receiveCoupon() {
-      mpx.showLoading({
-        title: "领取中..."
+    navigateToPremiumItemDetail() {
+      mpx.navigateTo({
+        url: "/pages/item/detail?id=20"
       });
-
-      try {
-        const store = useCouponStore();
-        await store.claim(919);
-      } finally {
-        mpx.hideLoading();
-      }
     },
-    navigateToItemDetail() {
+    navigateToBasicItemDetail() {
       mpx.navigateTo({
         url: "/pages/item/detail?id=3"
       });
@@ -79,7 +59,6 @@ page {
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
     "card": "@/components/card",
-    "phone-popup": "@/components/phone-popup"
   }
 }
 </script>

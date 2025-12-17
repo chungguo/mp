@@ -31,6 +31,10 @@
       咨询记录
     </view>
   </view>
+  <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="订单管理">
+    <t-cell title="订单记录" leftIcon="bill" hover arrow bindtap="onOrders" />
+  </t-cell-group>
+
   <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
     <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
   </t-cell-group>
@@ -155,6 +159,12 @@ createPage({
 
   onPhoneCanceled() {
     this.phonepopup = false;
+  },
+
+  onOrders() {
+    mpx.navigateTo({
+      url: '/pages/order/list',
+    });
   },
 
   navigateToProfile() {
