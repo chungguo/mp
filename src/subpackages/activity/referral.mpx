@@ -86,7 +86,8 @@
   </view>
 
   <!-- 地址表单 -->
-  <t-popup placement="center" visible="{{ addressFormVisible }}" z-index="10" overlay-props="{{ {zIndex: 9} }}">
+  <t-popup placement="center" t-class="relative" visible="{{ addressFormVisible }}" z-index="10"
+    overlay-props="{{ {zIndex: 9} }}">
     <view class="w-[600rpx] form">
       <view class="font-[600] text-[34rpx] color-[#000] pt-[56rpx] pb-[64rpx] text-center">请设置收货地址</view>
       <view class="px-[40rpx] pb-[64rpx]">
@@ -100,18 +101,20 @@
             bind:change="onAddressTextChange">
             <view slot="label" class="w-[140rpx]">详细地址</view>
           </t-input>
-          <t-input t-class="rounded-[14rpx]" placeholder="请输入真实姓名" borderless value="{{ form.recipient_name }}"
-            bind:change="onNameChange">
+          <t-input t-class="rounded-[14rpx]" placeholder="请输入真实姓名" maxlength="{{ 10 }}" borderless
+            value="{{ form.recipient_name }}" bind:change="onNameChange">
             <view slot="label" class="w-[140rpx]">姓名</view>
           </t-input>
-          <t-input t-class="rounded-[14rpx]" placeholder="请收入手机号" borderless value="{{ form.recipient_phone }}"
-            bind:change="onMobileChange">
+          <t-input t-class="rounded-[14rpx]" placeholder="请收入手机号" maxlength="{{ 11 }}" borderless
+            value="{{ form.recipient_phone }}" bind:change="onMobileChange">
             <view slot="label" class="w-[140rpx]">手机号</view>
           </t-input>
         </view>
         <t-button theme="primary" block t-class="mt-[64rpx]" bindtap="onSubmit">提交</t-button>
       </view>
     </view>
+    <t-icon t-class="absolute bottom-[-100rpx] translate-x-[-50%] left-[50%]" name="close-circle" size="64rpx"
+      color="#fff" bindtap="onAddressFormCancel" />
   </t-popup>
 
   <t-popup placement="center" visible="{{ addressComfirmVisible }}" z-index="20" overlay-props="{{ {zIndex: 19} }}">
@@ -369,7 +372,7 @@ createPage({
               };
             }
             return item;
-          })
+          }),
         });
 
         mpx.showToast({
@@ -379,7 +382,11 @@ createPage({
 
         mpx.setStorageSync(STORAGE_KEY, JSON.stringify(this.form));
       } finally {
-        this.loading = false;
+        this.onAddressFormCancel();
+        this.setData({
+          addressComfirmVisible: false,
+          loading: false,
+        });
       }
     },
     onAddressChange(e: WechatMiniprogram.CustomEvent) {
@@ -487,6 +494,17 @@ createPage({
     onAddressCancel() {
       this.addressPickerVisible = false;
     },
+    onAddressFormCancel() {
+      this.setData({
+        addressFormVisible: false,
+        form: {
+          area: [],
+          address: '',
+          recipient_name: '',
+          recipient_phone: '',
+        },
+      });
+    },
     restoreFormFromStorage() {
       try {
         const storedForm = mpx.getStorageSync(STORAGE_KEY);
@@ -520,6 +538,10 @@ page {
   background-repeat: no-repeat;
   background-size: 100%;
   position: relative;
+}
+
+input[disabled] {
+  color: #1D2129;
 }
 
 .footer {
@@ -604,6 +626,7 @@ page {
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "pca": "@/components/pca",
     "phone-popup": "@/components/phone-popup",
   }

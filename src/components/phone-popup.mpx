@@ -1,6 +1,6 @@
 <template>
   <t-popup visible="{{ visible }}" close-on-overlay-click="{{ false }}" placement="bottom"
-    t-class="h-[30vh] p-[100rpx] box-border relative popup" t-class-content="flex flex-col justify-start">
+    t-class="h-[30vh] p-[100rpx] box-border fixed popup" t-class-content="flex flex-col justify-start">
     <t-icon slot="close-btn" name="close" class="color-[#CCCCCC] relative top-[-80rpx] right-[-80rpx]"
       bindtap="closePopup" />
     <text class="text-center text-[36rpx] font-bold mb-[60rpx]">微信登录健牙宝小程序</text>
