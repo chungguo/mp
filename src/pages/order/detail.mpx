@@ -11,13 +11,13 @@
     </view>
 
     <!-- 已退款 -->
-    <view wx:if="{{ status === 2 }}">已退回原付款账户</view>
+    <view wx:if="{{ status === 2 }}" class="text-center text-[24rpx]">已退回原付款账户</view>
 
     <!-- 待支付 -->
-    <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx]">
+    <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx] justify-center text-[24rpx]">
       <view>订单在</view>
-      <t-count-down t-class="text-[#FF7913] text-[22rpx]" size="small" content="default" format="mm:ss"
-        time="{{ time }}" splitWithUnit bindfinish="onFinish" />
+      <t-count-down t-class="flex items-baseline font-bold text-[#FF7913]! text-[30rpx]" size="small" content="default"
+        format="mm:ss" time="{{ time }}" splitWithUnit bindfinish="onFinish" />
       <view>后失效</view>
     </view>
 
@@ -28,7 +28,8 @@
           <view class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap text-[30rpx] font-bold">
             {{ order.hospital_name }}
           </view>
-          <view class="flex items-center text-[#A4A6A9] text-[22rpx]">
+          <view wx:if="{{ order.hospital_ids && order.hospital_ids.length > 1 }}" bindtap="onShowHospitalNames"
+            class="flex items-center text-[#A4A6A9] text-[22rpx]">
             更多可用医院
             <t-icon name="chevron-right" size="22rpx" />
           </view>
@@ -47,6 +48,18 @@
             <view>付款：</view>
             <view class="text-[36rpx]">100</view>
           </view>
+        </view>
+
+        <!-- 待使用 -->
+        <view wx:if="{{ order.status === 1 }}" class="flex justify-center">
+          <t-qrcode borderless value="https://tdesign.tencent.com/" level="M" size="200" />
+        </view>
+
+        <!-- 待付款 -->
+        <view wx:if="{{ order.status === 0 }}" class="mt-[26rpx]">
+          <card title="商品详情" t-class="bg-[#F4F8FF]!">
+            <view class="text-[22rpx]">{{ order.item_description }}</view>
+          </card>
         </view>
       </view>
 
@@ -72,29 +85,47 @@
     </view>
   </view>
   <t-loading wx:if="{{ loading }}" fullscreen />
-  <order-footer />
+  <t-popup visible="{{ moreHospitalNameVisible }}" placement="center">
+    <view class="relative py-[68rpx] px-[32rpx]">
+      <view class="w-[420rpx] max-h-[300rpx] overflow-y-auto flex flex-col gap-[16rpx]">
+        <view wx:for="{{ moreHospital }}" wx:key="index">{{ item.name }}</view>
+      </view>
+      <t-icon t-class="absolute bottom-[-100rpx] translate-x-[-50%] left-[50%]" name="close-circle" size="64rpx"
+        color="#fff" bind:tap="onMoreHospitalClose" />
+    </view>
+  </t-popup>
+  <order-footer status="{{ status }}" />
 </template>
 
 <script lang="ts">
 import navigation from '@/mixins/navigation';
 import { OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
 import { createPage } from '@mpxjs/core';
-import { mapActions } from '@mpxjs/pinia';
+import { mapActions, mapState } from '@mpxjs/pinia';
 import dayjs from 'dayjs';
 
 createPage({
   mixins: [navigation],
   data: {
-    id: '',
+    orderId: '',
     status: -1,
     loading: false,
+    moreHospitalNameVisible: false,
     order: {} as OrderItem,
   },
+  ...mapState(useHospitalStore, ['hospitals']),
   ...mapActions(usePaymentStore, ['queryOrderDetail']),
+  ...mapActions(useHospitalStore, ['fetchHospitals']),
   watch: {
     order: {
-      handler(newVal) {
-        this.status = newVal.status;
+      handler(value) {
+        if (value && value.status !== undefined) {
+          this.status = value.status;
+        }
+        if (value?.hospital_ids?.length > 0) {
+          this.fetchHospitals();
+        }
       },
       immediate: true,
     }
@@ -108,7 +139,7 @@ createPage({
         [OrderStatus.REFUNDED]: '已退款',
         [OrderStatus.USED]: '已使用'
       }
-      return statusMap[this.order.status] || '-';
+      return statusMap[this.order?.status] || '-';
     },
     statusIcon() {
       const statusMap: Record<string, string> = {
@@ -118,7 +149,7 @@ createPage({
         [OrderStatus.REFUNDED]: 'refund',
         [OrderStatus.USED]: 'used'
       };
-      const name = statusMap[this.order.status];
+      const name = statusMap[this.order?.status];
 
       return name ? `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/icon/${name}.webp` : '';
     },
@@ -138,6 +169,10 @@ createPage({
       return this.order.used_at ? dayjs(this.order.used_at).format('YYYY-MM-DD HH:mm:ss') : '';
     },
     time() {
+      if (!this.order?.created_at) {
+        return 0;
+      }
+
       const diff = dayjs(this.order.created_at).add(10, 'minute').diff(dayjs(), 'millisecond');
 
       if (diff < 0) {
@@ -145,21 +180,27 @@ createPage({
       }
 
       return diff;
-    }
+    },
+    moreHospital() {
+      const hospitals = (this.order?.hospital_ids ?? []).map(id =>
+        (this.hospitals() ?? []).find((h: Hospital) => h.id === id))
+        .filter(Boolean);
+      return [...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals]
+    },
   },
   onLoad(options) {
     if (!options.id) {
       this.safeNavigateBack('/pages/order/list');
       return;
     }
-    this.id = options.id;
+    this.orderId = options.id;
     this.queryDetail();
   },
   methods: {
     async queryDetail() {
       try {
         this.loading = true;
-        const order = await this.queryOrderDetail(this.id);
+        const order = await this.queryOrderDetail(this.orderId);
         this.setData({
           order,
         });
@@ -167,9 +208,19 @@ createPage({
         this.loading = false;
       }
     },
+    onFinish() {
+      this.status = OrderStatus.CLOSED;
+    },
     goBack() {
       this.safeNavigateBack('/pages/order/list');
     },
+    onShowHospitalNames() {
+      this.moreHospitalNameVisible = true;
+    },
+    onMoreHospitalClose() {
+      this.moreHospitalNameVisible = false;
+    },
+
   }
 });
 </script>
@@ -196,7 +247,13 @@ createPage({
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
     "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
+    "t-cell": "tdesign-miniprogram/miniprogram_dist/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/miniprogram_dist/cell-group/cell-group",
+    "t-qrcode": "tdesign-miniprogram/miniprogram_dist/qrcode/qrcode",
+    "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
     "order-footer": "@/components/order/footer",
+    "card": "@/components/card",
   }
 }
 </script>

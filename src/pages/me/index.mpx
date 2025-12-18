@@ -31,12 +31,13 @@
       咨询记录
     </view>
   </view>
-  <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="订单管理">
-    <t-cell title="订单记录" leftIcon="bill" hover arrow bindtap="onOrders" />
+  <t-cell-group theme="card" title="订单管理">
+    <t-cell title="订单记录" leftIcon="catalog" hover arrow bindtap="onOrders" />
   </t-cell-group>
 
-  <t-cell-group wx:if="{{ showScanCoupon }}" theme="card" title="管理端">
-    <t-cell title="核销优惠券" leftIcon="scan" hover arrow bindtap="onScan" />
+  <t-cell-group wx:if="{{ adminVisible }}" theme="card" title="管理端">
+    <t-cell title="核销优惠券" leftIcon="coupon" hover arrow bindtap="onVerifyCoupon" />
+    <t-cell title="核销订单" leftIcon="bill" hover arrow bindtap="onVerifyOrder" />
   </t-cell-group>
 
   <t-dialog visible="{{ scaned }}">
@@ -82,7 +83,7 @@ createPage({
     this.callback = '';
   },
   computed: {
-    showScanCoupon() {
+    adminVisible() {
       const id = this.profile()?.role_id;
       return id && [RoleId.Admin, RoleId.HospitalAdmin, RoleId.HospitalOperator].includes(id);
     },
@@ -102,7 +103,7 @@ createPage({
     },
   },
 
-  async onScan() {
+  async onVerifyCoupon() {
     try {
       const data = await mpx.scanCode({
         onlyFromCamera: true,

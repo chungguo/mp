@@ -5,9 +5,10 @@
     - 可选的卡片标题，标题左侧有蓝色装饰线
     - 支持插槽内容，可插入任意内容
     - 统一的卡片样式（圆角、白色背景、内边距）
+    - 支持通过 card-class 属性传入自定义样式类，可覆盖默认样式
 -->
 <template>
-  <view class="card px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF]">
+  <view class="card px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF] t-class">
     <view wx:if="{{ !!title }}" class="font-bold text-[30rpx] title mb-[16rpx]">{{ title }}</view>
     <slot></slot>
   </view>
@@ -17,6 +18,7 @@
 import { createComponent } from '@mpxjs/core';
 
 createComponent({
+  externalClasses: ['t-class'],
   properties: {
     title: {
       type: String,

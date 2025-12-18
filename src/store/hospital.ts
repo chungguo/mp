@@ -63,6 +63,7 @@ export const useHospitalStore = defineStore('hospital', () => {
   };
 
   return {
+    hospitals,
     fetchHospitals,
     fetchHospitalById
   };

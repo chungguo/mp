@@ -1,6 +1,6 @@
 <template>
   <sticky-bottom>
-    <view wx:if="{{ status === 'pending' }}" class="flex items-center justify-between">
+    <view wx:if="{{ status === 0 }}" class="flex items-center justify-between">
       <view class="flex items-center gap-[76rpx]">
         <view class="small-btn" bindtap="onMakePhoneCall">
           <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
@@ -8,7 +8,7 @@
           医院电话
         </view>
 
-        <view class="small-btn">
+        <view class="small-btn" bindtap="onConsultation">
           <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
             t-class="w-[40rpx]" mode="widthFix" />
           医院客服
@@ -16,7 +16,6 @@
       </view>
       <t-button theme="primary" t-class="m-0 w-[326rpx] pay">立即支付</t-button>
     </view>
-
     <view wx:else class="flex items-center justify-between">
       <view class="large-btn" bindtap="onMakePhoneCall">
         <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
@@ -39,14 +38,14 @@ import mpx, { createComponent } from "@mpxjs/core";
 createComponent({
   properties: {
     status: {
-      type: String,
-      value: '',
-    }
+      type: Number,
+      value: -1,
+    },
   },
   methods: {
     onMakePhoneCall() {
       mpx.makePhoneCall({
-        phoneNumber: '13000000000'
+        phoneNumber: '不知道电话'
       });
     },
     onConsultation() {

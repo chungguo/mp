@@ -4,7 +4,7 @@
     <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToBasicItemDetail"
       src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/basic-package.webp" />
     <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToPremiumItemDetail"
-      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/premium-package.webp" />
+      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/%E5%8D%87%E7%BA%A7%E5%8C%85.webp" />
   </view>
   <view class="px-[26rpx] mt-[26rpx] text-[22rpx]">
     <card title="爱牙无忧包使用规则">
