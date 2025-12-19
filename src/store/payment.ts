@@ -1,5 +1,6 @@
 import { defineStore } from '@mpxjs/pinia';
 import request from '@/common/request';
+import { setPaymentParamsCache } from '@/common/payment';
 
 enum OrderStatus {
   PENDING = 0,    // 待支付
@@ -9,10 +10,26 @@ enum OrderStatus {
   USED = 4        // 已使用
 }
 
+enum RefundStatus {
+  REFUNDING = 0,  // 退款中
+  REFUNDED = 1,   // 退款成功
+  REFUND_FAILED = 2, // 退款失败
+  REFUND_CLOSED = 3  // 退款关闭
+}
+
 interface PreOrderParams {
   item_id: number,
   payment_method: 'jsapi',
   remark?: string;
+}
+
+interface PaymentParams {
+  appId: string;
+  timeStamp: string;
+  nonceStr: string;
+  package: string;
+  signType: 'RSA';
+  paySign: string;
 }
 
 interface PreOrder {
@@ -22,18 +39,36 @@ interface PreOrder {
   amount: number;
   status: number;
   payment_method: 'jsapi';
-  payment_params: {
-    appId: string;
-    timeStamp: number;
-    nonceStr: string;
-    package: string;
-    signType: 'RSA';
-    paySign: string;
-  },
+  payment_params: PaymentParams;
   created_at: string;
 }
 
-export interface OrderItem {
+interface RefundProgress {
+  /** 退款单ID */
+  id: number;
+  /** 平台退款单号 */
+  refund_no: string;
+  /** 微信退款单号(退款提交后返回) */
+  refund_id: string | null;
+  /** 关联的支付订单ID */
+  payment_order_id: number;
+  /** 原平台订单号 */
+  order_no: string;
+  /** 退款金额(单位：分) */
+  amount: number;
+  /** 退款状态：0=退款中，1=退款成功，2=退款失败，3=退款关闭 */
+  status: number;
+  /** 退款原因 */
+  reason: string;
+  /** 退款入账账户(退款成功后返回) */
+  receive_account: string | null;
+  /** 退款成功时间(ISO 8601格式，未成功为null) */
+  success_at: string | null;
+  /** 创建时间(ISO 8601格式) */
+  created_at: string;
+}
+
+interface OrderItem {
   /** 支付订单ID */
   id: number;
   /** 平台订单号 */
@@ -86,7 +121,7 @@ export interface OrderItem {
   used_at: string;
 }
 
-export { OrderStatus };
+export { OrderStatus, RefundStatus, PaymentParams, RefundProgress, OrderItem };
 
 export const usePaymentStore = defineStore('payment', () => {
   const preOrder = async (data: PreOrderParams) => {
@@ -97,6 +132,14 @@ export const usePaymentStore = defineStore('payment', () => {
       method: 'POST',
       data,
     });
+
+    const order_no = response.data?.data.order_no;
+    const payment_params = response.data?.data.payment_params;
+
+    // 缓存支付参数
+    if (order_no && payment_params) {
+      setPaymentParamsCache(order_no, payment_params);
+    }
 
     return response.data?.data;
   };
@@ -123,9 +166,34 @@ export const usePaymentStore = defineStore('payment', () => {
     return response.data.data;
   }
 
+  const refund = async (id: string) => {
+    const response = await request.fetch({
+      url: `/payment/orders/${id}/refund`,
+      method: 'POST',
+      data: {
+        reason: "用户申请退款"
+      },
+    });
+
+    return response.data;
+  }
+
+  const queryRefundProgress = async (refundid: string) => {
+    const response = await request.fetch<{
+      data: RefundProgress;
+    }>({
+      url: `/payment/refunds/${refundid}`,
+      method: 'GET',
+    });
+
+    return response.data?.data;
+  }
+
   return {
     queryOrders,
     queryOrderDetail,
     preOrder,
+    refund,
+    queryRefundProgress,
   };
 });

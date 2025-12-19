@@ -1,6 +1,6 @@
 <template>
   <sticky-bottom>
-    <view wx:if="{{ status === 0 }}" class="flex items-center justify-between">
+    <view wx:if="{{ order?.status === 0 }}" class="flex items-center justify-between">
       <view class="flex items-center gap-[76rpx]">
         <view class="small-btn" bindtap="onMakePhoneCall">
           <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
@@ -14,7 +14,7 @@
           医院客服
         </view>
       </view>
-      <t-button theme="primary" t-class="m-0 w-[326rpx] pay">立即支付</t-button>
+      <t-button theme="primary" t-class="m-0 w-[326rpx] pay" bindtap="onMakePayment">立即支付</t-button>
     </view>
     <view wx:else class="flex items-center justify-between">
       <view class="large-btn" bindtap="onMakePhoneCall">
@@ -30,17 +30,22 @@
       </view>
     </view>
   </sticky-bottom>
+  <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
 </template>
 
 <script lang="ts">
+import { getPaymentParamsCache } from "@/common/payment";
 import mpx, { createComponent } from "@mpxjs/core";
 
 createComponent({
   properties: {
-    status: {
-      type: Number,
-      value: -1,
+    order: {
+      type: Object,
+      value: {},
     },
+  },
+  data: {
+    loading: false,
   },
   methods: {
     onMakePhoneCall() {
@@ -53,6 +58,50 @@ createComponent({
         url: '/pages/order/wxwork',
       });
     },
+    async onMakePayment() {
+      this.loading = true;
+
+      try {
+        const params = await getPaymentParamsCache(this.order.order_no);
+
+        if (!params) {
+          mpx.showToast({
+            title: '获取支付参数失败，请重新下单',
+            icon: 'error',
+          });
+          return;
+        }
+
+        await mpx.requestPayment(params);
+
+        // 支付成功
+        mpx.showToast({
+          title: '支付成功',
+          icon: 'success'
+        });
+
+        setTimeout(() => {
+          this.safeNavigateBack('/pages/order/list');
+        }, 1500);
+      } catch (error) {
+        let errorMessage = '支付失败';
+
+        if (error?.errMsg?.includes('requestPayment:fail cancel')) {
+          errorMessage = '支付已取消';
+        } else if (error?.errMsg?.includes('requestPayment:fail')) {
+          errorMessage = '支付调用失败';
+        } else {
+          errorMessage = error.errMsg;
+        }
+
+        mpx.showToast({
+          title: errorMessage,
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    }
   }
 })
 </script>
@@ -95,6 +144,7 @@ createComponent({
   "usingComponents": {
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
     "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "sticky-bottom": "@/components/sticky-bottom",
   }
 }

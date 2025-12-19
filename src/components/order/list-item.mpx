@@ -41,12 +41,13 @@
 </template>
 
 <script lang="ts">
+import { VALIDITY_PERIOD } from "@/common/payment";
 import { OrderStatus } from "@/store/payment";
 import mpx, { createComponent } from "@mpxjs/core";
 import dayjs from "dayjs";
 
 createComponent({
-  props: {
+  properties: {
     order: {
       type: Object,
       value: {},
@@ -57,7 +58,7 @@ createComponent({
   },
   computed: {
     time() {
-      const diff = dayjs(this.order.created_at).add(10, 'minute').diff(dayjs(), 'millisecond');
+      const diff = dayjs(this.order.created_at).add(VALIDITY_PERIOD, 'minute').diff(dayjs(), 'millisecond');
 
       if (diff < 0) {
         this.status = OrderStatus.CLOSED;
