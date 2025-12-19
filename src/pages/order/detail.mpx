@@ -51,7 +51,7 @@
           <view wx:if="{{ status !== 3 }}" class="flex items-baseline font-bold text-[22rpx]"
             wx:class="{{ {'line-through': status === 2} }}">
             <view>付款：</view>
-            <view class="text-[36rpx]">100</view>
+            <view class="text-[36rpx]">{{ order.amount / 100 }}</view>
           </view>
         </view>
 
