@@ -1,6 +1,5 @@
 import { defineStore } from '@mpxjs/pinia';
 import request from '@/common/request';
-import { setPaymentParamsCache } from '@/common/payment';
 
 enum OrderStatus {
   PENDING = 0,    // 待支付
