@@ -107,6 +107,8 @@ interface OrderItem {
   status_text: string;
   /** 支付方式 */
   payment_method: string;
+  /** 支付截止时间(ISO 8601格式) */
+  payment_deadline: string;
   /** 支付时间(ISO 8601格式，未支付为null) */
   paid_at: string | null;
   /** 订单过期时间(ISO 8601格式，未设置为null) */
@@ -132,14 +134,6 @@ export const usePaymentStore = defineStore('payment', () => {
       method: 'POST',
       data,
     });
-
-    const order_no = response.data?.data.order_no;
-    const payment_params = response.data?.data.payment_params;
-
-    // 缓存支付参数
-    if (order_no && payment_params) {
-      setPaymentParamsCache(order_no, payment_params);
-    }
 
     return response.data?.data;
   };
@@ -189,11 +183,23 @@ export const usePaymentStore = defineStore('payment', () => {
     return response.data?.data;
   }
 
+  const continueMakePayment = async (id: string) => {
+    const response = await request.fetch<{
+      data: { payment_params: PaymentParams; };
+    }>({
+      url: `/payment/orders/${id}/continue`,
+      method: 'POST',
+    });
+
+    return response.data?.data;
+  }
+
   return {
     queryOrders,
     queryOrderDetail,
     preOrder,
     refund,
     queryRefundProgress,
+    continueMakePayment,
   };
 });

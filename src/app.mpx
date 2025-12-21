@@ -3,7 +3,6 @@ import mpx, { createApp } from '@mpxjs/core';
 import apiProxy from '@mpxjs/api-proxy';
 import { createPinia } from '@mpxjs/pinia';
 import { updateManager } from '@/common/update-manager';
-import { clearPaymentParamsCache } from '@/common/payment';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
@@ -19,7 +18,6 @@ mpx.use(apiProxy, {
 createApp({
   onShow() {
     updateManager();
-    clearPaymentParamsCache();
   },
   restartMiniProgram() {
     mpx.showModal({

@@ -34,8 +34,9 @@
 </template>
 
 <script lang="ts">
-import { getPaymentParamsCache } from "@/common/payment";
 import mpx, { createComponent } from "@mpxjs/core";
+import { type Hospital, useHospitalStore } from "@/store/hospital";
+import { usePaymentStore } from "@/store/payment";
 
 createComponent({
   properties: {
@@ -47,10 +48,22 @@ createComponent({
   data: {
     loading: false,
   },
+  lifetimes: {
+    attached() {
+      const store = useHospitalStore();
+      store.fetchHospitals();
+    }
+  },
+  computed: {
+    hospital() {
+      const store = useHospitalStore();
+      return store.hospitals?.find((h: Hospital) => h.id === this.order.hospital_id);
+    }
+  },
   methods: {
     onMakePhoneCall() {
       mpx.makePhoneCall({
-        phoneNumber: '不知道电话'
+        phoneNumber: this.hospital?.phone || '',
       });
     },
     onConsultation() {
@@ -62,9 +75,10 @@ createComponent({
       this.loading = true;
 
       try {
-        const params = await getPaymentParamsCache(this.order.order_no);
+        const store = usePaymentStore();
+        const data = await store.continueMakePayment(this.order.id);
 
-        if (!params) {
+        if (!data?.payment_params) {
           mpx.showToast({
             title: '获取支付参数失败，请重新下单',
             icon: 'error',
@@ -72,7 +86,7 @@ createComponent({
           return;
         }
 
-        await mpx.requestPayment(params);
+        await mpx.requestPayment(data.payment_params);
 
         // 支付成功
         mpx.showToast({

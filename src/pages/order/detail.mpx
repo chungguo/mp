@@ -112,7 +112,6 @@ import { type Hospital, useHospitalStore } from '@/store/hospital';
 import { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
 import dayjs from 'dayjs';
-import { VALIDITY_PERIOD } from '@/common/payment';
 
 createPage({
   mixins: [navigation],
@@ -183,11 +182,11 @@ createPage({
       return this.order.used_at ? dayjs(this.order.used_at).format('YYYY-MM-DD HH:mm:ss') : '';
     },
     time() {
-      if (!this.order?.created_at) {
+      if (!this.order?.payment_deadline) {
         return 0;
       }
 
-      const diff = dayjs(this.order.created_at).add(VALIDITY_PERIOD, 'minute').diff(dayjs(), 'millisecond');
+      const diff = dayjs(this.order.payment_deadline).diff(dayjs(), 'millisecond');
 
       if (diff < 0) {
         this.status = OrderStatus.CLOSED;
@@ -195,14 +194,13 @@ createPage({
 
       return diff;
     },
-    price () {
+    price() {
       return (this.order.amount / 100).toFixed(2);
     },
     moreHospital() {
-      const hospitals = (this.order?.hospital_ids ?? []).map(id =>
+      return (this.order?.hospital_ids ?? []).map(id =>
         (this.hospitals() ?? []).find((h: Hospital) => h.id === id))
         .filter(Boolean);
-      return [...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals, ...hospitals]
     },
   },
   onLoad(options) {

@@ -41,7 +41,6 @@
 </template>
 
 <script lang="ts">
-import { VALIDITY_PERIOD } from "@/common/payment";
 import { OrderStatus } from "@/store/payment";
 import mpx, { createComponent } from "@mpxjs/core";
 import dayjs from "dayjs";
@@ -58,7 +57,10 @@ createComponent({
   },
   computed: {
     time() {
-      const diff = dayjs(this.order.created_at).add(VALIDITY_PERIOD, 'minute').diff(dayjs(), 'millisecond');
+      if (!this.order.payment_deadline) {
+        return 0;
+      };
+      const diff = dayjs(this.order.payment_deadline).diff(dayjs(), 'millisecond');
 
       if (diff < 0) {
         this.status = OrderStatus.CLOSED;
