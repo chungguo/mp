@@ -138,7 +138,7 @@ createPage({
         }
 
         if (value.status === OrderStatus.REFUNDED) {
-          this.queryRefund();
+          this.queryRefund(this.order.refund_no);
         }
       },
       immediate: true,
@@ -224,11 +224,14 @@ createPage({
       }
     },
 
-    async queryRefund() {
+    async queryRefund(id: string = '') {
+      if (!id) {
+        return;
+      }
+
       try {
         this.loading = true;
-        // TODO: 这里需要传退款单ID，先用订单 ID代替测试
-        const refundProgress = await this.queryRefundProgress(this.order.id);
+        const refundProgress = await this.queryRefundProgress(id);
         this.refundstatus = refundProgress.status;
       } finally {
         this.loading = false;
@@ -238,8 +241,9 @@ createPage({
       this.loading = true;
 
       try {
-        await this.refund(this.orderId);
+        const res = await this.refund(this.orderId);
         this.status = OrderStatus.REFUNDED;
+        this.queryRefund(res.refund_no);
       } finally {
         this.loading = false;
       }

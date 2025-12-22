@@ -72,6 +72,8 @@ interface OrderItem {
   id: number;
   /** 平台订单号 */
   order_no: string;
+  /** 退款单号 */
+  refund_no: string;
   /** 微信支付交易号(支付成功后返回) */
   transaction_id: string;
   /** 用户OpenID */
@@ -162,7 +164,12 @@ export const usePaymentStore = defineStore('payment', () => {
   }
 
   const refund = async (id: string) => {
-    const response = await request.fetch({
+    const response = await request.fetch<{
+      data: {
+        refund_id: number;
+        refund_no: string;
+      }
+    }>({
       url: `/payment/orders/${id}/refund`,
       method: 'POST',
       data: {
@@ -170,7 +177,7 @@ export const usePaymentStore = defineStore('payment', () => {
       },
     });
 
-    return response.data;
+    return response.data.data;
   }
 
   const queryRefundProgress = async (refundid: string) => {
