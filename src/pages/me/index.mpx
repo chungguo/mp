@@ -51,6 +51,7 @@
 </template>
 
 <script lang="ts">
+import { usePaymentStore } from '@/store/payment';
 import { useUserStore, RoleId, RoleName } from '@/store/user';
 import mpx from '@mpxjs/core';
 import { createPage } from "@mpxjs/core";
@@ -64,6 +65,7 @@ createPage({
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
+  ...mapActions(usePaymentStore, ['verifyOrder']),
 
   pageLifetimes: {
     show() {
@@ -132,6 +134,54 @@ createPage({
     }
   },
 
+  async onVerifyOrder() {
+    try {
+      const data = await mpx.scanCode({
+        onlyFromCamera: true,
+        scanType: ['qrCode'],
+      });
+
+      const { result } = data;
+
+      const [orderNo, itemId] = result.split('|');
+      const openid = this.profile()?.openid;
+
+      this.scaned = true;
+
+      if ([orderNo, itemId, openid].some(v => !v)) {
+        mpx.showToast({
+          title: '无效的二维码',
+          icon: 'error',
+        });
+        return;
+      }
+
+      await this.verifyOrder({
+        order_no: orderNo,
+        item_id: Number(itemId),
+        open_id: openid,
+      });
+
+      mpx.showToast({
+        title: '核销成功',
+        icon: 'success',
+      });
+      setTimeout(() => {
+        mpx.navigateTo({
+          url: '/pages/order/success',
+        });
+      }, 1500);
+    } catch (e) {
+      mpx.showModal({
+        title: '识别结果',
+        content: '识别失败',
+        showCancel: false,
+        confirmText: '知道了',
+      });
+    } finally {
+      this.scaned = false;
+    }
+  },
   onClickMyCoupon() {
     this.callback = 'navigateToMyCoupon';
     this.checkProfile();

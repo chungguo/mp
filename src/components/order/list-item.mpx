@@ -33,7 +33,7 @@
           {{ statusText }}</view>
         <view wx:class="{{ { 'unused-button': status === 1, 'pending-button': status === 0} }}">
           <t-button theme="default" variant="outline" size="extra-small" bindtap="navigateToOrderDetail">{{ buttonText
-            }}</t-button>
+          }}</t-button>
         </view>
       </view>
     </view>
@@ -104,7 +104,7 @@ createComponent({
       this.status = OrderStatus.CLOSED;
     },
     navigateToOrderDetail() {
-      mpx.redirectTo({
+      mpx.navigateTo({
         url: `/pages/order/detail?id=${this.order.id}`
       });
     }

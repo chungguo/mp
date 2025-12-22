@@ -195,11 +195,26 @@ export const usePaymentStore = defineStore('payment', () => {
     return response.data?.data;
   }
 
+  const verifyOrder = async (data: {
+    order_no: string;
+    open_id: string;
+    item_id: number;
+  }) => {
+    const response = await request.fetch({
+      url: `/payment/orders/verify`,
+      method: 'POST',
+      data,
+    });
+
+    return response.data;
+  }
+
   return {
     queryOrders,
     queryOrderDetail,
     preOrder,
     refund,
+    verifyOrder,
     queryRefundProgress,
     continueMakePayment,
   };
