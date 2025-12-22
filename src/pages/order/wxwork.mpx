@@ -1,7 +1,7 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack"></t-navbar>
 
-  <wxwork title="{{ text }}" benefits="{{ benefits }}" />
+  <wxwork title="{{ text }}" source="{{ 1 }}" />
 
   <view class="px-[76rpx] mt-[56rpx]">
     <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
@@ -16,9 +16,6 @@ import navigation from '@/mixins/navigation';
 
 createPage({
   mixins: [navigation],
-  data: {
-    benefits: []
-  },
   computed: {
     text() {
       return '添加牙科小助理，获取专属建议';

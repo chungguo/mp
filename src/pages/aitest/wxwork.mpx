@@ -1,7 +1,7 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack"></t-navbar>
 
-  <wxwork title="{{ text }}" benefits="{{ benefits }}" />
+  <wxwork title="{{ text }}" source="{{ source }}" />
   <view class="px-[76rpx] mt-[56rpx]">
     <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
       <text slot="content" class="color-[#1D2129] text-[28rpx]">查看检测结果</text>
@@ -12,19 +12,20 @@
 <script lang="ts">
 import mpx, { createPage } from "@mpxjs/core";
 import navigation from '@/mixins/navigation';
+import { SourceType } from '@/store/wxwork';
 
 createPage({
   mixins: [navigation],
   data: {
     score: '',
-    benefits: [
-      '福利1：免费口腔全面检查',
-      '福利2：优惠洗牙与美白项目',
-      '福利3：专家一对一咨询'
-    ]
+    source: SourceType.AiDetectComplete,
   },
   onLoad(options) {
     this.score = options.score || '';
+
+    if (options.score) {
+      this.source = SourceType.AiDetectReportResult;
+    }
   },
   computed: {
     text(): string {

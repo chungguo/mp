@@ -16,19 +16,28 @@
         <view class="flex flex-col gap-[16rpx]">
           <view wx:for="{{ benefits }}" wx:key="index" class="flex items-center gap-[12rpx]">
             <view class="text-[6rpx] text-[#4A8DFF]">●</view>
-            <view class="text-[24rpx] flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">{{ item }}</view>
+            <view class="text-[24rpx] flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">{{
+              item.title }}：{{ item.description }}</view>
           </view>
         </view>
       </card>
     </view>
   </view>
+  <t-loading fullscreen="{{ true }}" theme="circular" size="40rpx" wx:if="{{ loading }}" />
 </template>
 
 <script lang="ts">
+import { type Benefit, useWxworkStore } from "@/store/wxwork";
 import { createComponent } from "@mpxjs/core";
+
+const WXWORK_QRCODE = 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-qrcode.png';
 
 createComponent({
   properties: {
+    source: {
+      type: Number,
+      value: 1,
+    },
     title: {
       type: String,
       value: '添加牙科小助理，获取专属建议'
@@ -38,6 +47,33 @@ createComponent({
       value: [],
     }
   },
+  data: {
+    loading: false,
+    qrcode: WXWORK_QRCODE,
+    benefits: [] as Benefit[],
+  },
+  lifetimes: {
+    async ready() {
+      this.loading = true;
+
+      try {
+        const store = useWxworkStore();
+        const data = await store.queryConfig(this.source);
+
+        this.setData({
+          benefits: data.benefits ?? [],
+        });
+
+        if (data.qrcode_url) {
+          this.setData({
+            qrcode: data.qrcode_url,
+          });
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
 })
 </script>
 
@@ -46,6 +82,7 @@ createComponent({
   "component": true,
   "usingComponents": {
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
     "card": "@/components/card",
   }
 }

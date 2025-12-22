@@ -1,7 +1,7 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack"></t-navbar>
 
-  <wxwork title="咨询已提交添加牙科小助理获取专属建议" benefits="{{ benefits }}" />
+  <wxwork title="咨询已提交添加牙科小助理获取专属建议" source="{{ 1 }}" />
 
   <view class="px-[76rpx] mt-[56rpx]">
     <t-button block theme="default" class="bg-[#ffffff99] border rounded-[28rpx]" size="large" bindtap="goResult">
@@ -16,13 +16,6 @@ import navigation from '@/mixins/navigation';
 
 createPage({
   mixins: [navigation],
-  data: {
-    benefits: [
-      '福利1：免费口腔全面检查',
-      '福利2：优惠洗牙与美白项目',
-      '福利3：专家一对一咨询'
-    ]
-  },
   methods: {
     goBack() {
       this.safeNavigateBack('/pages/consultation/form');
