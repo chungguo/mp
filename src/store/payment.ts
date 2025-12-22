@@ -73,7 +73,7 @@ interface OrderItem {
   /** 平台订单号 */
   order_no: string;
   /** 微信支付交易号(支付成功后返回) */
-  transaction_id: string | null;
+  transaction_id: string;
   /** 用户OpenID */
   open_id: string;
   /** 商品ID */
@@ -100,26 +100,28 @@ interface OrderItem {
   description: string;
   /** 实付金额(单位：分) */
   amount: number;
-  /** 订单状态 */
+  /** 订单状态：0=待支付，1=支付成功，2=已退款，3=已关闭，4=已使用 */
   status: OrderStatus;
   /** 状态文本 */
   status_text: string;
   /** 支付方式 */
   payment_method: string;
-  /** 支付截止时间(ISO 8601格式) */
+  /** 支付截止时间（订单创建后10分钟，超时未支付自动关闭） */
   payment_deadline: string;
-  /** 支付时间(ISO 8601格式，未支付为null) */
+  /** 支付时间（状态=1时有值） */
   paid_at: string | null;
-  /** 订单过期时间(ISO 8601格式，未设置为null) */
+  /** 已支付订单的使用过期时间 */
   expire_at: string | null;
   /** 已退款金额(单位：分) */
   refund_amount: number;
+  /** 退款时间（状态=2时有值） */
+  refunded_at: string | null;
+  /** 关闭时间（状态=3时有值，包括超时关闭） */
+  closed_at: string | null;
+  /** 使用/核销时间（状态=4时有值） */
+  verified_at: string | null;
   /** 创建时间(ISO 8601格式) */
   created_at: string;
-  /** 退款时间(ISO 8601格式，未退款为null) */
-  refund_at: string;
-  /** 使用时间(ISO 8601格式，未使用为null) */
-  used_at: string;
 }
 
 export { OrderStatus, RefundStatus, PaymentParams, RefundProgress, OrderItem };

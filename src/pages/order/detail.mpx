@@ -22,7 +22,7 @@
     <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx] justify-center text-[24rpx]">
       <view>订单在</view>
       <t-count-down t-class="flex items-baseline font-bold text-[#FF7913]! text-[30rpx]" size="small" content="default"
-        format="mm:ss" time="{{ time }}" splitWithUnit bindfinish="onFinish" />
+        format="mm:ss" time="{{ time }}" splitWithUnit bind:finish="onFinish" />
       <view>后失效</view>
     </view>
 
@@ -56,12 +56,12 @@
         </view>
 
         <!-- 待使用 -->
-        <view wx:if="{{ order.status === 1 }}" class="flex justify-center">
+        <view wx:if="{{ status === 1 }}" class="flex justify-center">
           <t-qrcode borderless value="https://tdesign.tencent.com/" level="M" size="200" />
         </view>
 
         <!-- 待付款 -->
-        <view wx:if="{{ order.status === 0 }}" class="mt-[26rpx]">
+        <view wx:if="{{ status === 0 }}" class="mt-[26rpx]">
           <card title="商品详情" t-class="bg-[#F4F8FF]!">
             <view class="text-[22rpx]">{{ order.item_description }}</view>
           </card>
@@ -100,7 +100,7 @@
         color="#fff" bind:tap="onMoreHospitalClose" />
     </view>
   </t-popup>
-  <order-footer order="{{ order }}" />
+  <order-footer order="{{ order }}" status="{{ status }}"/>
 
   <t-loading wx:if="{{ loading }}" fullscreen />
 </template>
@@ -152,7 +152,7 @@ createPage({
         [OrderStatus.REFUNDED]: '已退款',
         [OrderStatus.USED]: '已使用'
       }
-      return statusMap[this.order?.status] || '-';
+      return statusMap[this.status] || '-';
     },
     statusIcon() {
       const statusMap: Record<string, string> = {
@@ -162,7 +162,7 @@ createPage({
         [OrderStatus.REFUNDED]: 'refund',
         [OrderStatus.USED]: 'used'
       };
-      const name = statusMap[this.order?.status];
+      const name = statusMap[this.status];
 
       return name ? `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/icon/${name}.webp` : '';
     },
@@ -176,19 +176,15 @@ createPage({
       return this.order.created_at ? dayjs(this.order.created_at).format('YYYY-MM-DD HH:mm:ss') : '';
     },
     refundTime() {
-      return this.order.refund_at ? dayjs(this.order.refund_at).format('YYYY-MM-DD HH:mm:ss') : '';
+      return this.order.refunded_at ? dayjs(this.order.refunded_at).format('YYYY-MM-DD HH:mm:ss') : '';
     },
     usedTime() {
-      return this.order.used_at ? dayjs(this.order.used_at).format('YYYY-MM-DD HH:mm:ss') : '';
+      return this.order.verified_at ? dayjs(this.order.verified_at).format('YYYY-MM-DD HH:mm:ss') : '';
     },
     time() {
-      if (!this.order?.payment_deadline) {
-        return 0;
-      }
-
       const diff = dayjs(this.order.payment_deadline).diff(dayjs(), 'millisecond');
 
-      if (diff < 0) {
+      if (diff <= 0 || !this.order.payment_deadline) {
         this.status = OrderStatus.CLOSED;
       }
 

@@ -1,6 +1,6 @@
 <template>
   <sticky-bottom>
-    <view wx:if="{{ order?.status === 0 }}" class="flex items-center justify-between">
+    <view wx:if="{{ status === 0 }}" class="flex items-center justify-between">
       <view class="flex items-center gap-[76rpx]">
         <view class="small-btn" bindtap="onMakePhoneCall">
           <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
@@ -44,6 +44,10 @@ createComponent({
       type: Object,
       value: {},
     },
+    status: {
+      type: Number,
+      value: -1,
+    }
   },
   data: {
     loading: false,

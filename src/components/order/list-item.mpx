@@ -14,7 +14,7 @@
           <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx] text-[#1D2129]">
             请在
             <t-count-down t-class="text-[#FF7913] text-[22rpx]" size="small" content="default" format="mm:ss"
-              time="{{ time }}" splitWithUnit bindfinish="onFinish" />
+              time="{{ time }}" splitWithUnit bind:finish="onFinish" />
             内付款
           </view>
           <view wx:if="{{ status === 1 }}">付款：{{ payTime }}</view>
@@ -33,7 +33,7 @@
           {{ statusText }}</view>
         <view wx:class="{{ { 'unused-button': status === 1, 'pending-button': status === 0} }}">
           <t-button theme="default" variant="outline" size="extra-small" bindtap="navigateToOrderDetail">{{ buttonText
-          }}</t-button>
+            }}</t-button>
         </view>
       </view>
     </view>
@@ -57,12 +57,9 @@ createComponent({
   },
   computed: {
     time() {
-      if (!this.order.payment_deadline) {
-        return 0;
-      };
       const diff = dayjs(this.order.payment_deadline).diff(dayjs(), 'millisecond');
 
-      if (diff < 0) {
+      if (diff <= 0 || !this.order.payment_deadline) {
         this.status = OrderStatus.CLOSED;
       }
 
@@ -72,10 +69,10 @@ createComponent({
       return this.order.paid_at ? dayjs(this.order.paid_at).format('YYYY-MM-DD') : '-';
     },
     refundTime() {
-      return this.order.refund_at ? dayjs(this.order.refund_at).format('YYYY-MM-DD') : '-';
+      return this.order.refunded_at ? dayjs(this.order.refunded_at).format('YYYY-MM-DD') : '-';
     },
     useTime() {
-      return this.order.used_at ? dayjs(this.order.used_at).format('YYYY-MM-DD') : '-';
+      return this.order.verified_at ? dayjs(this.order.verified_at).format('YYYY-MM-DD') : '-';
     },
     statusText() {
       const statusMap: Record<string, string> = {
