@@ -89,6 +89,13 @@ image {
         "pages": [
           "./referral"
         ]
+      },
+      {
+        "root": "subpackages/group",
+        "name": "group",
+        "pages": [
+          "./index"
+        ]
       }
     ],
     "window": {

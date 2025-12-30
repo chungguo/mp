@@ -9,7 +9,11 @@
 -->
 <template>
   <view class="card px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF] t-class">
-    <view wx:if="{{ !!title }}" class="font-bold text-[30rpx] title mb-[16rpx]">{{ title }}</view>
+    <view wx:if="{{ !!title }}"
+      class="font-bold text-[30rpx] title mb-[16rpx] w-full flex justify-between items-center">
+      <view>{{ title }}</view>
+      <slot name="action"></slot>
+    </view>
     <slot></slot>
   </view>
 </template>
@@ -19,6 +23,9 @@ import { createComponent } from '@mpxjs/core';
 
 createComponent({
   externalClasses: ['t-class'],
+  options: {
+    multipleSlots: true,
+  },
   properties: {
     title: {
       type: String,

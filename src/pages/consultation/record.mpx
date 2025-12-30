@@ -10,9 +10,9 @@
     <scroll-view wx:elif="{{ !loading }}" class="p-[32rpx] box-border" scroll-y>
       <block wx:for="{{ records }}" wx:key="id" wx:for-item="record">
         <view class="p-[32rpx] rounded-[32rpx] bg-white flex flex-col text-[28rpx] mb-[24rpx] gap-[24rpx] color-[#999]">
-          <text class="text-[32rpx] color-black">{{ record.name }}</text>
-          <text class="break-all break-words">口腔症状：{{ record.desc }}</text>
-          <text class="text-right">{{ record.time }}</text>
+          <text class="text-[32rpx] color-black">{{ record.real_name }}</text>
+          <text class="break-all break-words">口腔症状：{{ record.symptoms }}</text>
+          <text class="text-right">{{ record.created_at }}</text>
         </view>
       </block>
     </scroll-view>
@@ -25,16 +25,24 @@ import request from '@/common/request';
 import dayjs from 'dayjs';
 import navigation from "@/mixins/navigation";
 
+interface Record {
+  profile_id: number;
+  real_name: string;
+  oral_symptoms: string[];
+  created_at: string;
+  is_manual_entry: number;
+  assignment_id: number;
+  hospital_id: number;
+  hospital_name: string;
+  assigned_at: string;
+  status: number;
+}
+
 createPage({
   mixins: [navigation],
   data: {
     loading: false,
-    records: [] as {
-      id: string;
-      name: string;
-      desc: string;
-      time: string;
-    }[],
+    records: [] as (Record & { symptoms: string })[],
   },
 
   async onLoad() {
@@ -50,31 +58,27 @@ createPage({
         mask: true
       });
 
-      const data = await request.fetch<{
+      const res = await request.fetch<{
         data: {
-          id: string;
-          real_name: string;
-          oral_symptoms: string[];
-          medical_history: string;
-          created_at: string;
-        }[],
+          assignments: Record[],
+        }
       }>({
-        url: '/profiles',
+        url: '/profiles/assignments',
         method: 'GET',
       });
 
-      const records = (data.data.data || []).map(s => {
-        const { id, real_name, oral_symptoms = [], medical_history = '', created_at } = s;
+      const records = (res?.data?.data?.assignments || []).map(s => {
+        const { real_name, is_manual_entry, oral_symptoms = [], created_at } = s;
         return {
-          id,
-          name: real_name,
-          desc: `${oral_symptoms.join(', ')}。${medical_history}`,
-          time: dayjs(created_at).format('YYYY-MM-DD'),
-        }
+          ...s,
+          real_name: is_manual_entry ? '平台客服录入' : real_name,
+          symptoms: `${oral_symptoms.join(', ')}`,
+          created_at: dayjs(created_at).format('YYYY-MM-DD'),
+        };
       });
 
       this.setData({
-        records: records
+        records: records,
       });
     } finally {
       mpx.hideLoading();

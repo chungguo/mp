@@ -46,7 +46,7 @@
           </view>
           <view
             class="w-full box-border h-[20rpx] bg-[#0000000D] rounded-[12rpx] absolute left-0 top-[140rpx] z-1 px-[30rpx]">
-            <view class="progress h-full rounded-[12rpx] z-2 left-[-30rpx]" wx:style="{{ {width: percent} }}"></view>
+            <view class="progress h-full rounded-[12rpx] z-2 left-[-30rpx]" wx:style="{{ percentStyle }}"></view>
           </view>
         </view>
 
@@ -193,12 +193,12 @@ createPage({
       }
       return this.form.area.join('');
     },
-    percent() {
+    percentStyle() {
       if (this.invitation_count_target > 0) {
         const percent = (this.invitation_count / this.invitation_count_target) * 100;
-        return percent ? `calc(${Math.max(percent > 100 ? 100 : percent, 0)}% + 60rpx)` : '30rpx';
+        return percent ? { width: `calc(${Math.max(percent > 100 ? 100 : percent, 0)}% + 60rpx)` } : { width: "30rpx" };
       }
-      return "30rpx";
+      return { width: "30rpx" };
     },
     invitation_gap() {
       const achievedCount = this.rewards.filter(item => item.is_unlocked).length;

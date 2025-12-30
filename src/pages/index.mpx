@@ -30,11 +30,11 @@
               <t-image width="80rpx" height="80rpx"
                 src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
             </view>
-            <view bindtap="navigateToActivityReferral"
+            <view bindtap="navigateToGroup"
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
-              <view class="color-[#1D2129] text-[28rpx] font-bold">分享领好礼</view>
+              <view class="color-[#1D2129] text-[28rpx] font-bold">拼团</view>
               <t-image width="80rpx" height="80rpx"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E5%88%86%E4%BA%AB%E9%A2%86%E5%A5%BD%E7%A4%BC.png" />
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/image.webp" />
             </view>
           </view>
         </view>
@@ -377,19 +377,9 @@ createPage({
       url: '/pages/package/insurance',
     });
   },
-  navigateToActivityReferral() {
-    const activity = this.banner.find(item => item.type === 'referral');
-
-    if (!activity) {
-      mpx.showToast({
-        title: '活动不存在',
-        icon: 'error',
-      });
-      return;
-    }
-
+  navigateToGroup() {
     mpx.navigateTo({
-      url: activity.path,
+      url: '/subpackages/group/index',
     });
   },
   navigateToCategory(e: WechatMiniprogram.CustomEvent) {

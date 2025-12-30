@@ -1,8 +1,8 @@
 <template>
   <view wx:if="{{ text }}" class="relative color-white rounded-[8rpx] px-[10rpx] py-[1rpx] box-border text-[24rpx]"
-    wx:style="backgroundColor: {{ backgroundColor }};">
+    wx:style="{{ backgroundStyle }}">
     {{ text }}
-    <view class="absolute arrow left-[-10rpx] top-[50%] w-0 h-0" wx:style="borderRightColor: {{ backgroundColor }}">
+    <view class="absolute arrow left-[-10rpx] top-[50%] w-0 h-0" wx:style="{{ borderStyle }}">
     </view>
   </view>
 </template>
@@ -20,8 +20,20 @@ createComponent({
       type: String,
       value: '',
     },
-  }
-})
+  },
+  computed: {
+    backgroundStyle() {
+      return {
+        backgroundColor: this.backgroundColor,
+      }
+    },
+    borderStyle() {
+      return {
+        borderRightColor: this.backgroundColor,
+      }
+    },
+  },
+});
 </script>
 
 <style lang="less">
