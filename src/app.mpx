@@ -6,6 +6,7 @@ import { updateManager } from '@/common/update-manager';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 
+// golden oV8BL1zWxzH1V3qAx7iR6YGvkAEY
 const pinia = createPinia();
 
 dayjs.extend(duration);

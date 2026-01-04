@@ -12,10 +12,10 @@
 
     <!-- 已退款 -->
     <view wx:if="{{ status === 2 }}" class="text-center text-[24rpx]">
+      <block wx:if="{{ refundstatus === 0 }}">退款中，预计2个工作日内退回原付款账户</block>
       <block wx:if="{{ refundstatus === 1 }}">已退回原付款账户</block>
       <block wx:if="{{ refundstatus === 2 }}">退款失败</block>
       <block wx:if="{{ refundstatus === 3 }}">退款关闭</block>
-      <block wx:else>退款中</block>
     </view>
 
     <!-- 待支付 -->
@@ -109,7 +109,7 @@
 import navigation from '@/mixins/navigation';
 import { OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
 import { type Hospital, useHospitalStore } from '@/store/hospital';
-import { createPage } from '@mpxjs/core';
+import mpx, { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
 import dayjs from 'dayjs';
 
@@ -238,12 +238,22 @@ createPage({
       }
     },
     async onMakeRefund() {
-      this.loading = true;
-
       try {
-        const res = await this.refund(this.orderId);
+        const res = await mpx.showModal({
+          title: '温馨提示',
+          content: '是否确定进行退款？',
+          confirmText: '退款',
+          cancelText: '取消',
+        });
+
+        if (!res.confirm) {
+          return;
+        }
+
+        this.loading = true;
+        const response = await this.refund(this.orderId);
         this.status = OrderStatus.REFUNDED;
-        this.queryRefund(res.refund_no);
+        this.queryRefund(response.refund_no);
       } finally {
         this.loading = false;
       }

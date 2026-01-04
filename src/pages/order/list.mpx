@@ -52,7 +52,7 @@ createPage({
     }
   },
 
-  onLoad() {
+  onShow() {
     this.fetchOrders();
   },
 

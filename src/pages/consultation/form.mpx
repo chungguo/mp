@@ -15,7 +15,7 @@
 
     <!-- 姓名输入 -->
     <t-cell title="姓名" required t-class-center="cell-center" t-class-note="cell-note">
-      <t-input slot="note" borderless placeholder="请输入姓名" maxlength="10" bind:change="onNameChange"
+      <t-input slot="note" borderless placeholder="请输入姓名" maxlength="50" bind:change="onNameChange"
         value="{{ name }}" />
     </t-cell>
 
@@ -217,9 +217,9 @@ createPage({
   validateForm() {
     const { name, gender, symptoms, mobile } = this.data;
 
-    if (!name) {
+    if (!name || name.length < 2) {
       mpx.showToast({
-        title: '请输入姓名',
+        title: '请输入姓名，2-50个字',
         icon: 'error'
       });
       return false;
