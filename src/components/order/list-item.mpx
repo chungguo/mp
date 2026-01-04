@@ -8,7 +8,7 @@
     <view class="flex-1 flex justify-between items-center min-w-0">
       <!-- 左：名称 + 时间 -->
       <view class="flex-1 flex flex-col gap-[16rpx] min-w-0">
-        <view class="text-[30rpx] text-[#1D2129] font-bold text-ellipsis overflow-hidden whitespace-nowrap">{{
+        <view class="text-[30rpx] text-[#1D2129] font-bold truncate">{{
           order.item_name }}</view>
         <view class="text-[22rpx] text-[#A4A6A9]">
           <view wx:if="{{ status === 0 }}" class="flex items-center gap-[6rpx] text-[#1D2129]">

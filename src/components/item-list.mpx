@@ -19,7 +19,7 @@
       </view>
 
       <view class="flex flex-col flex-1 gap-[22rpx] min-w-0">
-        <view class="text-[28rpx] color-[#090E0B] font-bold text-ellipsis overflow-hidden whitespace-nowrap">{{
+        <view class="text-[28rpx] color-[#090E0B] font-bold truncate">{{
           item.name }}</view>
         <view class="flex items-center justify-between">
           <view class="flex items-center gap-[10rpx]">

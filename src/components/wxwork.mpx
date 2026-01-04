@@ -16,7 +16,7 @@
         <view class="flex flex-col gap-[16rpx]">
           <view wx:for="{{ benefits }}" wx:key="index" class="flex items-center gap-[12rpx]">
             <view class="text-[6rpx] text-[#4A8DFF]">●</view>
-            <view class="text-[24rpx] flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">{{
+            <view class="text-[24rpx] flex-1 min-w-0 truncate">{{
               item.title }}：{{ item.description }}</view>
           </view>
         </view>

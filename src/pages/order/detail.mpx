@@ -30,7 +30,7 @@
       <!-- 商品详情 -->
       <view class="bg-white rounded-[20rpx] px-[26rpx] py-[36rpx]">
         <view class="flex items-center">
-          <view class="flex-1 text-ellipsis overflow-hidden whitespace-nowrap text-[30rpx] font-bold">
+          <view class="flex-1 truncate text-[30rpx] font-bold">
             {{ order.hospital_name }}
           </view>
           <view wx:if="{{ order.hospital_ids && order.hospital_ids.length > 1 }}" bindtap="onShowHospitalNames"
@@ -43,7 +43,7 @@
         <view class="flex items-center gap-[26rpx]">
           <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
             mode="aspectFill" />
-          <view class="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap flex flex-col gap-[10rpx]">
+          <view class="flex-1 min-w-0 truncate flex flex-col gap-[10rpx]">
             <view class="text-[28rpx] font-bold">{{ order.item_name }}</view>
             <view class="text-[22rpx] text-[#A4A6A9]">随时退，过期退</view>
           </view>

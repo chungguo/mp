@@ -41,7 +41,7 @@
       </view>
     </view>
 
-    <swiper indicator-dots="{{ true }}"indicator-color="#D9D9D9" indicator-active-color="#4A8DFF"
+    <swiper indicator-dots="{{ true }}" indicator-color="#D9D9D9" indicator-active-color="#4A8DFF"
       class="h-[196rpx] bg-white mx-[32rpx] rounded-[22rpx]">
       <block wx:for="{{ grids }}" wx:key="index" wx:for-item="grid">
         <swiper-item class="flex justify-between items-center">
@@ -89,7 +89,7 @@
               <view class="relative rounded-[16rpx]">
                 <t-image t-class="rounded-[16rpx] of-hidden w-[194rpx] h-[194rpx]" src="{{ item.avatar }}" />
                 <view
-                  class="bg-[#4A8DFF] absolute z-2 bottom-0 left-0 right-0 color-white text-center text-ellipsis  of-hidden whitespace-nowrap rounded-b-[16rpx] text-[22rpx] py-[5rpx]">
+                  class="bg-[#4A8DFF] absolute z-2 bottom-0 left-0 right-0 color-white text-center truncate rounded-b-[16rpx] text-[22rpx] py-[5rpx]">
                   {{ item.title }}
                 </view>
               </view>
@@ -97,10 +97,10 @@
                 <view class="flex justify-between items-center">
                   <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
                   <view wx:if="{{ item.experienceYear }}" class="color-[#51555E] text-[24rpx]">从业{{ item.experienceYear
-                    }}年</view>
+                  }}年</view>
                 </view>
                 <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
-                  <view class="text-ellipsis of-hidden whitespace-nowrap">{{ item.hospitals }}</view>
+                  <view class="truncate">{{ item.hospitals }}</view>
                   <view>{{ item.department }}</view>
                 </view>
               </view>
@@ -122,6 +122,7 @@ import { type Category, useCategoryStore } from '@/store/category';
 import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash-es';
+import { discount } from '@/common/price';
 
 createPage({
   data: {
@@ -326,19 +327,14 @@ createPage({
     }
 
     const { original_price, discount_price } = item;
-    const discount = original_price - discount_price;
 
-    if (!discount) {
+    const discountText = discount(original_price, discount_price);
+
+    if (!discountText) {
       return;
     }
 
-    const num = ((discount_price / original_price) * 10).toFixed(1);
-
-    if (Number(num) === 0) {
-      return;
-    }
-
-    return `${num}折`;
+    return `${discountText}折`;
   },
 
   navigateToItemDetail(e: WechatMiniprogram.CustomEvent) {

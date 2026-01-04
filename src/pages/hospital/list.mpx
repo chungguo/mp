@@ -23,7 +23,7 @@
           </view>
           <view class="flex items-center gap-[8rpx] mt-[4rpx]">
             <t-icon name="location" size="24rpx" class="text-[#999]" />
-            <text class="text-[24rpx] text-[#666] flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{{
+            <text class="text-[24rpx] text-[#666] flex-1 truncate">{{
               item.address }}</text>
           </view>
         </view>

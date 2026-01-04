@@ -7,6 +7,13 @@ export enum ItemStatus {
   OffShelf = 2,
 }
 
+export interface SecKill {
+  activity_id: number;
+  end_time: string;
+  seckill_price: number;
+  stock: number;
+}
+
 export interface Item {
   id: number;
   sku_id: string;
@@ -25,6 +32,9 @@ export interface Item {
   created_at: string;
   updated_at: string;
   tags: string;
+  marketing_activities?: {
+    seckill_activity?: SecKill;
+  },
 }
 
 export interface ItemListQuery {

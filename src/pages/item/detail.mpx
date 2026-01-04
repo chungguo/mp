@@ -5,10 +5,14 @@
   <view class="relative top-[-60rpx] mx-[26rpx] flex flex-col gap-[40rpx]">
     <card>
       <view class="flex items-center gap-[16rpx]">
-        <view class="text-[58rpx] font-bold color-[#F42020]">￥{{ item.discount_price }}</view>
-        <view class="text-[36rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}</view>
+        <view class="text-[48rpx] font-bold color-[#F02E2E]">￥{{ discountPrice }}</view>
+        <view class="text-[32rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}</view>
         <tag wx:if="{{ tags.length > 0 }}" wx:for="{{ tags }}" wx:for-item="tag" wx:key="index" text="{{ tag }}"
-          backgroundColor="#FFAB61" />
+          backgroundColor="{{ tagColor }}" />
+        <view class="text-[28rpx]" wx:if="{{ seckill }}">
+          <t-count-down size="small" format="{{ format }}" time="{{ countdown }}" splitWithUnit
+            bind:finish="onFinish" />
+        </view>
       </view>
       <view class="text-[32rpx] font-bold color-[#1D2129]">{{ item.name }}</view>
     </card>
@@ -21,6 +25,7 @@
       <view class="text-[24rpx] color-[#1D2129]">{{ item.description }}</view>
     </card>
   </view>
+
   <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
 
   <sticky-bottom>
@@ -31,7 +36,18 @@
           bindtap="goConsultation" />
         <text>咨询门诊</text>
       </view>
-      <view bindtap="onBuy"
+
+      <view wx:if="{{ seckill }}" bindtap="onBuy"
+        class="bg-#F02E2E right-[26rpx] color-white text-[28rpx] rounded-r-[26rpx] flex flex-col items-center justify-center w-[422rpx] py-[20rpx]">
+        <text>秒杀价 ￥{{ discountPrice }} 立即购买</text>
+        <view class="flex items-center text-[18rpx]">
+          <t-count-down t-class="text-white! text-[18rpx]!" size="small" format="{{ format }}" time="{{ countdown }}"
+            splitWithUnit bind:finish="onFinish" />
+          后恢复原价
+        </view>
+      </view>
+
+      <view wx:else bindtap="onBuy"
         class="bg-#FF7913 right-[26rpx] color-white text-[32rpx] rounded-r-[26rpx] flex items-center justify-center gap-[12rpx] w-[422rpx] py-[20rpx]">
         <text>￥{{ item.discount_price }}</text>
         <text>立即购买</text>
@@ -48,21 +64,60 @@ import { mapActions } from '@mpxjs/pinia';
 import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
-import { usePaymentStore } from "@/store/payment";
+import { PreOrderParams, usePaymentStore } from "@/store/payment";
 import navigationMixin from "@/mixins/navigation";
+import dayjs from "dayjs";
 
 createPage({
   mixins: [navigationMixin],
   data: {
     itemId: 0,
+    finished: false,
     loading: false,
     item: {} as Item,
     phonepopup: false,
   },
   computed: {
+    seckill() {
+      if (this.finished || !this.item?.marketing_activities?.seckill_activity) {
+        return false;
+      }
+
+      const { stock, seckill_price, end_time } = this.item.marketing_activities.seckill_activity;
+
+      const avaliable = dayjs().isBefore(dayjs(end_time));
+
+      return stock && seckill_price && avaliable;
+    },
+    countdown() {
+      if (!this.seckill || !this.item.marketing_activities?.seckill_activity?.end_time) {
+        return 0;
+      }
+
+      return dayjs(this.item.marketing_activities.seckill_activity.end_time).diff(dayjs(), 'millisecond');
+    },
+    format() {
+      return this.countdown < 1000 * 60 * 60 * 24 ? 'HH:mm:ss' : "DD:HH:mm:ss";
+    },
+    discountPrice() {
+      const seckillprice = this.item?.marketing_activities?.seckill_activity?.seckill_price;
+
+      if (this.seckill && seckillprice) {
+        return seckillprice;
+      }
+
+      return this.item.discount_price;
+    },
+    tagColor() {
+      return this.seckill ? '#F02E2E' : '#FFAB61';
+    },
     tags() {
+      if (this.seckill) {
+        return ['秒杀价'];
+      }
+
       return this.item?.tags?.split(',').filter(Boolean);
-    }
+    },
   },
   ...mapActions(usePaymentStore, ['preOrder']),
   async onLoad(options: Partial<Record<'id', string>> = {}) {
@@ -104,10 +159,19 @@ createPage({
       try {
         this.loading = true;
 
-        const data = await this.preOrder({
+        const params: PreOrderParams = {
           item_id: this.itemId,
           payment_method: 'jsapi',
-        });
+        };
+
+        const activity_id = this.item?.marketing_activities?.seckill_activity?.activity_id;
+
+        if (this.seckill && activity_id) {
+          params['activity_id'] = activity_id;
+          params['activity_type'] = 'seckill';
+        }
+
+        const data = await this.preOrder(params);
 
         if (!data.payment_params) {
           mpx.showToast({
@@ -168,6 +232,10 @@ createPage({
       }
     },
 
+    onFinish() {
+      this.finished = true;
+    },
+
     goBack() {
       this.safeNavigateBack('/pages/index')
     },
@@ -219,6 +287,7 @@ createPage({
     "t-textarea": "tdesign-miniprogram/miniprogram_dist/textarea/textarea",
     "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
     "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
+    "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
     "card": "@/components/card",
     "sticky-bottom": "@/components/sticky-bottom",
     "hospital-list": "@/components/hospital-list",

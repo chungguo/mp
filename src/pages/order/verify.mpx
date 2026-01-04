@@ -15,7 +15,7 @@
     <view class="flex items-center gap-[26rpx] mb-[26rpx]">
       <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
         mode="aspectFill" />
-      <view class="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap flex flex-col gap-[10rpx]">
+      <view class="flex-1 min-w-0 truncate flex flex-col gap-[10rpx]">
         <view class="text-[28rpx] font-bold">{{ order.item_name }}</view>
         <view class="text-[22rpx] text-[#A4A6A9]">随时退，过期退</view>
       </view>

@@ -16,9 +16,11 @@ enum RefundStatus {
   REFUND_CLOSED = 3  // 退款关闭
 }
 
-interface PreOrderParams {
+export interface PreOrderParams {
   item_id: number,
   payment_method: 'jsapi',
+  activity_type?: 'seckill' | 'group_buy';
+  activity_id?: number;
   remark?: string;
 }
 
