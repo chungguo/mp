@@ -1,0 +1,191 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="订单核销" />
+  <view class="flex items-center gap-[16rpx] pt-[36rpx] pb-[26rpx]">
+    <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/icon/verify.webp" t-class="w-[36rpx]"
+      mode="widthFix" />
+    订单核销
+  </view>
+  <view class="bg-white rounded-[20rpx] px-[26rpx] py-[36rpx]">
+    <view class="flex-1 text-[30rpx] font-bold">
+      {{ hospitalnames }}
+    </view>
+
+    <t-divider />
+
+    <view class="flex items-center gap-[26rpx] mb-[26rpx]">
+      <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
+        mode="aspectFill" />
+      <view class="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap flex flex-col gap-[10rpx]">
+        <view class="text-[28rpx] font-bold">{{ order.item_name }}</view>
+        <view class="text-[22rpx] text-[#A4A6A9]">随时退，过期退</view>
+      </view>
+
+      <view class="flex items-baseline font-bold text-[22rpx]" wx:class="{{ {'line-through': status === 2} }}">
+        <view>付款：</view>
+        <view class="text-[36rpx]">{{ price }}</view>
+      </view>
+    </view>
+
+    <card title="商品详情" t-class="bg-[#F4F8FF]!">
+      <view class="text-[22rpx]">{{ order.item_description }}</view>
+    </card>
+  </view>
+
+  <!-- 订单信息 -->
+  <view class="bg-white rounded-[20rpx] px-[26rpx] py-[36rpx] mt-[26rpx]">
+    <view class="flex items-start justify-between">
+      <view class="text-[30rpx] font-bold">订单信息</view>
+    </view>
+    <view class="flex flex-col gap-[18rpx] text-[#090E0B] text-[24rpx] mt-[22rpx]">
+      <view>订单编号：{{ order.order_no }}</view>
+      <view>下单时间：{{ createTime }}</view>
+    </view>
+  </view>
+
+  <view class="mt-[190rpx] flex flex-col gap-[46rpx]">
+    <t-button theme="primary" block bindtap="onVerifyOrder">确认核销</t-button>
+    <t-button theme="primary" variant="outline" block bindtap="goBack">取消</t-button>
+  </view>
+  <t-loading wx:if="{{ loading }}" fullscreen />
+</template>
+
+<script lang="ts">
+import navigation from '@/mixins/navigation';
+import mpx, { createPage } from "@mpxjs/core";
+import { mapActions, mapState } from '@mpxjs/pinia';
+import { OrderItem, usePaymentStore } from '@/store/payment';
+import { type Hospital, useHospitalStore } from '@/store/hospital';
+import dayjs from 'dayjs';
+import { useUserStore } from '@/store/user';
+
+createPage({
+  mixins: [navigation],
+  data: {
+    orderId: '',
+    itemId: '',
+    orderNo: '',
+    loading: false,
+    order: {} as OrderItem,
+  },
+  ...mapState(useUserStore, ['profile']),
+  ...mapState(useHospitalStore, ['hospitals']),
+  ...mapActions(useUserStore, ['queryProfile']),
+  ...mapActions(usePaymentStore, ['queryOrderDetail', 'verifyOrder']),
+  ...mapActions(useHospitalStore, ['fetchHospitals']),
+  watch: {
+    order: {
+      handler(value) {
+        if (value?.hospital_ids?.length > 0) {
+          this.fetchHospitals();
+        }
+      },
+      immediate: true,
+    }
+  },
+  computed: {
+    hospitalnames() {
+      return (this.order?.hospital_ids ?? []).map(id =>
+        (this.hospitals() ?? []).find((h: Hospital) => h.id === id))
+        .filter(Boolean).map(h => h.name).join(' ');
+    },
+    price() {
+      return this.order.amount ? (this.order.amount / 100).toFixed(2) : '-';
+    },
+    createTime() {
+      return this.order.created_at ? dayjs(this.order.created_at).format('YYYY-MM-DD HH:mm:ss') : '';
+    },
+  },
+
+  onLoad(options) {
+    if (!options.id) {
+      this.safeNavigateBack('/pages/me/index');
+      return;
+    }
+
+    this.setData({
+      orderId: options.id,
+      itemId: options.itemId,
+      orderNo: options.orderNo,
+    });
+
+    this.queryDetail();
+    this.queryProfile();
+  },
+
+  methods: {
+    async queryDetail() {
+      try {
+        this.loading = true;
+        const order = await this.queryOrderDetail(this.orderId);
+        this.setData({
+          order,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async onVerifyOrder() {
+      const openid = this.profile()?.openid;
+
+      if (!this.orderId || !this.itemId || !openid) {
+        mpx.showToast({
+          title: '订单信息错误',
+          icon: 'error',
+        });
+        return;
+      }
+
+      try {
+        this.loading = true;
+
+        await this.verifyOrder({
+          order_no: this.orderNo,
+          item_id: Number(this.itemId),
+          open_id: openid,
+        });
+
+        mpx.showToast({
+          title: '核销成功',
+          icon: 'success',
+        });
+
+        setTimeout(() => {
+          mpx.switchTab({
+            url: '/pages/me/index',
+          });
+        }, 1000);
+      } finally {
+        this.loading = false;
+      }
+    }
+  },
+  goBack() {
+    this.safeNavigateBack('/pages/me/index');
+  },
+});
+</script>
+
+<style>
+page {
+  padding-inline: 26rpx;
+  --td-button-medium-font-size: 28rpx;
+  --td-bg-color-container: transparent;
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "订单核销",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
+    "t-divider": "tdesign-miniprogram/miniprogram_dist/divider/divider",
+    "card": "@/components/card",
+  }
+}
+</script>

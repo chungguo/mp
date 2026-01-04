@@ -192,10 +192,10 @@ createPage({
       return diff;
     },
     price() {
-      return (this.order.amount / 100).toFixed(2);
+      return this.order.amount ? (this.order.amount / 100).toFixed(2) : '-';
     },
     qrcodetext() {
-      return [this.order.order_no, this.order.item_id].filter(Boolean).join('|');
+      return [this.order.id, this.order.order_no, this.order.item_id].filter(Boolean).join('|');
     },
     moreHospital() {
       return (this.order?.hospital_ids ?? []).map(id =>

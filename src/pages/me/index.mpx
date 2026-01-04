@@ -51,7 +51,6 @@
 </template>
 
 <script lang="ts">
-import { usePaymentStore } from '@/store/payment';
 import { useUserStore, RoleId, RoleName } from '@/store/user';
 import mpx from '@mpxjs/core';
 import { createPage } from "@mpxjs/core";
@@ -65,7 +64,6 @@ createPage({
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
-  ...mapActions(usePaymentStore, ['verifyOrder']),
 
   pageLifetimes: {
     show() {
@@ -143,12 +141,11 @@ createPage({
 
       const { result } = data;
 
-      const [orderNo, itemId] = result.split('|');
-      const openid = this.profile()?.openid;
+      const [id, orderNo, itemId] = result.split('|');
 
       this.scaned = true;
 
-      if ([orderNo, itemId, openid].some(v => !v)) {
+      if ([id, orderNo, itemId].some(v => !v)) {
         mpx.showToast({
           title: '无效的二维码',
           icon: 'error',
@@ -156,21 +153,10 @@ createPage({
         return;
       }
 
-      await this.verifyOrder({
-        order_no: orderNo,
-        item_id: Number(itemId),
-        open_id: openid,
+      mpx.navigateTo({
+        url: `/pages/order/verify?id=${id}&orderNo=${orderNo}&itemId=${itemId}`,
       });
 
-      mpx.showToast({
-        title: '核销成功',
-        icon: 'success',
-      });
-      setTimeout(() => {
-        mpx.navigateTo({
-          url: '/pages/order/success',
-        });
-      }, 1500);
     } catch (e) {
       mpx.showModal({
         title: '识别结果',

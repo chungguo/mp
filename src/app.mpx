@@ -82,6 +82,7 @@ image {
       "./pages/order/detail",
       "./pages/order/success",
       "./pages/order/wxwork",
+      "./pages/order/verify",
     ],
     "subPackages": [
       {
