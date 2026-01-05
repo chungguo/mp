@@ -34,7 +34,7 @@
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">秒杀</view>
               <t-image width="80rpx" height="80rpx"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/image.webp" />
+                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/lto.webp" />
             </view>
           </view>
         </view>
