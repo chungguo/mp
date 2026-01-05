@@ -143,12 +143,16 @@ export const usePaymentStore = defineStore('payment', () => {
     return response.data?.data;
   };
 
-  const queryOrders = async () => {
+  const queryOrders = async (params: {
+    page: number;
+    page_size: number;
+  }) => {
     const response = await request.fetch<{
       data: OrderItem[];
     }>({
       url: '/payment/orders',
       method: 'GET',
+      params,
     });
 
     return response.data?.data;

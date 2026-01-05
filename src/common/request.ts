@@ -35,10 +35,22 @@ mpx.xfetch.interceptors.response.use((res) => {
 
   if (res.data.error) {
     log.error(res.requestConfig ?? {}, res.statusCode || res.status, res.data ?? {});
+
     mpx.showModal({
       title: '提示',
       content: res.data.details || res.data.error,
       showCancel: false,
+      usePromise: false,
+      success: (r) => {
+        if (r.confirm && res.status === 401 && res.data.error === 'Invalid token') {
+          const pages = getCurrentPages();
+          const currentPage = pages[pages.length - 1];
+          const path = `/${currentPage.route}`;
+          mpx.restartMiniProgram({
+            path,
+          });
+        }
+      },
     });
     return Promise.reject(res);
   }
