@@ -26,7 +26,7 @@
 
         <view class="flex items-start">
           <t-icon name="location" size="32rpx" color="#999999" class="mr-[8rpx] mt-[4rpx]" />
-          <text class="mr-[8rpx]">{{ applicable_hospital }}，</text>
+          <text class="mr-[8rpx]">{{ applicable_hospital }}</text>
         </view>
 
         <view wx:if="{{ rule }}" class="flex items-start">

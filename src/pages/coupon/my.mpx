@@ -18,7 +18,7 @@
       <t-tab-panel label="已使用" value="2">
         <block wx:if="{{ activeTab === '2' && coupons.length !== 0 }}">
           <view wx:for="{{ coupons }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx opacity-50">
-            <coupon coupon="{{ item }}" action="查看" />
+            <coupon bind:coupon-click="onCouponTap" coupon="{{ item }}" action="查看" />
           </view>
         </block>
         <block wx:else>
@@ -31,7 +31,7 @@
         <block wx:if="{{ activeTab === '3' && coupons.length !== 0 }}">
           <view wx:for="{{ coupons }}" wx:key="id" class="mx-32rpx mb-24rpx first:mt-48rpx opacity-50"
             bindtap="onCouponTap">
-            <coupon coupon="{{ item }}" action="查看" />
+            <coupon bind:coupon-click="onCouponTap" coupon="{{ item }}" action="查看" />
           </view>
         </block>
         <block wx:else>
@@ -48,8 +48,10 @@
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 import { CouponReceived, useCouponStore } from '@/store/coupon';
+import navigation from '@/mixins/navigation';
 
 createPage({
+  mixins: [navigation],
   data: {
     coupons: [] as CouponReceived[],
     activeTab: '1', // 默认选中未使用
@@ -102,14 +104,12 @@ createPage({
   onCouponTap(e: WechatMiniprogram.CustomEvent) {
     const id = e.detail.id;
     mpx.navigateTo({
-      url: `./detail?id=${id}`,
+      url: `/pages/coupon/detail?id=${id}`,
     });
   },
 
   goBack() {
-    mpx.switchTab({
-      url: '/pages/me/index',
-    });
+    this.safeNavigateBack('/pages/me/index');
   }
 });
 

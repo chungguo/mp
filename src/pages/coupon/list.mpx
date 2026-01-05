@@ -30,11 +30,13 @@
 </template>
 
 <script lang="ts">
+import navigation from '@/mixins/navigation';
 import { type Coupon, useCouponStore } from '@/store/coupon';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 
 createPage({
+  mixins: [navigation],
   data: {
     coupons: [] as {
       coupon: Coupon,
@@ -52,9 +54,7 @@ createPage({
   },
 
   goBack() {
-    mpx.switchTab({
-      url: '/pages/index',
-    });
+    this.safeNavigateBack('/pages/index');
   },
 
   // 加载优惠券数据
