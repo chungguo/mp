@@ -1,0 +1,108 @@
+<template>
+  <t-navbar left-arrow bind:go-back="goBack" title="秒杀活动" />
+
+  <view class="px-[26rpx]">
+    <!-- 商品列表 -->
+    <view class="flex flex-col gap-[24rpx]">
+      <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
+        <block wx:for="{{ items }}" wx:key="id">
+          <item-card item="{{ item }}" />
+        </block>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{ !loading && items.length === 0 }}" class="flex flex-col items-center justify-center py-[120rpx]">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/empty.png" width="200rpx"
+        height="200rpx" />
+      <text class="text-[28rpx] color-[#86909C] mt-[24rpx]">暂无商品</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
+</template>
+
+<script lang="ts">
+import mpx, { createPage } from '@mpxjs/core';
+import { mapActions } from '@mpxjs/pinia';
+import { type Item, useItemStore } from '@/store/item';
+import dayjs from 'dayjs';
+
+createPage({
+  data: {
+    loading: false,
+    items: [] as Item[],
+  },
+
+  ...mapActions(useItemStore, ['fetchItems']),
+
+  async onLoad() {
+    await this.loadItems();
+  },
+
+
+  methods: {
+    async loadItems() {
+      this.loading = true;
+
+      try {
+        const result = await this.fetchItems({
+          page: 1,
+          page_size: 100,
+        });
+
+        this.setData({
+          items: result.items.filter((item: Item) => {
+            const seckill = item.marketing_activities?.seckill_activity;
+
+            if (!seckill) {
+              return false;
+            }
+
+            const { end_time, seckill_price, stock } = seckill;
+
+            if (!seckill_price || !stock || dayjs().isAfter(dayjs(end_time))) {
+              return false;
+            }
+
+            return true;
+          }),
+        });
+      } catch (error) {
+        console.error('加载商品失败:', error);
+        mpx.showToast({
+          title: '加载失败',
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    goBack() {
+      mpx.switchTab({
+        url: '/pages/index',
+      });
+    }
+  }
+});
+</script>
+
+<style lang="less">
+page {
+  --td-navbar-background: transparent;
+}
+</style>
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "秒杀活动",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "item-card": "@/components/item-card",
+  }
+}
+</script>

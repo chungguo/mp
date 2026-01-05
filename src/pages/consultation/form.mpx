@@ -346,7 +346,7 @@ createPage({
         },
       });
 
-      mpx.navigateTo({
+      mpx.redirectTo({
         url: '/pages/consultation/wxwork',
       });
     } finally {

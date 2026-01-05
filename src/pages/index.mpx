@@ -30,9 +30,9 @@
               <t-image width="80rpx" height="80rpx"
                 src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
             </view>
-            <view bindtap="navigateToGroup"
+            <view bindtap="navigateToLTO"
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
-              <view class="color-[#1D2129] text-[28rpx] font-bold">拼团</view>
+              <view class="color-[#1D2129] text-[28rpx] font-bold">秒杀</view>
               <t-image width="80rpx" height="80rpx"
                 src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/image.webp" />
             </view>
@@ -373,9 +373,9 @@ createPage({
       url: '/pages/package/insurance',
     });
   },
-  navigateToGroup() {
+  navigateToLTO() {
     mpx.navigateTo({
-      url: '/subpackages/group/index',
+      url: '/pages/item/lto',
     });
   },
   navigateToCategory(e: WechatMiniprogram.CustomEvent) {
