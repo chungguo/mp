@@ -52,6 +52,7 @@
 
 <script lang="ts">
 import { useUserStore, RoleId, RoleName } from '@/store/user';
+import { useCouponStore } from '@/store/coupon';
 import mpx from '@mpxjs/core';
 import { createPage } from "@mpxjs/core";
 import { mapState, mapActions } from '@mpxjs/pinia';
@@ -64,6 +65,7 @@ createPage({
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
+  ...mapActions(useCouponStore, ['verify']),
 
   pageLifetimes: {
     show() {
@@ -121,9 +123,10 @@ createPage({
         icon: 'success',
       });
     } catch (e) {
+      console.error(e)
       mpx.showModal({
-        title: '识别结果',
-        content: '识别失败',
+        title: '核销结果',
+        content: '核销失败',
         showCancel: false,
         confirmText: '知道了',
       });
