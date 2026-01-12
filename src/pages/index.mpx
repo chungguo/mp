@@ -97,7 +97,7 @@
                 <view class="flex justify-between items-center">
                   <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
                   <view wx:if="{{ item.experienceYear }}" class="color-[#51555E] text-[24rpx]">从业{{ item.experienceYear
-                  }}年</view>
+                    }}年</view>
                 </view>
                 <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
                   <view class="truncate">{{ item.hospitals }}</view>
@@ -270,10 +270,7 @@ createPage({
       this.setData({
         hospitals: hospitals.map((h: Hospital) => ({
           ...h,
-          items: res.items.filter((i: Item) => i.hospital_ids.includes(h.id)).map((i: Item) => ({
-            ...i,
-            discountText: this.getDiscount(i),
-          })).slice(0, 2)
+          items: res.items.filter((i: Item) => i.hospital_ids.includes(h.id)).slice(0, 2),
         })),
       });
     } finally {

@@ -27,11 +27,11 @@
   </view>
   <t-divider />
   <view class="flex flex-col gap-[22rpx]">
-    <view wx:for="{{ hospital.items }}" wx:key="id" class="flex items-center gap-[26rpx]">
-      <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.discount_price }}</view>
-      <view wx:if="{{ discountText }}"
+    <view wx:for="{{ items }}" wx:key="id" class="flex items-center gap-[26rpx]">
+      <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.price }}</view>
+      <view wx:if="{{ item.discount }}"
         class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
-        {{ item.discountText }}</view>
+        {{ item.discount }}</view>
       <view class="truncate color-[#090E0B] text-[22rpx]">{{
         item.name }}</view>
     </view>
@@ -39,7 +39,10 @@
 </template>
 
 <script lang="ts">
+import { discount } from "@/common/price";
+import { Item } from "@/store/item";
 import { createComponent } from "@mpxjs/core";
+import dayjs from "dayjs";
 import { isEmpty } from "lodash-es";
 
 createComponent({
@@ -55,6 +58,35 @@ createComponent({
     },
     tags() {
       return this.hospital.tags.split(',').filter(Boolean);
+    },
+    items() {
+      if (isEmpty(this.hospital.items)) {
+        return [];
+      }
+
+      return this.hospital.items.map((item: Item) => {
+        const { original_price, discount_price, marketing_activities } = item;
+
+        if (
+          !marketing_activities?.seckill_activity?.stock
+          || !marketing_activities?.seckill_activity?.seckill_price
+          || dayjs().isAfter(dayjs(marketing_activities?.seckill_activity?.end_time))
+        ) {
+          const discountNumber = discount(original_price, discount_price);
+
+          return {
+            name: item.name,
+            price: discount_price,
+            discount: discountNumber ? `${discountNumber}折` : '',
+          };
+        }
+
+        return {
+          name: item.name,
+          price: marketing_activities.seckill_activity.seckill_price,
+          discount: '秒杀'
+        };
+      });
     }
   }
 });

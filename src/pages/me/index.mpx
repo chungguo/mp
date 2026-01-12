@@ -123,7 +123,10 @@ createPage({
         icon: 'success',
       });
     } catch (e) {
-      console.error(e)
+      if (e?.errMsg === 'scanCode:fail cancel') {
+        return;
+      }
+
       mpx.showModal({
         title: '核销结果',
         content: '核销失败',
@@ -161,6 +164,10 @@ createPage({
       });
 
     } catch (e) {
+      if (e?.errMsg === 'scanCode:fail cancel') {
+        return;
+      }
+
       mpx.showModal({
         title: '识别结果',
         content: '识别失败',
