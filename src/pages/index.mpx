@@ -236,7 +236,7 @@ createPage({
     const res = await store.avaliable();
 
     const banner = [{
-      image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385151.png',
+      image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/b4c753daef99a3bd23293805978eafc9.webp',
       path: '/pages/coupon/list',
       type: 'coupon',
     }];
