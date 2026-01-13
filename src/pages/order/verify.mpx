@@ -15,8 +15,8 @@
     <view class="flex items-center gap-[26rpx] mb-[26rpx]">
       <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
         mode="aspectFill" />
-      <view class="flex-1 min-w-0 truncate flex flex-col gap-[10rpx]">
-        <view class="text-[28rpx] font-bold">{{ order.item_name }}</view>
+      <view class="flex-1 min-w-0 flex flex-col gap-[10rpx]">
+        <view class="text-[28rpx] font-bold truncate">{{ order.item_name }}</view>
         <view class="text-[22rpx] text-[#A4A6A9]">随时退，过期退</view>
       </view>
 
@@ -70,7 +70,7 @@ createPage({
   ...mapState(useUserStore, ['profile']),
   ...mapState(useHospitalStore, ['hospitals']),
   ...mapActions(useUserStore, ['queryProfile']),
-  ...mapActions(usePaymentStore, ['queryOrderDetail', 'verifyOrder']),
+  ...mapActions(usePaymentStore, ['adminQueryOrderDetail', 'verifyOrder']),
   ...mapActions(useHospitalStore, ['fetchHospitals']),
   watch: {
     order: {
@@ -116,7 +116,7 @@ createPage({
     async queryDetail() {
       try {
         this.loading = true;
-        const order = await this.queryOrderDetail(this.orderId);
+        const order = await this.adminQueryOrderDetail(this.orderId);
         this.setData({
           order,
         });

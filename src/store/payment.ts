@@ -169,6 +169,17 @@ export const usePaymentStore = defineStore('payment', () => {
     return response.data.data;
   }
 
+  const adminQueryOrderDetail = async (id: string) => {
+    const response = await request.fetch<{
+      data: OrderItem;
+    }>({
+      url: `/admin/orders//${id}`,
+      method: 'GET',
+    });
+
+    return response.data.data;
+  };
+
   const refund = async (id: string) => {
     const response = await request.fetch<{
       data: {
@@ -227,6 +238,7 @@ export const usePaymentStore = defineStore('payment', () => {
     queryOrderDetail,
     preOrder,
     refund,
+    adminQueryOrderDetail,
     verifyOrder,
     queryRefundProgress,
     continueMakePayment,
