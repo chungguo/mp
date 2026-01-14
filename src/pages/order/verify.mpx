@@ -53,7 +53,7 @@
 import navigation from '@/mixins/navigation';
 import mpx, { createPage } from "@mpxjs/core";
 import { mapActions, mapState } from '@mpxjs/pinia';
-import { OrderItem, usePaymentStore } from '@/store/payment';
+import { OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
 import { type Hospital, useHospitalStore } from '@/store/hospital';
 import dayjs from 'dayjs';
 import { useUserStore } from '@/store/user';
@@ -116,7 +116,7 @@ createPage({
     async queryDetail() {
       try {
         this.loading = true;
-        const order = await this.adminQueryOrderDetail(this.orderId);
+        const order = await this.adminQueryOrderDetail(this.orderNo);
         this.setData({
           order,
         });
@@ -131,6 +131,14 @@ createPage({
       if (!this.orderId || !this.itemId || !openid) {
         mpx.showToast({
           title: '订单信息错误',
+          icon: 'error',
+        });
+        return;
+      }
+
+      if (this.order.status !== OrderStatus.PAID) {
+        mpx.showToast({
+          title: '状态不允许核销',
           icon: 'error',
         });
         return;
