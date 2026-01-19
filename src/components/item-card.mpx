@@ -23,7 +23,7 @@
             <text wx:if="{{ seckill }}" class="text-[20rpx]">秒杀</text>￥{{ discountPrice }}
           </view>
           <view class="text-[24rpx] color-[#1D2129] opacity-40 font-400 line-through mx-[6rpx]">￥{{ item.original_price
-            }}
+          }}
           </view>
           <view wx:if="{{ discountText }}"
             class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx] ml-[12rpx] whitespace-nowrap">
@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { type Item } from '@/store/item';
-import mpx, { createComponent } from '@mpxjs/core';
+import { createComponent } from '@mpxjs/core';
 import { discount } from '@/common/price';
 import dayjs from 'dayjs';
 
@@ -67,11 +67,28 @@ createComponent({
 
       return stock && seckill_price && avaliable;
     },
+
+    group() {
+      if (!this.item?.marketing_activities?.group_buying_activity) {
+        return false;
+      }
+
+      const { stock, group_price, start_time, end_time } = this.item.marketing_activities.group_buying_activity;
+
+      const avaliable = dayjs().isBefore(dayjs(end_time)) && dayjs().isAfter(dayjs(start_time));
+
+      return stock && group_price && avaliable;
+    },
     discountPrice() {
       const seckillprice = this.item?.marketing_activities?.seckill_activity?.seckill_price;
+      const groupprice = this.item?.marketing_activities?.group_buying_activity?.group_price;
 
       if (this.seckill && seckillprice) {
         return seckillprice;
+      }
+
+      if (this.group && groupprice) {
+        return groupprice;
       }
 
       return this.item.discount_price;
@@ -85,14 +102,23 @@ createComponent({
       const { original_price, discount_price } = this.item;
 
       const seckillprice = this.item?.marketing_activities?.seckill_activity?.seckill_price;
+      const groupprice = this.item?.marketing_activities?.group_buying_activity?.group_price;
 
-      const discountText = discount(original_price, (seckillprice && this.seckill) ? seckillprice : discount_price);
+      if (this.seckill) {
+        const discountText = discount(original_price, seckillprice || discount_price);
 
-      if (!discountText) {
-        return;
+        if (discountText) {
+          return `${discountText}折`;
+        }
       }
 
-      return `${discountText}折`;
+      if (this.group) {
+        const discountText = discount(original_price, groupprice || discount_price);
+
+        if (discountText) {
+          return `${discountText}折`;
+        }
+      }
     },
     tags() {
       if (!this.item || !this.item.tags) {
@@ -104,9 +130,7 @@ createComponent({
   methods: {
     navigateToItemDetail(e: WechatMiniprogram.CustomEvent) {
       const { id } = e.currentTarget.dataset;
-      mpx.navigateTo({
-        url: `/pages/item/detail?id=${id}`
-      });
+      this.triggerEvent('item-click', { id });
     },
   },
 });

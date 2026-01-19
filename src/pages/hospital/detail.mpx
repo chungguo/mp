@@ -4,7 +4,7 @@
   <!-- 医院图片轮播 -->
   <view class="p-26rpx flex flex-col gap-[26rpx]">
     <view class="rounded-24rpx of-hidden">
-      <t-swiper height="260rpx" list="{{ hospital.images }}" navigation="{{ { type: 'dots' } }}"></t-swiper>
+      <t-swiper height="260rpx" list="{{ hospital.images }}" navigation="{{ { type: 'dots' } }}" />
     </view>
 
     <!-- 医院基本信息 -->

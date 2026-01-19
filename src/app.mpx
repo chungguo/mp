@@ -98,7 +98,8 @@ image {
         "root": "subpackages/group",
         "name": "group",
         "pages": [
-          "./index"
+          "./index",
+          "./initiate"
         ]
       }
     ],

@@ -6,7 +6,7 @@
     <view class="flex flex-col gap-[24rpx]">
       <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
         <block wx:for="{{ items }}" wx:key="id">
-          <item-card item="{{ item }}" />
+          <item-card item="{{ item }}" bind:item-click="onItemClick" />
         </block>
       </view>
     </view>
@@ -78,6 +78,12 @@ createPage({
       } finally {
         this.loading = false;
       }
+    },
+    onItemClick(e: WechatMiniprogram.CustomEvent) {
+      const id = e.detail.id;
+      mpx.navigateTo({
+        url: `/pages/item/detail?id=${id}`
+      });
     },
 
     goBack() {

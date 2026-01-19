@@ -1,89 +1,114 @@
 <template>
-  <t-navbar left-arrow bind:go-back="goBack" title="拼团"></t-navbar>
-  <view class="px-[24rpx] flex flex-col gap-[26rpx] mt-[166rpx]">
-    <card>
-      TODO
-    </card>
+  <t-navbar left-arrow bind:go-back="goBack" title="拼团活动" />
 
-    <card>
-      TODO
-    </card>
+  <view class="px-[26rpx]">
+    <!-- 商品列表 -->
+    <view class="flex flex-col gap-[24rpx]">
+      <view class="flex flex-wrap gap-[22rpx] mt-[26rpx]">
+        <block wx:for="{{ items }}" wx:key="id">
+          <item-card item="{{ item }}" bind:item-click="onItemClick" />
+        </block>
+      </view>
+    </view>
 
-    <card title="拼团流程">
-      <view slot="action" bindtap="onRule"
-        class="text-[#1D2129] text-[22rpx] font-normal flex items-center opacity-[0.6]">
-        详细规则
-        <t-icon name="chevron-right" />
-      </view>
-      <view class="box-border px-[36rpx] mt-[54rpx] mb-[34rpx]">
-        <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/tuan_progress.webp"
-          t-class="w-full" mode="widthFix" />
-      </view>
-      <view class="text-[#1D2129] opacity-[0.3] text-[22rpx] text-center">拼团成功后优惠券24小时内到账，拼团失败立即自动退款</view>
-    </card>
+    <!-- 空状态 -->
+    <view wx:if="{{ !loading && items.length === 0 }}" class="flex flex-col items-center justify-center py-[120rpx]">
+      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/empty.png" width="200rpx"
+        height="200rpx" />
+      <text class="text-[28rpx] color-[#86909C] mt-[24rpx]">暂无商品</text>
+    </view>
   </view>
-  <t-popup visible="{{ ruleVisible }}" close-on-overlay-click="{{ false }}" placement="bottom">
-    <view class="flex align-start justify-between px-[30rpx] py-[46rpx]">
-      <view class="flex-1 text-center text-[36rpx] font-weight">拼团规则</view>
-      <t-icon name="close" bindtap="onRuleClose" t-class="text-[#CCCCCC]" />
-    </view>
-    <view class="px-[36rpx] pb-[66rpx] text-[24rpx] text-[#1D2129] flex flex-col gap-[20rpx]">
-      <view>a.本活动为限时拼团活动，需邀请多位用户参与本次拼团，活动期间每位用户仅有1次助力机会，用完即止;</view>
-      <view>b.本活动限时限量，售完截止;</view>
-      <view>c.本团为多人拼团，权益拼团成功后即发放，限定时间内有效，逾期自动作废;</view>
-      <view>d.若在限定时间内拼团未成功，系统将自动进行退款，但若已拼团成功，商品不支持退款;</view>
-      <view>
-        e.若在售卖过程中发现有用户通过不正当手段如扰乱系统、实施网络攻击、恶意套现以及利用系统、规则漏洞作弊等获取不当利益、有碍其他用户公平交易或有违售卖目的，健牙宝有权取消该用户购买资格，并有权追回该用户已经购买的商品、服务或权益
-      </view>
-    </view>
-  </t-popup>
+
+  <!-- 加载状态 -->
+  <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
 </template>
 
-<script>
-import navigation from "@/mixins/navigation";
-import { createPage } from "@mpxjs/core";
+<script lang="ts">
+import mpx, { createPage } from '@mpxjs/core';
+import { mapActions } from '@mpxjs/pinia';
+import { type Item, useItemStore } from '@/store/item';
+import dayjs from 'dayjs';
 
 createPage({
-  mixins: [navigation],
-  data() {
-    return {
-      ruleVisible: false,
-    };
+  data: {
+    loading: false,
+    items: [] as Item[],
   },
-  methods: {
-    goBack() {
-      this.safeNavigateBack('/pages/index');
-    },
-    onRule() {
-      this.ruleVisible = true;
-    },
-    onRuleClose() {
-      this.ruleVisible = false;
-    },
-  },
-});
 
+  ...mapActions(useItemStore, ['fetchItems']),
+
+  async onLoad() {
+    await this.loadItems();
+  },
+
+
+  methods: {
+    async loadItems() {
+      this.loading = true;
+
+      try {
+        const result = await this.fetchItems({
+          page: 1,
+          page_size: 100,
+        });
+
+        this.setData({
+          items: result.items.filter((item: Item) => {
+            const group = item.marketing_activities?.group_buying_activity;
+
+            if (!group) {
+              return false;
+            }
+
+            const { start_time, end_time, group_price, stock } = group;
+
+            if (!group_price || !stock || dayjs().isAfter(dayjs(end_time)) || dayjs().isBefore(dayjs(start_time))) {
+              return false;
+            }
+
+            return true;
+          }),
+        });
+      } catch (error) {
+        console.error('加载商品失败:', error);
+        mpx.showToast({
+          title: '加载失败',
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    onItemClick(e: WechatMiniprogram.CustomEvent) {
+      const id = e.detail.id;
+      mpx.navigateTo({
+        url: `/subpackages/group/initiate?id=${id}`
+      });
+    },
+
+    goBack() {
+      mpx.switchTab({
+        url: '/pages/index',
+      });
+    },
+  }
+});
 </script>
-<style>
+
+<style lang="less">
 page {
-  --td-navbar-color: black;
   --td-navbar-background: transparent;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/tuan.webp");
-  background-repeat: no-repeat;
-  background-size: 100%;
 }
 </style>
 
 <script type="application/json">
 {
+  "navigationBarTitleText": "拼团活动",
   "navigationStyle": "custom",
-  "navigationBarTitleText": "拼团",
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
-    "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
-    "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
-    "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
-    "card": "@/components/card",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "item-card": "@/components/item-card",
   }
 }
 </script>

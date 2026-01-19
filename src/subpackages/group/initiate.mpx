@@ -1,5 +1,5 @@
 <template>
-  <t-navbar left-arrow bind:go-back="goBack" title="购买商品" />
+  <t-navbar left-arrow bind:go-back="goBack" title="拼团" />
 
   <t-swiper height="568rpx" list="{{ item.detail_images }}" navigation="{{ { type: 'dots' } }}" />
 
@@ -10,13 +10,11 @@
         <view class="text-[32rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}</view>
         <tag wx:if="{{ tags.length > 0 }}" wx:for="{{ tags }}" wx:for-item="tag" wx:key="index" text="{{ tag }}"
           backgroundColor="{{ tagColor }}" />
-        <view class="text-[28rpx]" wx:if="{{ seckill }}">
-          <t-count-down size="small" format="{{ format }}" time="{{ countdown }}" splitWithUnit
-            bind:finish="onFinish" />
-        </view>
       </view>
       <view class="text-[32rpx] font-bold color-[#1D2129]">{{ item.name }}</view>
     </card>
+
+    <group-rule wx:if="{{ group }}" />
 
     <card wx:if="{{ hospitals && hospitals.length > 0 }}" title="适用门店">
       <hospital-list hospitals="{{ hospitals }}" />
@@ -31,21 +29,15 @@
 
   <sticky-bottom>
     <view class="flex justify-between">
-      <view class="flex items-center gap-[14rpx]" bindtap="navigateToConsultation">
-        <t-image t-class="w-[44rpx] h-[44rpx]"
-          src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
-          bindtap="goConsultation" />
-        <text>咨询门诊</text>
+      <view class="flex items-center flex-col" bindtap="navigateToConsultation">
+        <text>￥{{ item.original_price }}</text>
+        <text>单独购买</text>
       </view>
 
-      <view wx:if="{{ seckill }}" bindtap="onBuy"
-        class="bg-#F02E2E right-[26rpx] color-white text-[28rpx] rounded-r-[26rpx] flex flex-col items-center justify-center w-[422rpx] py-[20rpx]">
-        <text>秒杀价 ￥{{ discountPrice }} 立即购买</text>
-        <view class="flex items-center text-[18rpx]">
-          <t-count-down t-class="text-white! text-[18rpx]!" size="small" format="{{ format }}" time="{{ countdown }}"
-            splitWithUnit bind:finish="onFinish" />
-          后恢复原价
-        </view>
+      <view wx:if="{{ group }}" bindtap="onBuy"
+        class="bg-#FF7913 right-[26rpx] color-white rounded-r-[26rpx] flex flex-col items-center justify-center w-[422rpx] py-[4rpx]">
+        <text class="text-[32rpx]">￥{{ discountPrice }}</text>
+        <text class="text-[24rpx]" wx:if="{{ !!members }}">发起拼团 {{ members }} 人即可成团</text>
       </view>
 
       <view wx:else bindtap="onBuy"
@@ -73,48 +65,40 @@ createPage({
   mixins: [navigationMixin],
   data: {
     itemId: 0,
-    finished: false,
     loading: false,
     item: {} as Item,
     phonepopup: false,
   },
   computed: {
-    seckill() {
-      if (this.finished || !this.item?.marketing_activities?.seckill_activity) {
+    group() {
+      if (!this.item?.marketing_activities?.group_buying_activity) {
         return false;
       }
 
-      const { stock, seckill_price, end_time } = this.item.marketing_activities.seckill_activity;
+      const { stock, group_price, start_time, end_time } = this.item.marketing_activities.group_buying_activity;
 
-      const avaliable = dayjs().isBefore(dayjs(end_time));
+      const avaliable = dayjs().isBefore(dayjs(end_time)) && dayjs().isAfter(dayjs(start_time));
 
-      return stock && seckill_price && avaliable;
+      return stock && group_price && avaliable;
     },
-    countdown() {
-      if (!this.seckill || !this.item.marketing_activities?.seckill_activity?.end_time) {
-        return 0;
-      }
-
-      return dayjs(this.item.marketing_activities.seckill_activity.end_time).diff(dayjs(), 'millisecond');
-    },
-    format() {
-      return this.countdown < 1000 * 60 * 60 * 24 ? 'HH:mm:ss' : "DD:HH:mm:ss";
+    members() {
+      return this.item.marketing_activities?.group_buying_activity?.required_count;
     },
     discountPrice() {
-      const seckillprice = this.item?.marketing_activities?.seckill_activity?.seckill_price;
+      const groupPrice = this.item?.marketing_activities?.group_buying_activity?.group_price;
 
-      if (this.seckill && seckillprice) {
-        return seckillprice;
+      if (this.group && groupPrice) {
+        return groupPrice;
       }
 
       return this.item.discount_price;
     },
     tagColor() {
-      return this.seckill ? '#F02E2E' : '#FFAB61';
+      return this.group ? '#F53A3A' : '#FFAB61';
     },
     tags() {
-      if (this.seckill) {
-        return ['秒杀价'];
+      if (this.group) {
+        return ['团购价'];
       }
 
       return this.item?.tags?.split(',').filter(Boolean);
@@ -140,6 +124,7 @@ createPage({
       try {
         const itemStore = useItemStore();
         const hospitalStore = useHospitalStore();
+
         const itemDetail = await itemStore.fetchItemById(this.itemId);
         const hospitals = await hospitalStore.fetchHospitals();
 
@@ -156,6 +141,7 @@ createPage({
         this.loading = false;
       }
     },
+
     async makeOrder() {
       try {
         this.loading = true;
@@ -165,11 +151,11 @@ createPage({
           payment_method: 'jsapi',
         };
 
-        const activity_id = this.item?.marketing_activities?.seckill_activity?.activity_id;
+        const activity_id = this.item?.marketing_activities?.group_buying_activity?.activity_id;
 
-        if (this.seckill && activity_id) {
+        if (this.group && activity_id) {
           params['activity_id'] = activity_id;
-          params['activity_type'] = 'seckill';
+          params['activity_type'] = 'group_buy';
         }
 
         const data = await this.preOrder(params);
@@ -233,10 +219,6 @@ createPage({
       }
     },
 
-    onFinish() {
-      this.finished = true;
-    },
-
     goBack() {
       this.safeNavigateBack('/pages/index')
     },
@@ -277,7 +259,7 @@ createPage({
 
 <script type="application/json">
 {
-  "navigationBarTitleText": "购买商品",
+  "navigationBarTitleText": "拼团",
   "navigationStyle": "custom",
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
@@ -289,10 +271,11 @@ createPage({
     "t-swiper": "tdesign-miniprogram/miniprogram_dist/swiper/swiper",
     "t-swiper-nav": "tdesign-miniprogram/miniprogram_dist/swiper-nav/swiper-nav",
     "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
+    "tag": "@/components/tag",
     "card": "@/components/card",
+    "group-rule": "@/components/order/group-rule",
     "sticky-bottom": "@/components/sticky-bottom",
     "hospital-list": "@/components/hospital-list",
-    "tag": "@/components/tag",
     "phone-popup": "@/components/phone-popup",
   }
 }

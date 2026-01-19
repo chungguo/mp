@@ -14,6 +14,27 @@ export interface SecKill {
   stock: number;
 }
 
+export interface Group {
+  /** 拼团活动ID，用于发起拼团时传入 */
+  activity_id: number;
+  /** 拼团价格 */
+  group_price: number;
+  /**	成团人数 */
+  required_count: number;
+  /** 拼团有效期（小时） */
+  expire_hours: number;
+  /** 拼团活动开始时间 */
+  start_time: string;
+  /**拼团活动结束时间 */
+  end_time: string;
+  /** 拼团库存数量 */
+  stock: number;
+  /** 分享图片URL */
+  share_image: string;
+  /** 分享文案 */
+  share_text: string;
+}
+
 export interface Item {
   id: number;
   sku_id: string;
@@ -34,6 +55,7 @@ export interface Item {
   tags: string;
   marketing_activities?: {
     seckill_activity?: SecKill;
+    group_buying_activity?: Group;
   },
 }
 
