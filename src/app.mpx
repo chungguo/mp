@@ -99,7 +99,8 @@ image {
         "name": "group",
         "pages": [
           "./index",
-          "./initiate"
+          "./initiate",
+          "./join"
         ]
       }
     ],

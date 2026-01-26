@@ -2,29 +2,168 @@
   <t-navbar left-arrow bind:go-back="goBack" title="拼团"></t-navbar>
   <view class="px-[24rpx] flex flex-col gap-[26rpx] mt-[166rpx]">
     <card>
-      TODO
+      <view class="text-[#333333] mb-[16rpx] truncate text-[30rpx] font-bold">{{ item.name }}</view>
+      <view class="flex gap-[20rpx]">
+        <t-image src="{{ item.cover_image }}" t-class="w-[226rpx] h-[172rpx] rounded-[16rpx] of-hidden"
+          mode="widthFix" />
+        <view class="flex-1 flex flex-col justify-between">
+          <view class="text-[#999999] text-[22rpx] h-[94rpx] overflow-3">
+            {{ item.description }}
+          </view>
+          <view class="text-[#333333] flex justify-between items-center">
+            <text class="text-[22rpx]">发起 3 人即可成团</text>
+            <view class="flex items-baseline gap-[10rpx]">
+              <text class="text-[#F42020] text-[46rpx] font-bold">￥{{ discountPrice }}</text>
+              <text class="line-through opacity-40 text-[30rpx] text-[#1D2129]">{{ item.original_price }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
     </card>
 
     <card>
-      TODO
+      <!-- 拼团中 -->
+      <view class="text-[30rpx] font-bold flex justify-center items-center">
+        <view wx:if="{{ group.status === 1 && !finished }}">
+          还差 <text class="text-[#F42020] mx-[10rpx]">{{ needed }}人</text>，拼团成功
+        </view>
+      </view>
+      <view class="flex gap-[36rpx] justify-center my-[46rpx]">
+        <t-image wx:for="{{ avatars }}" src="{{ item }}" width="98rpx" height="98rpx" />
+      </view>
+      <!-- 拼团中 -->
+      <block wx:if="{{ group.status === 1 && group.remaining_seconds > 0 && !finished }}">
+        <view class="flex gap-[26rpx] justify-center items-center text-[#333333] text-[28rpx] font-bold">
+          <text>剩余</text>
+          <t-count-down size="small" theme="square" format="{{ format }}" time="{{ countdown }}"
+            bind:finish="onFinish" />
+          <text>结束</text>
+        </view>
+      </block>
+
+      <!-- 拼团中 -->
+      <view wx:if="{{ group.status === 1 && !finished }}" class="text-center opacity-40 text-[22rpx] mt-[36rpx]">
+        邀请越多好友·成团概率越高</view>
     </card>
 
     <group-rule />
-  </view>
 
+    <card wx:if="{{ hospitals && hospitals.length > 0 }}" title="适用门店">
+      <hospital-list hospitals="{{ hospitals }}" />
+    </card>
+  </view>
+  <t-loading wx:if="{{ loading }}" fullscreen="{{ true }}" theme="circular" size="40rpx" />
 </template>
 
-<script>
+<script lang="ts">
 import navigation from "@/mixins/navigation";
-import { createPage } from "@mpxjs/core";
+import mpx, { createPage } from "@mpxjs/core";
+import { type Item, useItemStore } from "@/store/item";
+import { type Hospital, useHospitalStore } from "@/store/hospital";
+import { type GroupInfoItem, useGroupStore } from "./store";
+
+const AVATAR = 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp';
 
 createPage({
   mixins: [navigation],
-  data() {
-    return {
-    };
+  data: {
+    itemId: 0,
+    groupId: 0,
+    finished: false,
+    group: {} as GroupInfoItem,
+    loading: false,
+    item: {} as Item,
+    hospitals: [] as Hospital[],
+    avatars: [AVATAR, AVATAR, AVATAR],
+  },
+  computed: {
+    countdown() {
+      if (!this.group.remaining_seconds) {
+        return 0;
+      }
+
+      return this.group.remaining_seconds * 1000;
+    },
+    format() {
+      return this.countdown < 1000 * 60 * 60 * 24 ? 'HH:mm:ss' : "DD:HH:mm:ss";
+    },
+    discountPrice() {
+      const groupPrice = this.item?.marketing_activities?.group_buying_activity?.group_price;
+
+      if (this.group && groupPrice) {
+        return groupPrice;
+      }
+
+      return this.item.discount_price;
+    },
+    needed() {
+      return Math.max(this.group.required_count - this.group.current_count, 0);
+    }
+  },
+  async onLoad(options: Partial<Record<'group_id', string>> = {}) {
+    const { group_id } = options;
+
+    if (!group_id) {
+      mpx.showToast({
+        title: '无法参团',
+        icon: 'error'
+      });
+      return;
+    }
+
+    this.groupId = Number(group_id);
+
+    this.loadGroupInfo();
   },
   methods: {
+    async loadGroupInfo() {
+      this.loading = true;
+
+      try {
+        const groupStore = useGroupStore();
+        const info = await groupStore.getGroupInfo(this.groupId);
+
+        this.setData({
+          group: info?.group ?? {} as GroupInfoItem,
+          participants: info?.participants ?? [],
+        });
+
+        this.loadItemDetail();
+      } catch (error) {
+        mpx.showToast({
+          title: '加载失败',
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    async loadItemDetail() {
+      this.loading = true;
+
+      try {
+        const itemStore = useItemStore();
+        const hospitalStore = useHospitalStore();
+
+        const itemDetail = await itemStore.fetchItemById(this.group.item_id);
+        const hospitals = await hospitalStore.fetchHospitals();
+
+        this.setData({
+          item: itemDetail,
+          hospitals: hospitals.filter((h: Hospital) => itemDetail.hospital_ids.includes(h.id)),
+        });
+      } catch (error) {
+        mpx.showToast({
+          title: '加载失败',
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    onFinish() {
+      this.finished = true;
+    },
     goBack() {
       this.safeNavigateBack('/pages/index');
     },
@@ -36,9 +175,18 @@ createPage({
 page {
   --td-navbar-color: black;
   --td-navbar-background: transparent;
+  --td-countdown-bg-color: #F42020;
   background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/tuan.webp");
   background-repeat: no-repeat;
   background-size: 100%;
+}
+
+.overflow-3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 </style>
 
@@ -51,7 +199,11 @@ page {
     "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
     "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
+    "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
+    "card": "@/components/card",
     "group-rule": "@/components/order/group-rule",
+    "hospital-list": "@/components/hospital-list",
   }
 }
 </script>

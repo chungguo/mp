@@ -57,7 +57,7 @@ import { mapActions } from '@mpxjs/pinia';
 import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
-import { PreOrderParams, usePaymentStore } from "@/store/payment";
+import { useGroupStore } from "@/subpackages/group/store";
 import navigationMixin from "@/mixins/navigation";
 import dayjs from "dayjs";
 
@@ -68,6 +68,7 @@ createPage({
     loading: false,
     item: {} as Item,
     phonepopup: false,
+    hospitals: [] as Hospital[],
   },
   computed: {
     group() {
@@ -104,7 +105,7 @@ createPage({
       return this.item?.tags?.split(',').filter(Boolean);
     },
   },
-  ...mapActions(usePaymentStore, ['preOrder']),
+  ...mapActions(useGroupStore, ['initiateGroup']),
   async onLoad(options: Partial<Record<'id', string>> = {}) {
     const { id } = options;
 
@@ -146,34 +147,27 @@ createPage({
       try {
         this.loading = true;
 
-        const params: PreOrderParams = {
-          item_id: this.itemId,
-          payment_method: 'jsapi',
-        };
-
         const activity_id = this.item?.marketing_activities?.group_buying_activity?.activity_id;
 
-        if (this.group && activity_id) {
-          params['activity_id'] = activity_id;
-          params['activity_type'] = 'group_buy';
-        }
-
-        const data = await this.preOrder(params);
-
-        if (!data.payment_params) {
+        if (!this.group || !activity_id || !this.itemId) {
           mpx.showToast({
-            title: '支付参数错误',
+            title: '不允许拼团',
             icon: 'error'
           });
           return;
         }
 
+        const data = await this.initiateGroup({
+          activity_id,
+          item_id: this.itemId
+        });
+
         // 验证必填参数
         const paymentKeys = ['timeStamp', 'nonceStr', 'package', 'signType', 'paySign'];
 
-        if (paymentKeys.some(k => !data.payment_params[k])) {
+        if (!data.wechat_pay_params || paymentKeys.some(k => !data.payment_params[k])) {
           mpx.showToast({
-            title: '缺少必要的支付参数',
+            title: '支付参数错误',
             icon: 'error'
           });
           return;
@@ -188,7 +182,7 @@ createPage({
         });
 
         setTimeout(() => {
-          this.safeNavigateBack('/pages/index');
+          this.safeNavigateBack(`/subpackages/group/join?group_id=${data.group_id}`);
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';
