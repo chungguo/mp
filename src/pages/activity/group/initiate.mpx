@@ -57,7 +57,7 @@ import { mapActions } from '@mpxjs/pinia';
 import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
-import { useGroupStore } from "@/subpackages/group/store";
+import { useGroupStore } from "@/pages/activity/group/store";
 import navigationMixin from "@/mixins/navigation";
 import dayjs from "dayjs";
 
@@ -182,7 +182,7 @@ createPage({
         });
 
         setTimeout(() => {
-          this.safeNavigateBack(`/subpackages/group/join?group_id=${data.group_id}`);
+          this.safeNavigateBack(`/pages/activity/group/join?group_id=${data.group_id}`);
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';

@@ -82,7 +82,7 @@ createPage({
     onItemClick(e: WechatMiniprogram.CustomEvent) {
       const id = e.detail.id;
       mpx.navigateTo({
-        url: `/subpackages/group/initiate?id=${id}`
+        url: `/pages/activity/group/initiate?id=${id}`
       });
     },
 

@@ -85,24 +85,10 @@ image {
       "./pages/order/success",
       "./pages/order/wxwork",
       "./pages/order/verify",
-    ],
-    "subPackages": [
-      {
-        "root": "subpackages/activity",
-        "name": "activity",
-        "pages": [
-          "./referral"
-        ]
-      },
-      {
-        "root": "subpackages/group",
-        "name": "group",
-        "pages": [
-          "./index",
-          "./initiate",
-          "./join"
-        ]
-      }
+      "./pages/activity/referral/referral",
+      "./pages/activity/group/index",
+      "./pages/activity/group/initiate",
+      "./pages/activity/group/join",
     ],
     "window": {
       "backgroundColor": "#F5F5F5",

@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import request from "@/common/request";
-import { useReferralStore } from "@/subpackages/activity/store";
+import { useReferralStore } from "@/pages/activity/referral/store";
 import mpx, { createPage } from "@mpxjs/core";
 import navigation from '@/mixins/navigation';
 
@@ -110,7 +110,7 @@ createPage({
         }
 
         mpx.navigateTo({
-          url: `/subpackages/activity/referral?activity_id=${activities[0].id}`,
+          url: `/pages/activity/referral/referral?activity_id=${activities[0].id}`,
         });
       } catch (e) {
         mpx.showToast({

@@ -73,7 +73,7 @@
 <script lang="ts">
 import mpx from '@mpxjs/core';
 import { Gender, useUserStore } from "@/store/user";
-import { useReferralStore } from '@/subpackages/activity/store';
+import { useReferralStore } from '@/pages/activity/referral/store';
 import { createPage } from "@mpxjs/core";
 import request, { BASE_URL } from '@/common/request';
 import navigation from '@/mixins/navigation';

@@ -252,7 +252,7 @@ createPage({
 
         setTimeout(() => {
           mpx.redirectTo({
-            url: `/subpackages/group/join?group_id=${data.group_id}`,
+            url: `/pages/activity/group/join?group_id=${data.group_id}`,
           });
         }, 1500);
       } catch (error) {
@@ -282,13 +282,13 @@ createPage({
     },
     onReGroup() {
       mpx.redirectTo({
-        url: `/subpackages/group/initiate?id=${this.group.item_id}`
+        url: `/pages/activity/group/initiate?id=${this.group.item_id}`
       });
     },
     onShareAppMessage() {
       return {
         title: '在线问诊，牙齿健康状态早知道',
-        path: `/subpackages/group/join?group_id=${this.groupId}`,
+        path: `/pages/activity/group/join?group_id=${this.groupId}`,
         imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
       };
     },

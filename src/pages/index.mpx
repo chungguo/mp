@@ -119,7 +119,7 @@ import { Doctor, useDoctorStore } from '@/store/doctor';
 import { type Hospital, useHospitalStore } from '@/store/hospital';
 import { type Item, useItemStore } from '@/store/item';
 import { type Category, useCategoryStore } from '@/store/category';
-import { type ReturningUserActivity, useReferralStore } from '@/subpackages/activity/store';
+import { type ReturningUserActivity, useReferralStore } from '@/pages/activity/referral/store';
 import dayjs from 'dayjs';
 import { chunk } from 'lodash-es';
 import { discount } from '@/common/price';
@@ -245,7 +245,7 @@ createPage({
       if (item.banner_image && item.id) {
         banner.push({
           image: item.banner_image,
-          path: `/subpackages/activity/referral?activity_id=${item.id}`,
+          path: `/pages/activity/referral/referral?activity_id=${item.id}`,
           type: 'referral',
         });
       }
