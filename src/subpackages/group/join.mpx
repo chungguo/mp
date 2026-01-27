@@ -92,7 +92,7 @@ import { orderBy, sortBy } from "lodash-es";
 import { mapState } from '@mpxjs/pinia';
 
 const defaultParticipant = {
-  avatar: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp';,
+  avatar: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp',
   name: '',
   color: '',
   join_order: 0,
