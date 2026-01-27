@@ -165,7 +165,7 @@ createPage({
         // 验证必填参数
         const paymentKeys = ['timeStamp', 'nonceStr', 'package', 'signType', 'paySign'];
 
-        if (!data.wechat_pay_params || paymentKeys.some(k => !data.payment_params[k])) {
+        if (!data.wechat_pay_params || paymentKeys.some(k => !data.wechat_pay_params[k])) {
           mpx.showToast({
             title: '支付参数错误',
             icon: 'error'
@@ -173,7 +173,7 @@ createPage({
           return;
         }
 
-        await mpx.requestPayment(data.payment_params);
+        await mpx.requestPayment(data.wechat_pay_params);
 
         // 支付成功
         mpx.showToast({

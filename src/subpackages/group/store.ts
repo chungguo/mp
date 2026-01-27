@@ -27,7 +27,7 @@ interface InitiateGroup {
     timeStamp: string;
     nonceStr: string;
     package: string;
-    signType: string;
+    signType: 'RSA';
     paySign: string;
   },
 }
@@ -120,9 +120,24 @@ export const useGroupStore = defineStore("group", () => {
     }
   };
 
+  const joinGroup = async (group_id: number) => {
+    try {
+      const res = await request.fetch<{
+        data: InitiateGroup,
+      }>({
+        url: `/group-buying/groups/${group_id}/join`,
+        method: 'POST',
+      });
+      return res?.data?.data;
+    } catch (error) {
+      return null;
+    }
+  };
+
   return {
     getGroupRecords,
     getGroupInfo,
     initiateGroup,
+    joinGroup,
   };
 });

@@ -22,17 +22,36 @@
     </card>
 
     <card>
-      <!-- 拼团中 -->
+      <!-- 标题 -->
       <view class="text-[30rpx] font-bold flex justify-center items-center">
-        <view wx:if="{{ group.status === 1 && !finished }}">
+        <!-- 拼团中 -->
+        <view wx:if="{{ status === 1 }}">
           还差 <text class="text-[#F42020] mx-[10rpx]">{{ needed }}人</text>，拼团成功
         </view>
+        <!-- 拼团成功 -->
+        <view wx:if="{{ status === 2 }}" class="flex items-center gap-[10rpx]">
+          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/finished.webp" width="32rpx"
+            height="32rpx" />
+          拼团成功，优惠券已发放至账户
+        </view>
+        <!-- 拼团失败 -->
+        <view wx:if="{{ status === 3 }}" class="text-[#F42020]">很遗憾，本次拼团失败</view>
       </view>
+
+      <!-- 团员头像 -->
       <view class="flex gap-[36rpx] justify-center my-[46rpx]">
-        <t-image wx:for="{{ avatars }}" src="{{ item }}" width="98rpx" height="98rpx" />
+        <view wx:for="{{ participants }}" class="relative">
+          <t-avatar image="{{ item.avatar }}" size="98rpx" shape="circle" />
+
+          <view wx:style="{{ { backgroundColor: item.color } }}"
+            class="text-white rounded-[14rpx] w-[72rpx] text-[20rpx] text-center absolute left-[50%] bottom-[0] translate-x-[-50%]">
+            {{ item.name }}
+          </view>
+        </view>
       </view>
-      <!-- 拼团中 -->
-      <block wx:if="{{ group.status === 1 && group.remaining_seconds > 0 && !finished }}">
+
+      <!-- 拼团中，倒计时 -->
+      <block wx:if="{{ status === 1 && group.remaining_seconds > 0 }}">
         <view class="flex gap-[26rpx] justify-center items-center text-[#333333] text-[28rpx] font-bold">
           <text>剩余</text>
           <t-count-down size="small" theme="square" format="{{ format }}" time="{{ countdown }}"
@@ -41,9 +60,16 @@
         </view>
       </block>
 
-      <!-- 拼团中 -->
-      <view wx:if="{{ group.status === 1 && !finished }}" class="text-center opacity-40 text-[22rpx] mt-[36rpx]">
-        邀请越多好友·成团概率越高</view>
+      <view class="mt-[46rpx]">
+        <t-button wx:if="{{ status !== 1 }}" block theme="primary" bindtap="onReGroup">再次发起拼团</t-button>
+        <t-button wx:elif="{{ joined }}" open-type="share" block theme="primary">邀请好友参团</t-button>
+        <t-button wx:else block theme="primary" bindtap="onJoin">我要参团</t-button>
+      </view>
+
+      <!-- 拼团中，邀请提示 -->
+      <view wx:if="{{ status === 1 }}" class="text-center opacity-40 text-[22rpx] mt-[36rpx]">
+        邀请越多好友·成团概率越高
+      </view>
     </card>
 
     <group-rule />
@@ -58,24 +84,34 @@
 <script lang="ts">
 import navigation from "@/mixins/navigation";
 import mpx, { createPage } from "@mpxjs/core";
+import { useUserStore } from '@/store/user';
 import { type Item, useItemStore } from "@/store/item";
 import { type Hospital, useHospitalStore } from "@/store/hospital";
 import { type GroupInfoItem, useGroupStore } from "./store";
+import { orderBy, sortBy } from "lodash-es";
+import { mapState } from '@mpxjs/pinia';
 
-const AVATAR = 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp';
+const defaultParticipant = {
+  avatar: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp';,
+  name: '',
+  color: '',
+  join_order: 0,
+  is_initiator: 0,
+  user_id: 0,
+};
 
 createPage({
   mixins: [navigation],
   data: {
-    itemId: 0,
     groupId: 0,
     finished: false,
     group: {} as GroupInfoItem,
     loading: false,
     item: {} as Item,
     hospitals: [] as Hospital[],
-    avatars: [AVATAR, AVATAR, AVATAR],
+    participants: [] as typeof defaultParticipant[],
   },
+  ...mapState(useUserStore, ['profile']),
   computed: {
     countdown() {
       if (!this.group.remaining_seconds) {
@@ -98,7 +134,16 @@ createPage({
     },
     needed() {
       return Math.max(this.group.required_count - this.group.current_count, 0);
-    }
+    },
+    status() {
+      if (this.finished) {
+        return 1;
+      }
+      return this.group.status;
+    },
+    joined() {
+      return this.participants.some(p => p.user_id === this.profile()?.id);
+    },
   },
   async onLoad(options: Partial<Record<'group_id', string>> = {}) {
     const { group_id } = options;
@@ -121,11 +166,32 @@ createPage({
 
       try {
         const groupStore = useGroupStore();
+        const userId = this.profile()?.id;
         const info = await groupStore.getGroupInfo(this.groupId);
+
+        const serverParticipants = (info?.participants ?? []).map(p => {
+          const initiator = !!p.is_initiator;
+          const self = p.user_id === userId;
+
+          return {
+            user_id: p.user_id,
+            avatar: p.avatar,
+            is_initiator: p.is_initiator,
+            name: self ? '我' : (initiator ? '团长' : '团员'),
+            color: self ? '#317DFF' : (initiator ? '#FF7913' : '#28D2C6'),
+            join_order: p.join_order,
+          };
+        });
+
+        const participants = orderBy(sortBy(serverParticipants, 'join_order').concat([
+          defaultParticipant,
+          defaultParticipant,
+          defaultParticipant
+        ]).slice(0, 3), 'is_initiator', 'desc');
 
         this.setData({
           group: info?.group ?? {} as GroupInfoItem,
-          participants: info?.participants ?? [],
+          participants,
         });
 
         this.loadItemDetail();
@@ -161,11 +227,70 @@ createPage({
         this.loading = false;
       }
     },
+    async onJoin() {
+      this.loading = true;
+
+      try {
+        const groupStore = useGroupStore();
+        const data = await groupStore.joinGroup(this.groupId);
+
+        if (!data || !data.wechat_pay_params) {
+          mpx.showToast({
+            title: '支付参数错误',
+            icon: 'error'
+          });
+          return;
+        }
+
+        await mpx.requestPayment(data.wechat_pay_params);
+
+        // 支付成功
+        mpx.showToast({
+          title: '支付成功',
+          icon: 'success'
+        });
+
+        setTimeout(() => {
+          mpx.redirectTo({
+            url: `/subpackages/group/join?group_id=${data.group_id}`,
+          });
+        }, 1500);
+      } catch (error) {
+        let errorMessage = '支付失败';
+
+        if (error?.errMsg?.includes('requestPayment:fail cancel')) {
+          errorMessage = '支付已取消';
+        } else if (error?.errMsg?.includes('requestPayment:fail')) {
+          errorMessage = '支付调用失败';
+        } else {
+          errorMessage = error.errMsg;
+        }
+
+        mpx.showToast({
+          title: errorMessage,
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
     onFinish() {
       this.finished = true;
     },
     goBack() {
       this.safeNavigateBack('/pages/index');
+    },
+    onReGroup() {
+      mpx.redirectTo({
+        url: `/subpackages/group/initiate?id=${this.group.item_id}`
+      });
+    },
+    onShareAppMessage() {
+      return {
+        title: '在线问诊，牙齿健康状态早知道',
+        path: `/subpackages/group/join?group_id=${this.groupId}`,
+        imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+      };
     },
   },
 });
@@ -176,6 +301,13 @@ page {
   --td-navbar-color: black;
   --td-navbar-background: transparent;
   --td-countdown-bg-color: #F42020;
+  --td-button-border-radius: 44rpx;
+  --td-button-primary-text-color: white;
+  --td-button-primary-bg-color: #FF7913;
+  --td-button-primary-active-bg-color: #FF7913;
+  --td-button-primary-active-border-color: transparent;
+  --td-button-primary-border-color: transparent;
+  --td-button-medium-font-size: 30rpx;
   background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/tuan.webp");
   background-repeat: no-repeat;
   background-size: 100%;
@@ -200,7 +332,9 @@ page {
     "t-icon": "tdesign-miniprogram/miniprogram_dist/icon/icon",
     "t-popup": "tdesign-miniprogram/miniprogram_dist/popup/popup",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-button": "tdesign-miniprogram/miniprogram_dist/button/button",
     "t-count-down": "tdesign-miniprogram/miniprogram_dist/count-down/count-down",
+    "t-avatar": "tdesign-miniprogram/miniprogram_dist/avatar/avatar",
     "card": "@/components/card",
     "group-rule": "@/components/order/group-rule",
     "hospital-list": "@/components/hospital-list",
