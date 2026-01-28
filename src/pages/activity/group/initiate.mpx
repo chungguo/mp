@@ -29,21 +29,15 @@
 
   <sticky-bottom>
     <view class="flex justify-between">
-      <view class="flex items-center flex-col" bindtap="navigateToConsultation">
+      <view class="flex items-center flex-col" bindtap="makeOrder">
         <text>￥{{ item.original_price }}</text>
         <text>单独购买</text>
       </view>
 
-      <view wx:if="{{ group }}" bindtap="onBuy"
+      <view bindtap="makeGroupOrder"
         class="bg-#FF7913 right-[26rpx] color-white rounded-r-[26rpx] flex flex-col items-center justify-center w-[422rpx] py-[4rpx]">
         <text class="text-[32rpx]">￥{{ discountPrice }}</text>
         <text class="text-[24rpx]" wx:if="{{ !!members }}">发起拼团 {{ members }} 人即可成团</text>
-      </view>
-
-      <view wx:else bindtap="onBuy"
-        class="bg-#FF7913 right-[26rpx] color-white text-[32rpx] rounded-r-[26rpx] flex items-center justify-center gap-[12rpx] w-[422rpx] py-[20rpx]">
-        <text>￥{{ item.discount_price }}</text>
-        <text>立即购买</text>
       </view>
     </view>
   </sticky-bottom>
@@ -69,18 +63,11 @@ createPage({
     item: {} as Item,
     phonepopup: false,
     hospitals: [] as Hospital[],
+    makeOrderName: '',
   },
   computed: {
     group() {
-      if (!this.item?.marketing_activities?.group_buying_activity) {
-        return false;
-      }
-
-      const { stock, group_price, start_time, end_time } = this.item.marketing_activities.group_buying_activity;
-
-      const avaliable = dayjs().isBefore(dayjs(end_time)) && dayjs().isAfter(dayjs(start_time));
-
-      return stock && group_price && avaliable;
+      return this.groupAvaliable(this.item);
     },
     members() {
       return this.item.marketing_activities?.group_buying_activity?.required_count;
@@ -116,6 +103,7 @@ createPage({
       });
       return;
     }
+
     this.itemId = Number(id);
     this.loadItemDetail();
   },
@@ -128,6 +116,14 @@ createPage({
 
         const itemDetail = await itemStore.fetchItemById(this.itemId);
         const hospitals = await hospitalStore.fetchHospitals();
+
+        // 不支持拼团，跳转到详情页
+        if (!this.groupAvaliable(itemDetail)) {
+          mpx.redirectTo({
+            url: `/pages/item/detail?id=${itemDetail.id}`,
+          });
+          return;
+        };
 
         this.setData({
           item: itemDetail,
@@ -143,10 +139,17 @@ createPage({
       }
     },
 
-    async makeOrder() {
-      try {
-        this.loading = true;
+    async makeGroupOrder() {
+      const checked = await this.beforeMakeOrder();
 
+      if (!checked) {
+        this.makeOrderName = 'makeGroupOrder';
+        return;
+      }
+
+      this.loading = true;
+
+      try {
         const activity_id = this.item?.marketing_activities?.group_buying_activity?.activity_id;
 
         if (!this.group || !activity_id || !this.itemId) {
@@ -162,10 +165,7 @@ createPage({
           item_id: this.itemId
         });
 
-        // 验证必填参数
-        const paymentKeys = ['timeStamp', 'nonceStr', 'package', 'signType', 'paySign'];
-
-        if (!data.wechat_pay_params || paymentKeys.some(k => !data.wechat_pay_params[k])) {
+        if (!data.wechat_pay_params) {
           mpx.showToast({
             title: '支付参数错误',
             icon: 'error'
@@ -203,32 +203,100 @@ createPage({
         this.loading = false;
       }
     },
-    async onBuy() {
+
+    async makeOrder() {
+      const checked = await this.beforeMakeOrder();
+
+      if (!checked) {
+        this.makeOrderName = 'makeOrder';
+        return;
+      }
+
+      try {
+        this.loading = true;
+
+        const data = await this.preOrder({
+          item_id: this.itemId,
+          payment_method: 'jsapi',
+        });
+
+        if (!data.payment_params) {
+          mpx.showToast({
+            title: '支付参数错误',
+            icon: 'error'
+          });
+          return;
+        }
+
+        await mpx.requestPayment(data.payment_params);
+
+        // 支付成功
+        mpx.showToast({
+          title: '支付成功',
+          icon: 'success'
+        });
+
+        setTimeout(() => {
+          this.safeNavigateBack('/pages/order/list');
+        }, 1500);
+      } catch (error) {
+        let errorMessage = '支付失败';
+
+        if (error?.errMsg?.includes('requestPayment:fail cancel')) {
+          errorMessage = '支付已取消';
+        } else if (error?.errMsg?.includes('requestPayment:fail')) {
+          errorMessage = '支付调用失败';
+        } else {
+          errorMessage = error.errMsg;
+        }
+
+        mpx.showToast({
+          title: errorMessage,
+          icon: 'error'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    async beforeMakeOrder() {
       const store = useUserStore();
       await store.queryProfile();
+
+      this.makeOrderName = '';
+
       if (!store.profile?.phone) {
         this.phonepopup = true;
-      } else {
-        this.makeOrder();
+        return false;
       }
+
+      return true;
     },
 
     goBack() {
       this.safeNavigateBack('/pages/index')
     },
 
-    navigateToConsultation() {
-      mpx.navigateTo({
-        url: '/pages/consultation/form'
-      })
-    },
     onPhoneConfirmed() {
       this.phonepopup = false;
-      this.makeOrder();
+
+      if (this.makeOrderName) {
+        this[this.makeOrderName]();
+      }
     },
     onPhoneCanceled() {
       this.phonepopup = false;
     },
+    groupAvaliable(item: Item) {
+      if (!item?.marketing_activities?.group_buying_activity) {
+        return false;
+      }
+
+      const { stock, group_price, start_time, end_time } = item.marketing_activities.group_buying_activity;
+
+      const avaliable = dayjs().isBefore(dayjs(end_time)) && dayjs().isAfter(dayjs(start_time));
+
+      return stock && group_price && avaliable;
+    }
   }
 });
 </script>

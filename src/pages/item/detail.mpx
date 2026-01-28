@@ -202,7 +202,7 @@ createPage({
         });
 
         setTimeout(() => {
-          this.safeNavigateBack('/pages/index');
+          this.safeNavigateBack('/pages/order/list');
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';
