@@ -51,6 +51,7 @@ import { mapActions } from '@mpxjs/pinia';
 import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
+import { usePaymentStore } from "@/store/payment";
 import { useGroupStore } from "@/pages/activity/group/store";
 import navigationMixin from "@/mixins/navigation";
 import dayjs from "dayjs";
@@ -93,6 +94,7 @@ createPage({
     },
   },
   ...mapActions(useGroupStore, ['initiateGroup']),
+  ...mapActions(usePaymentStore, ['preOrder']),
   async onLoad(options: Partial<Record<'id', string>> = {}) {
     const { id } = options;
 
@@ -196,7 +198,7 @@ createPage({
         }
 
         mpx.showToast({
-          title: errorMessage,
+          title: errorMessage || '下单失败',
           icon: 'error'
         });
       } finally {
@@ -247,7 +249,7 @@ createPage({
         } else if (error?.errMsg?.includes('requestPayment:fail')) {
           errorMessage = '支付调用失败';
         } else {
-          errorMessage = error.errMsg;
+          errorMessage = error.errMsg || '下单失败';
         }
 
         mpx.showToast({
