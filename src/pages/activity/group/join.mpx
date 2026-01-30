@@ -88,8 +88,8 @@ import { useUserStore } from '@/store/user';
 import { type Item, useItemStore } from "@/store/item";
 import { type Hospital, useHospitalStore } from "@/store/hospital";
 import { type GroupInfoItem, useGroupStore } from "./store";
-import { orderBy, sortBy } from "lodash-es";
-import { mapState } from '@mpxjs/pinia';
+import { omit, orderBy, sortBy } from "lodash-es";
+import { mapActions, mapState } from '@mpxjs/pinia';
 
 const defaultParticipant = {
   avatar: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp',
@@ -112,6 +112,7 @@ createPage({
     participants: [] as typeof defaultParticipant[],
   },
   ...mapState(useUserStore, ['profile']),
+  ...mapActions(useUserStore, ['queryProfile']),
   computed: {
     countdown() {
       if (!this.group.remaining_seconds) {
@@ -157,8 +158,8 @@ createPage({
     }
 
     this.groupId = Number(group_id);
-
-    this.loadGroupInfo();
+    await this.queryProfile();
+    await this.loadGroupInfo();
   },
   methods: {
     async loadGroupInfo() {
@@ -190,7 +191,7 @@ createPage({
         ]).slice(0, 3), 'is_initiator', 'desc');
 
         this.setData({
-          group: info?.group ?? {} as GroupInfoItem,
+          group: omit(info, ['participants']),
           participants,
         });
 

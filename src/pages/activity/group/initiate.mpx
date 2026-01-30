@@ -164,7 +164,8 @@ createPage({
 
         const data = await this.initiateGroup({
           activity_id,
-          item_id: this.itemId
+          item_id: this.itemId,
+          payment_method: 'jsapi',
         });
 
         if (!data.wechat_pay_params) {

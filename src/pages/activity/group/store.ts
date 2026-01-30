@@ -106,8 +106,7 @@ export const useGroupStore = defineStore("group", () => {
   const getGroupInfo = async (group_id: number) => {
     try {
       const res = await request.fetch<{
-        data: {
-          group: GroupInfoItem,
+        data: GroupInfoItem & {
           participants: ParticipantItem[],
         },
       }>({
@@ -127,6 +126,9 @@ export const useGroupStore = defineStore("group", () => {
       }>({
         url: `/group-buying/groups/${group_id}/join`,
         method: 'POST',
+        data: {
+          payment_method: "jsapi"
+        }
       });
       return res?.data?.data;
     } catch (error) {
