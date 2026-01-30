@@ -11,7 +11,7 @@
             {{ item.description }}
           </view>
           <view class="text-[#333333] flex justify-between items-center">
-            <text class="text-[22rpx]">发起 3 人即可成团</text>
+            <text class="text-[22rpx]">发起 {{ group.required_count }} 人即可成团</text>
             <view class="flex items-baseline gap-[10rpx]">
               <text class="text-[#F42020] text-[46rpx] font-bold">￥{{ discountPrice }}</text>
               <text class="line-through opacity-40 text-[30rpx] text-[#1D2129]">{{ item.original_price }}</text>
@@ -134,7 +134,8 @@ createPage({
       return this.item.discount_price;
     },
     needed() {
-      return Math.max(this.group.required_count - this.group.current_count, 0);
+      const current_count = this.participants.filter(p => p.user_id).length;
+      return Math.max(this.group.required_count - current_count, 0);
     },
     status() {
       if (this.finished) {
