@@ -46,7 +46,7 @@
       正在核销，请稍候...
     </view>
   </t-dialog>
-  <version />
+
   <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
@@ -261,7 +261,6 @@ page {
     "t-col": "tdesign-miniprogram/miniprogram_dist/col/col",
     "t-dialog": "tdesign-miniprogram/miniprogram_dist/dialog/dialog",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
-    "version": "@/components/version",
     "phone-popup": "@/components/phone-popup",
   }
 }
