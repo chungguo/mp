@@ -19,10 +19,8 @@
   </t-cell-group>
   <view bindtap="onVersionTap"
     class="my-[100rpx] text-center text-[22rpx] color-gray flex items-center justify-center gap-[16rpx]">
-    <text>版本号: {{ info.miniProgram?.envVersion }}</text>
-    <text wx:if="{{ info.miniProgram?.version }}">
-      {{ info.miniProgram?.version }}
-    </text>
+    <view>版本号: {{ info.miniProgram?.envVersion }}</view>
+    <view wx:if="{{ info.miniProgram?.version }}">{{ info.miniProgram?.version }}</view>
   </view>
 </template>
 
