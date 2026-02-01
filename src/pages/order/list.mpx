@@ -43,7 +43,7 @@ createPage({
         case 'pending':
           return this.orders.filter(order => order.status === OrderStatus.PENDING);
         case 'unused':
-          return this.orders.filter(order => order.status === OrderStatus.PAID);
+          return this.orders.filter(order => order.status === OrderStatus.PAID || order.status === OrderStatus.GROUPING);
         case 'refunded':
           return this.orders.filter(order => order.status === OrderStatus.REFUNDED);
         default:

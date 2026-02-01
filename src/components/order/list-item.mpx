@@ -17,7 +17,7 @@
               time="{{ time }}" splitWithUnit bind:finish="onFinish" />
             内付款
           </view>
-          <view wx:if="{{ status === 1 }}">付款：{{ payTime }}</view>
+          <view wx:if="{{ status === 1 || status === 10 }}">付款：{{ payTime }}</view>
           <view wx:if="{{ status === 2 }}">退款：{{ refundTime }}</view>
           <view wx:if="{{ status === 4 }}">使用：{{ useTime }}</view>
         </view>
@@ -26,7 +26,7 @@
       <view class="h-full flex flex-col justify-between items-end">
         <view class="text-[#1D2129] font-bold text-[30rpx]" wx:class="{{ {
                 pending: status === 0,
-                unused: status === 1,
+                unused: status === 1 || status === 10,
                 refunded: status === 2,
                 cancelled: status === 3,
               } }}">
@@ -80,14 +80,15 @@ createComponent({
         [OrderStatus.PAID]: '待使用',
         [OrderStatus.PENDING]: '待支付',
         [OrderStatus.REFUNDED]: '已退款',
-        [OrderStatus.USED]: '已使用'
+        [OrderStatus.USED]: '已使用',
+        [OrderStatus.GROUPING]: '待成团',
       }
       return statusMap[this.status] || '-'
     },
     buttonText() {
       return {
-        unused: '查看券码',
-        pending: '去付款',
+        [OrderStatus.PAID]: '查看券码',
+        [OrderStatus.PENDING]: '去付款',
       }[this.status] || '查看详情';
     },
   },
@@ -104,6 +105,12 @@ createComponent({
       this.status = OrderStatus.CLOSED;
     },
     navigateToOrderDetail() {
+      if (this.status === OrderStatus.GROUPING) {
+        mpx.navigateTo({
+          url: `/pages/activity/group/join?group_id=${this.order.group_id}`
+        });
+        return;
+      }
       mpx.navigateTo({
         url: `/pages/order/detail?id=${this.order.id}`
       });

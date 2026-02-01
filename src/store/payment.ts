@@ -6,7 +6,8 @@ enum OrderStatus {
   PAID = 1,       // 支付成功
   REFUNDED = 2,   // 已退款
   CLOSED = 3,     // 已关闭
-  USED = 4        // 已使用
+  USED = 4,        // 已使用
+  GROUPING = 10   // 拼团中（支付成功，等待成团）
 }
 
 enum RefundStatus {
@@ -126,6 +127,8 @@ interface OrderItem {
   verified_at: string | null;
   /** 创建时间(ISO 8601格式) */
   created_at: string;
+  /** 拼团ID */
+  group_id: number;
 }
 
 export { OrderStatus, RefundStatus, PaymentParams, RefundProgress, OrderItem };
