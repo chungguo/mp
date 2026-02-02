@@ -63,7 +63,6 @@
 
 <script lang="ts">
 import request, { BASE_URL } from '@/common/request';
-import navigation from '@/mixins/navigation';
 import { Gender, GenderOptions, useUserStore } from '@/store/user';
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions, mapState } from '@mpxjs/pinia';
@@ -71,7 +70,6 @@ import dayjs from 'dayjs';
 import { pickBy } from 'lodash-es';
 
 createPage({
-  mixins: [navigation],
   data: {
     avatar: '',
     nickname: '',

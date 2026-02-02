@@ -106,7 +106,6 @@
 </template>
 
 <script lang="ts">
-import navigation from '@/mixins/navigation';
 import { OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
 import { type Hospital, useHospitalStore } from '@/store/hospital';
 import mpx, { createPage } from '@mpxjs/core';
@@ -114,7 +113,6 @@ import { mapActions, mapState } from '@mpxjs/pinia';
 import dayjs from 'dayjs';
 
 createPage({
-  mixins: [navigation],
   data: {
     orderId: '',
     status: -1,

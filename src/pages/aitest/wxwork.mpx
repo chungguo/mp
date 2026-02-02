@@ -11,11 +11,9 @@
 
 <script lang="ts">
 import mpx, { createPage } from "@mpxjs/core";
-import navigation from '@/mixins/navigation';
 import { SourceType } from '@/store/wxwork';
 
 createPage({
-  mixins: [navigation],
   data: {
     score: '',
     source: SourceType.AiDetectComplete,

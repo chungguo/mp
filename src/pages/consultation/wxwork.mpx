@@ -12,10 +12,8 @@
 
 <script lang="ts">
 import mpx, { createPage } from "@mpxjs/core";
-import navigation from '@/mixins/navigation';
 
 createPage({
-  mixins: [navigation],
   methods: {
     goBack() {
       this.safeNavigateBack('/pages/consultation/form');

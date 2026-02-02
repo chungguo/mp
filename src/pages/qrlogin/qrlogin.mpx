@@ -1,0 +1,91 @@
+<template>
+  <t-navbar title="二维码登录" />
+  <view class="flex flex-col items-center mt-[100rpx] gap-[32rpx]">
+    <t-image src="{{ image }}" width="120rpx" height="120rpx" t-class="rounded-[50%] of-hidden" />
+    <view class="text-[32rpx] font-bold">{{ text }}</view>
+  </view>
+  <view class='absolute bottom-[200rpx] left-0 right-0 px-[120rpx]'>
+    <view wx:if="{{ success }}">
+      <t-button block bindtap="back">知道了</t-button>
+    </view>
+    <view wx:else class="flex flex-col items-center gap-[24rpx]">
+      <t-button theme="primary" block bindtap="confirm">登录</t-button>
+      <t-button block bindtap="back">取消</t-button>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import mpx from '@mpxjs/core';
+import { createPage } from "@mpxjs/core";
+import request from '@/common/request';
+import { useUserStore } from '@/store/user';
+createPage({
+  data: {
+    scene: '',
+    success: false,
+    image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/logo.jpeg',
+    text: '登录"健牙宝"',
+  },
+  onLoad(options) {
+    if (!options.scene) {
+      this.back();
+      return;
+    }
+
+    this.scene = options.scene;
+  },
+  methods: {
+    async confirm() {
+      mpx.showLoading({
+        title: '登录中...',
+        mask: true,
+      });
+
+      try {
+        const userStore = useUserStore();
+        await userStore.login();
+
+        await request.fetch({
+          url: '/auth/qrcode/confirm',
+          method: 'POST',
+          data: {
+            login_key: this.scene,
+            token: userStore.token,
+          },
+        });
+
+        this.setData({
+          text: '登录成功',
+          image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/success.png',
+          success: true,
+        });
+      } finally {
+        mpx.hideLoading();
+      }
+    },
+    back() {
+      this.safeNavigateBack();
+    },
+  }
+});
+
+</script>
+
+<style lang="less">
+page {
+  background-color: white;
+}
+</style>
+
+<script type="application/json">
+  {
+    "navigationBarTitleText": "二维码登录",
+    "navigationStyle": "custom",
+    "usingComponents": {
+      "t-navbar": "tdesign-miniprogram/miniprogram_dist/navbar/navbar",
+      "t-image": "tdesign-miniprogram/miniprogram_dist/image/image",
+      "t-button": "tdesign-miniprogram/miniprogram_dist/button/button"
+    }
+  }
+</script>

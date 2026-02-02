@@ -1,6 +1,7 @@
 import mpx from '@mpxjs/core'
 
-export default {
+// 全局导航 mixin - 自动混入到所有页面和组件
+mpx.mixin({
   methods: {
     /**
      * 安全返回上一页，如果失败则导航到指定页面
@@ -30,4 +31,4 @@ export default {
       })
     }
   }
-}
+})

@@ -50,7 +50,6 @@
 </template>
 
 <script lang="ts">
-import navigation from '@/mixins/navigation';
 import mpx, { createPage } from "@mpxjs/core";
 import { mapActions, mapState } from '@mpxjs/pinia';
 import { OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
@@ -59,7 +58,6 @@ import dayjs from 'dayjs';
 import { useUserStore } from '@/store/user';
 
 createPage({
-  mixins: [navigation],
   data: {
     orderId: '',
     itemId: '',

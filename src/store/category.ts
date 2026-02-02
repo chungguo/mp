@@ -32,7 +32,7 @@ export const useCategoryStore = defineStore('category', () => {
       params,
     });
 
-    const data = sortBy(response.data?.data ?? [], ['id']);
+    const data = response.data?.data ?? [];
 
     // 如果没有参数，更新缓存
     if (isEmpty(params)) {

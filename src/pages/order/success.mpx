@@ -9,11 +9,9 @@
 </template>
 
 <script lang="ts">
-import navigation from "@/mixins/navigation";
 import { createPage } from "@mpxjs/core";
 
 createPage({
-  mixins: [navigation],
   data: {
 
   },

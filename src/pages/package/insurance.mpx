@@ -16,10 +16,8 @@
 
 <script>
 import mpx, { createPage } from "@mpxjs/core";
-import navigation from "@/mixins/navigation";
 
 createPage({
-  mixins: [navigation],
   data: {
     phonepopup: false,
   },

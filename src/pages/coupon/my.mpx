@@ -48,10 +48,8 @@
 import mpx, { createPage } from '@mpxjs/core';
 import { mapActions } from '@mpxjs/pinia';
 import { CouponReceived, useCouponStore } from '@/store/coupon';
-import navigation from '@/mixins/navigation';
 
 createPage({
-  mixins: [navigation],
   data: {
     coupons: [] as CouponReceived[],
     activeTab: '1', // 默认选中未使用

@@ -5,6 +5,8 @@ import { createPinia } from '@mpxjs/pinia';
 import { updateManager } from '@/common/update-manager';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import '@/mixins/share';
+import '@/mixins/navigation';
 
 // golden oV8BL1zWxzH1V3qAx7iR6YGvkAEY
 // lele oV8BL16mmQFfwIvDihb3CJFX9nYY
@@ -20,6 +22,12 @@ mpx.use(apiProxy, {
 createApp({
   onShow() {
     updateManager();
+  },
+  onLaunch() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
   },
   restartMiniProgram() {
     mpx.showModal({
@@ -89,6 +97,7 @@ image {
       "./pages/activity/group/index",
       "./pages/activity/group/initiate",
       "./pages/activity/group/join",
+      "./pages/qrlogin/qrlogin",
     ],
     "window": {
       "backgroundColor": "#F5F5F5",

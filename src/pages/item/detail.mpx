@@ -66,11 +66,9 @@ import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
 import { PreOrderParams, usePaymentStore } from "@/store/payment";
-import navigationMixin from "@/mixins/navigation";
 import dayjs from "dayjs";
 
 createPage({
-  mixins: [navigationMixin],
   data: {
     itemId: 0,
     finished: false,

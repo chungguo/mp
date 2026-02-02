@@ -1,6 +1,7 @@
 import mpx, { ref } from '@mpxjs/core';
 import { defineStore } from '@mpxjs/pinia';
 import request, { BASE_URL } from '@/common/request';
+import { log } from '@/common/log';
 
 export enum Gender {
   Unknown = 0,
@@ -78,6 +79,7 @@ export const useUserStore = defineStore('user', () => {
 
         const result = await new Promise<string>((resolve, reject) => {
           mpx.request<{
+            statusCode: number;
             data: {
               is_new_user: boolean;
               session_token: string;
@@ -92,11 +94,19 @@ export const useUserStore = defineStore('user', () => {
             usePromise: false,
             success: (res) => {
               const newToken = res.data.data.session_token;
+
+              if (!newToken) {
+                reject('');
+                log.error(res);
+                return;
+              }
+
               token.value = newToken;
               newUser.value = res.data.data.is_new_user;
               resolve(newToken);
             },
             fail: (err) => {
+              log.error(err);
               reject(err);
             },
           });

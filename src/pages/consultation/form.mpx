@@ -76,7 +76,6 @@ import { Gender, useUserStore } from "@/store/user";
 import { useReferralStore } from '@/pages/activity/referral/store';
 import { createPage } from "@mpxjs/core";
 import request, { BASE_URL } from '@/common/request';
-import navigation from '@/mixins/navigation';
 
 const SYMPTOM = [
   { label: "龋齿", value: "caries" },
@@ -89,7 +88,6 @@ const SYMPTOM = [
 ];
 
 createPage({
-  mixins: [navigation],
   data: {
     mobile: '',
 

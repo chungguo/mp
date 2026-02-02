@@ -27,10 +27,8 @@
 import { createPage } from '@mpxjs/core';
 import { type OrderItem, OrderStatus, usePaymentStore } from '@/store/payment';
 import { mapActions } from '@mpxjs/pinia';
-import navigation from '@/mixins/navigation';
 
 createPage({
-  mixins: [navigation],
   data: {
     activeTab: 'all',
     orders: [] as OrderItem[],

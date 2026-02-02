@@ -2,7 +2,7 @@
   <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
   <view class="px-[26rpx] mt-[550rpx]">
     <view class="text-[36rpx] color-[#1D2129] mt-[10rpx] mb-[52rpx] text-center font-bold">
-      领专属 <text class="color-[#4287FF] text-[66rpx] mx-[20rpx]">0</text> 元福利
+      领专属福利
     </view>
     <view bindtap="startTest">
       <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/test-btn.png" mode="widthFix"
