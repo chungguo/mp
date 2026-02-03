@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AI图像隐私处理协议</title>
+  <script>
+    (function () {
+      function setRem() {
+        const baseWidth = 375;
+        const baseFontSize = 100;
+        const html = document.documentElement;
+        const width = html.clientWidth;
+        const fontSize = width / baseWidth * baseFontSize;
+        html.style.fontSize = fontSize + 'px';
+      }
+      setRem();
+      window.addEventListener('resize', setRem);
+      window.addEventListener('orientationchange', setRem);
+    })();
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      font-size: 0.14rem;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f6fa;
+      padding: 0.16rem;
+    }
+
+    .container {
+      max-width: 7.5rem;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 0.12rem;
+      padding: 0.24rem;
+    }
+
+    .header {
+      text-align: center;
+      padding-bottom: 0.2rem;
+      border-bottom: 0.01rem solid #e8e8e8;
+      margin-bottom: 0.2rem;
+    }
+
+    .main-title {
+      font-size: 0.22rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 0.08rem;
+    }
+
+    .sub-title {
+      font-size: 0.16rem;
+      color: #666;
+      margin-bottom: 0.12rem;
+    }
+
+    .meta-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.04rem;
+      font-size: 0.12rem;
+      color: #888;
+    }
+
+    .tips {
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+      padding: 0.12rem 0.16rem;
+      border-radius: 0.06rem;
+      margin: 0.2rem 0;
+      font-size: 0.13rem;
+      color: #856404;
+      line-height: 1.8;
+    }
+
+    .section {
+      margin-bottom: 0.24rem;
+    }
+
+    .section-title {
+      font-size: 0.16rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 0.12rem;
+      padding-left: 0.12rem;
+      position: relative;
+    }
+
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.04rem;
+      width: 0.04rem;
+      height: 0.16rem;
+      background: linear-gradient(180deg, #4a90d9 0%, #2c5aa0 100%);
+      border-radius: 0.02rem;
+    }
+
+    .section-content {
+      color: #555;
+      line-height: 1.8;
+    }
+
+    .section-content p {
+      margin-bottom: 0.1rem;
+    }
+
+    .item {
+      margin-bottom: 0.12rem;
+    }
+
+    .item-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.06rem;
+    }
+
+    .item-content {
+      padding-left: 0.12rem;
+      color: #666;
+    }
+
+    .sub-item {
+      margin-bottom: 0.08rem;
+    }
+
+    .numbered-list {
+      list-style: decimal;
+      padding-left: 0.24rem;
+    }
+
+    .numbered-list li {
+      margin-bottom: 0.06rem;
+    }
+
+    .bullet-list {
+      list-style: disc;
+      padding-left: 0.24rem;
+    }
+
+    .bullet-list li {
+      margin-bottom: 0.06rem;
+    }
+
+    .highlight {
+      color: #2c5aa0;
+      font-weight: 500;
+    }
+
+    .warning-box {
+      background-color: #fff2f0;
+      border: 0.01rem solid #ffccc7;
+      border-radius: 0.08rem;
+      padding: 0.12rem;
+      margin: 0.12rem 0;
+    }
+
+    .warning-title {
+      color: #cf1322;
+      font-weight: 600;
+      margin-bottom: 0.06rem;
+    }
+
+    .warning-text {
+      color: #a8071a;
+      font-size: 0.13rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="main-title">AI图像隐私处理协议</h1>
+      <h2 class="sub-title">图像处理与隐私保护协议</h2>
+      <div class="meta-info">
+        <span>适用于【<span class="highlight">AI 牙齿健康检测</span>】服务</span>
+        <span>发布/更新日期：2026年 2 月2 日</span>
+        <span>生效日期：2026年 2 月2 日</span>
+        <span>版本号：V1.0</span>
+      </div>
+    </header>
+
+    <div class="tips">
+      <strong>提示：</strong>本协议为《隐私政策》的组成部分或专项补充。当你在【AI
+      牙齿健康检测】模块点击"同意并开始检测/上传图片/继续"或以其他方式开始使用本服务，即表示你已阅读并同意本协议所述的图像处理规则与隐私保护安排。
+    </div>
+
+    <section class="section">
+      <h3 class="section-title">第一条 定义与说明</h3>
+      <div class="section-content">
+        <div class="item">
+          <div class="item-title">1. 本服务</div>
+          <div class="item-content">指由【<span class="highlight">健牙宝</span>】（以下简称"我们"或"平台"）提供的"AI 牙齿健康检测"功能，包括但不限于图像上传、AI
+            分析、结果展示、记录查询、医生解读/咨询（如有）等环节。</div>
+        </div>
+        <div class="item">
+          <div class="item-title">2. 图像信息</div>
+          <div class="item-content">指你在本服务中上传或生成的与口腔/牙齿相关的图片、截图、视频帧（如适用）、以及从上述数据中提取的结构化信息。</div>
+        </div>
+        <div class="item">
+          <div class="item-title">3. 个人信息</div>
+          <div class="item-content">指以电子或其他方式记录的、与已识别或可识别自然人有关的各种信息。</div>
+        </div>
+        <div class="item">
+          <div class="item-title">4. 敏感个人信息/个人敏感信息（若适用）</div>
+          <div class="item-content">在多数司法辖区中，口腔图像及健康相关分析结论可能被认定为健康数据或敏感信息。我们将以更高标准进行保护。</div>
+        </div>
+        <div class="item">
+          <div class="item-title">5. 去标识化/匿名化</div>
+          <div class="item-content">去标识化指在不额外信息配合下无法识别到个人身份；匿名化指无法识别且无法复原。</div>
+        </div>
+        <div class="item">
+          <div class="item-title">6. 处理</div>
+          <div class="item-content">包括收集、存储、使用、加工、传输、提供、公开、删除等。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">第二条 我们处理图像信息的目的与范围</h3>
+      <div class="section-content">
+        <p>为实现本服务功能，我们可能在你授权范围内处理以下信息：</p>
+
+        <div class="item">
+          <div class="item-title">2.1 我们收集/获取的图像信息类型</div>
+          <div class="item-content">
+            <div class="sub-item">（1）<strong>你主动上传的口腔/牙齿图像：</strong>如正面、侧面、张口照片等。</div>
+            <div class="sub-item">
+              （2）<strong>图像元数据：</strong>例如上传时间、图片格式/分辨率、文件大小；如你授权且系统自动读取，可能包含拍摄设备类型等信息（一般不包含你相册的其他内容）。</div>
+            <div class="sub-item">（3）<strong>图像特征与结构化结果：</strong>例如牙齿区域定位、色阶/纹理特征、牙列结构特征、疑似问题点位标注等。</div>
+            <div class="sub-item">（4）<strong>检测记录信息：</strong>检测时间、评分/等级、风险提示、建议内容、是否已查看、是否已删除等。</div>
+          </div>
+        </div>
+
+        <p style="margin-top: 0.12rem; color: #666;">我们不会在未获得你明确授权的情况下访问你设备中的其他照片、相册内容、通讯录等与本服务无关的信息。</p>
+
+        <div class="item" style="margin-top: 0.16rem;">
+          <div class="item-title">2.2 处理目的</div>
+          <div class="item-content">
+            <p style="margin-bottom: 0.08rem;">我们仅基于下列目的处理你的图像信息：</p>
+            <ol class="numbered-list">
+              <li><strong>完成 AI 牙齿健康检测：</strong>对上传图像进行质量校验、区域识别、特征提取与风险评估，生成检测报告或提示信息。</li>
+              <li><strong>展示检测结果与服务交互：</strong>向你展示评分、风险提示、建议内容，并支持你查看历史记录（如你开启/同意保存记录）。</li>
+              <li><strong>服务质量保障与安全风控：</strong>用于识别异常请求、欺诈/攻击、系统故障排查、合规审计与安全事件追溯。</li>
+              <li><strong>医生解读/咨询（如你主动选择）：</strong>在你发起医生咨询或解读服务时，将必要的图像与分析结果提供给经过授权的专业人员用于参考。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">第三条 授权方式、处理依据与同意管理</h3>
+      <div class="section-content">
+        <ol class="numbered-list">
+          <li><strong>处理依据：</strong>我们基于你的明示同意、合同/服务履行所必需、以及法律法规允许的其他依据处理相关信息。若涉及健康类敏感信息，我们通常以明示同意作为核心依据。</li>
+          <li><strong>授权入口：</strong>你在"开始检测/上传图片"前勾选同意本协议或点击确认按钮，即构成对图像处理的授权。</li>
+          <li><strong>拒绝授权的影响：</strong>若你拒绝授权，我们将无法为你提供依赖图像处理的检测功能，但不影响你使用其他不依赖该信息的服务模块。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">第四条 信息共享、委托处理与第三方说明</h3>
+      <div class="section-content">
+        <div class="item">
+          <div class="item-title">4.1 委托处理（处理者/服务商）</div>
+          <div class="item-content">
+            <p style="margin-bottom: 0.08rem;">为实现本服务的稳定运行，我们可能委托具备安全能力的服务商提供基础设施或技术支持，包括但不限于：</p>
+            <ul class="bullet-list">
+              <li>云存储/云计算服务商</li>
+              <li>内容安全/风控服务商（用于识别恶意攻击与违法内容）</li>
+              <li>医生服务合作方（在你主动选择医生服务时）</li>
+            </ul>
+            <p style="margin-top: 0.08rem;">我们将与相关服务商签署严格的数据处理协议，约定处理目的、期限、方式、安全措施、保密义务及审计要求，并对其行为进行监督。</p>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="item-title">4.2 对外提供/共享</div>
+          <div class="item-content">
+            <p style="margin-bottom: 0.08rem;">除以下情形外，我们不会向任何第三方提供你的图像信息：</p>
+            <ol class="numbered-list">
+              <li>已获得你的单独同意；</li>
+              <li>为履行你主动选择的服务所必需（例如医生解读）；</li>
+              <li>法律法规要求、司法机关或行政机关依法提出要求；</li>
+              <li>为保护你或他人生命健康、财产安全且难以获得同意的紧急情况（法律允许范围内）。</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class="item-title">4.3 转让与公开披露</div>
+          <div class="item-content">
+            <p>我们不会转让或公开披露你的图像信息，除非：</p>
+            <ul class="bullet-list">
+              <li>获得你的单独同意；或</li>
+              <li>法律法规另有规定或依法必须执行。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">第五条 免责声明与医疗提示</h3>
+      <div class="section-content">
+        <div class="warning-box">
+          <div class="warning-title">重要提示</div>
+          <div class="warning-text">
+            <ol class="numbered-list">
+              <li>本服务提供的检测结果为基于图像的算法分析与健康参考建议，<strong>不构成医疗诊断或治疗方案</strong>。</li>
+              <li>如你出现牙痛、出血、肿胀等症状，请及时就医并遵从专业医生建议。</li>
+              <li>我们会持续优化模型，但仍可能因图像质量、拍摄角度、光照等因素导致误差。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">第六条 协议更新</h3>
+      <div class="section-content">
+        <p>我们可能根据业务变化、法律要求或安全需要更新本协议。对于重大变更，我们将以弹窗、页面提示或其他显著方式告知你，并在需要时重新获取你的同意。</p>
+      </div>
+    </section>
+  </div>
+</body>
+
+</html>
