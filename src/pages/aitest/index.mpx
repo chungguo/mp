@@ -39,7 +39,7 @@
           </view>
         </view>
 
-        <view class="text-[22rpx] text-center mt-[46rpx] mb-[27rpx]">
+        <view class="text-[22rpx] text-center mt-[46rpx] mb-[27rpx]" bindtap="showProtocol">
           我们将遵循<text class="color-[#317DFF]">《AI处理图像信息协议》</text>处理你的照片
         </view>
 
@@ -270,6 +270,11 @@ createPage({
           url: './result',
         });
       }
+    },
+    showProtocol() {
+      mpx.navigateTo({
+        url: '/pages/webview/index?url=https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/ai_test_privacy.html',
+      });
     }
   }
 });

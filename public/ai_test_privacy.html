@@ -1,26 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-cmn-Hans">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="x5-cache" content="disable" />
   <title>AI图像隐私处理协议</title>
-  <script>
-    (function () {
-      function setRem() {
-        const baseWidth = 375;
-        const baseFontSize = 100;
-        const html = document.documentElement;
-        const width = html.clientWidth;
-        const fontSize = width / baseWidth * baseFontSize;
-        html.style.fontSize = fontSize + 'px';
-      }
-      setRem();
-      window.addEventListener('resize', setRem);
-      window.addEventListener('orientationchange', setRem);
-    })();
-  </script>
   <style>
     * {
       margin: 0;
@@ -28,71 +15,77 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      width: 100%;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-      font-size: 0.14rem;
+      font-size: 14px;
       line-height: 1.6;
       color: #333;
       background-color: #f5f6fa;
-      padding: 0.16rem;
+      padding: 16px;
+      -webkit-text-size-adjust: 100% !important;
     }
 
     .container {
-      max-width: 7.5rem;
+      max-width: 750px;
       margin: 0 auto;
       background-color: #fff;
-      border-radius: 0.12rem;
-      padding: 0.24rem;
+      border-radius: 12px;
+      padding: 24px;
     }
 
     .header {
       text-align: center;
-      padding-bottom: 0.2rem;
-      border-bottom: 0.01rem solid #e8e8e8;
-      margin-bottom: 0.2rem;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e8e8e8;
+      margin-bottom: 20px;
     }
 
     .main-title {
-      font-size: 0.22rem;
+      font-size: 22px;
       font-weight: 600;
       color: #1a1a1a;
-      margin-bottom: 0.08rem;
+      margin-bottom: 8px;
     }
 
     .sub-title {
-      font-size: 0.16rem;
+      font-size: 16px;
       color: #666;
-      margin-bottom: 0.12rem;
+      margin-bottom: 12px;
     }
 
     .meta-info {
       display: flex;
       flex-direction: column;
-      gap: 0.04rem;
-      font-size: 0.12rem;
+      gap: 4px;
+      font-size: 12px;
       color: #888;
     }
 
     .tips {
       background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-      padding: 0.12rem 0.16rem;
-      border-radius: 0.06rem;
-      margin: 0.2rem 0;
-      font-size: 0.13rem;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 20px 0;
+      font-size: 13px;
       color: #856404;
       line-height: 1.8;
     }
 
     .section {
-      margin-bottom: 0.24rem;
+      margin-bottom: 24px;
     }
 
     .section-title {
-      font-size: 0.16rem;
+      font-size: 16px;
       font-weight: 600;
       color: #1a1a1a;
-      margin-bottom: 0.12rem;
-      padding-left: 0.12rem;
+      margin-bottom: 12px;
+      padding-left: 12px;
       position: relative;
     }
 
@@ -100,11 +93,11 @@
       content: '';
       position: absolute;
       left: 0;
-      top: 0.04rem;
-      width: 0.04rem;
-      height: 0.16rem;
+      top: 4px;
+      width: 4px;
+      height: 16px;
       background: linear-gradient(180deg, #4a90d9 0%, #2c5aa0 100%);
-      border-radius: 0.02rem;
+      border-radius: 2px;
     }
 
     .section-content {
@@ -113,44 +106,44 @@
     }
 
     .section-content p {
-      margin-bottom: 0.1rem;
+      margin-bottom: 10px;
     }
 
     .item {
-      margin-bottom: 0.12rem;
+      margin-bottom: 12px;
     }
 
     .item-title {
       font-weight: 600;
       color: #333;
-      margin-bottom: 0.06rem;
+      margin-bottom: 6px;
     }
 
     .item-content {
-      padding-left: 0.12rem;
+      padding-left: 12px;
       color: #666;
     }
 
     .sub-item {
-      margin-bottom: 0.08rem;
+      margin-bottom: 8px;
     }
 
     .numbered-list {
       list-style: decimal;
-      padding-left: 0.24rem;
+      padding-left: 24px;
     }
 
     .numbered-list li {
-      margin-bottom: 0.06rem;
+      margin-bottom: 6px;
     }
 
     .bullet-list {
       list-style: disc;
-      padding-left: 0.24rem;
+      padding-left: 24px;
     }
 
     .bullet-list li {
-      margin-bottom: 0.06rem;
+      margin-bottom: 6px;
     }
 
     .highlight {
@@ -160,21 +153,21 @@
 
     .warning-box {
       background-color: #fff2f0;
-      border: 0.01rem solid #ffccc7;
-      border-radius: 0.08rem;
-      padding: 0.12rem;
-      margin: 0.12rem 0;
+      border: 1px solid #ffccc7;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
     }
 
     .warning-title {
       color: #cf1322;
       font-weight: 600;
-      margin-bottom: 0.06rem;
+      margin-bottom: 6px;
     }
 
     .warning-text {
       color: #a8071a;
-      font-size: 0.13rem;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -244,12 +237,12 @@
           </div>
         </div>
 
-        <p style="margin-top: 0.12rem; color: #666;">我们不会在未获得你明确授权的情况下访问你设备中的其他照片、相册内容、通讯录等与本服务无关的信息。</p>
+        <p style="margin-top: 12px; color: #666;">我们不会在未获得你明确授权的情况下访问你设备中的其他照片、相册内容、通讯录等与本服务无关的信息。</p>
 
-        <div class="item" style="margin-top: 0.16rem;">
+        <div class="item" style="margin-top: 16px;">
           <div class="item-title">2.2 处理目的</div>
           <div class="item-content">
-            <p style="margin-bottom: 0.08rem;">我们仅基于下列目的处理你的图像信息：</p>
+            <p style="margin-bottom: 8px;">我们仅基于下列目的处理你的图像信息：</p>
             <ol class="numbered-list">
               <li><strong>完成 AI 牙齿健康检测：</strong>对上传图像进行质量校验、区域识别、特征提取与风险评估，生成检测报告或提示信息。</li>
               <li><strong>展示检测结果与服务交互：</strong>向你展示评分、风险提示、建议内容，并支持你查看历史记录（如你开启/同意保存记录）。</li>
@@ -278,20 +271,20 @@
         <div class="item">
           <div class="item-title">4.1 委托处理（处理者/服务商）</div>
           <div class="item-content">
-            <p style="margin-bottom: 0.08rem;">为实现本服务的稳定运行，我们可能委托具备安全能力的服务商提供基础设施或技术支持，包括但不限于：</p>
+            <p style="margin-bottom: 8px;">为实现本服务的稳定运行，我们可能委托具备安全能力的服务商提供基础设施或技术支持，包括但不限于：</p>
             <ul class="bullet-list">
               <li>云存储/云计算服务商</li>
               <li>内容安全/风控服务商（用于识别恶意攻击与违法内容）</li>
               <li>医生服务合作方（在你主动选择医生服务时）</li>
             </ul>
-            <p style="margin-top: 0.08rem;">我们将与相关服务商签署严格的数据处理协议，约定处理目的、期限、方式、安全措施、保密义务及审计要求，并对其行为进行监督。</p>
+            <p style="margin-top: 8px;">我们将与相关服务商签署严格的数据处理协议，约定处理目的、期限、方式、安全措施、保密义务及审计要求，并对其行为进行监督。</p>
           </div>
         </div>
 
         <div class="item">
           <div class="item-title">4.2 对外提供/共享</div>
           <div class="item-content">
-            <p style="margin-bottom: 0.08rem;">除以下情形外，我们不会向任何第三方提供你的图像信息：</p>
+            <p style="margin-bottom: 8px;">除以下情形外，我们不会向任何第三方提供你的图像信息：</p>
             <ol class="numbered-list">
               <li>已获得你的单独同意；</li>
               <li>为履行你主动选择的服务所必需（例如医生解读）；</li>

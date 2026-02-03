@@ -98,6 +98,7 @@ image {
       "./pages/activity/group/initiate",
       "./pages/activity/group/join",
       "./pages/qrlogin/qrlogin",
+      "./pages/webview/index",
     ],
     "window": {
       "backgroundColor": "#F5F5F5",

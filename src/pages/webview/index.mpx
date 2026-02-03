@@ -1,0 +1,29 @@
+<template>
+  <web-view src="{{ url }}"></web-view>
+</template>
+
+<script lang="ts">
+import { createPage } from "@mpxjs/core";
+
+createPage({
+  data: {
+    url: '',
+  },
+  onLoad(query: Record<string, string>) {
+    this.url = query.url;
+
+    if (!this.url) {
+      this.safeNavigateBack();
+    }
+  },
+});
+</script>
+
+
+<script type="application/json">
+{
+  "navigationBarTitleText": "健牙宝",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {}
+}
+</script>
