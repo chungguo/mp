@@ -108,6 +108,10 @@ createPage({
     item: {} as Item,
     hospitals: [] as Hospital[],
     participants: [] as typeof defaultParticipant[],
+    share: {
+      title: '在线问诊，牙齿健康状态早知道',
+      imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+    }
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
@@ -187,12 +191,21 @@ createPage({
           defaultParticipant,
           defaultParticipant,
           defaultParticipant
-        ]).slice(0, 3), 'is_initiator', 'desc');
+        ]).slice(0, info?.required_count), 'is_initiator', 'desc');
 
         this.setData({
           group: omit(info, ['participants']),
           participants,
         });
+
+        if (info?.share_image && info?.share_text) {
+          this.setData({
+            share: {
+              title: info.share_text,
+              imageUrl: info.share_image,
+            }
+          });
+        }
 
         this.loadItemDetail();
       } catch (error) {
@@ -287,14 +300,13 @@ createPage({
     },
     onShareAppMessage() {
       return {
-        title: '在线问诊，牙齿健康状态早知道',
+        ...this.share,
         path: `/pages/activity/group/join?group_id=${this.groupId}`,
-        imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
       };
     },
     onShareTimeline() {
       return {
-        title: '在线问诊，牙齿健康状态早知道',
+        ...this.share,
         path: `/pages/activity/group/join?group_id=${this.groupId}`,
       };
     }

@@ -43,6 +43,8 @@ export interface GroupInfoItem {
   expire_time: string;
   status: number;
   remaining_seconds: number;
+  share_text: string;
+  share_image: string;
 }
 
 interface ParticipantItem {
