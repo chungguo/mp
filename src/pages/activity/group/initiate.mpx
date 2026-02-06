@@ -52,7 +52,7 @@ import { useUserStore } from "@/store/user";
 import { type Item, useItemStore } from "@/store/item";
 import { Hospital, useHospitalStore } from "@/store/hospital";
 import { usePaymentStore } from "@/store/payment";
-import { useGroupStore } from "@/pages/activity/group/store";
+import { useGroupStore, GROUP_TEMPLATE_ID } from "@/pages/activity/group/store";
 import dayjs from "dayjs";
 
 createPage({
@@ -148,6 +148,10 @@ createPage({
       }
 
       this.loading = true;
+
+      await mpx.requestSubscribeMessage({
+        tmplIds: [GROUP_TEMPLATE_ID],
+      });
 
       try {
         const activity_id = this.item?.marketing_activities?.group_buying_activity?.activity_id;

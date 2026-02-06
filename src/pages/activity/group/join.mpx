@@ -86,7 +86,7 @@ import mpx, { createPage } from "@mpxjs/core";
 import { useUserStore } from '@/store/user';
 import { type Item, useItemStore } from "@/store/item";
 import { type Hospital, useHospitalStore } from "@/store/hospital";
-import { type GroupInfoItem, useGroupStore } from "./store";
+import { GROUP_TEMPLATE_ID, type GroupInfoItem, useGroupStore } from "./store";
 import { omit, orderBy, sortBy } from "lodash-es";
 import { mapActions, mapState } from '@mpxjs/pinia';
 
@@ -254,6 +254,10 @@ createPage({
           });
           return;
         }
+
+        await mpx.requestSubscribeMessage({
+          tmplIds: [GROUP_TEMPLATE_ID],
+        });
 
         await mpx.requestPayment(data.wechat_pay_params);
 

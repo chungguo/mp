@@ -1,6 +1,8 @@
 import request from "@/common/request";
 import { defineStore } from "@mpxjs/pinia";
 
+export const GROUP_TEMPLATE_ID = '58hVmFFsHOr4q8ZEFqtwXyYpm4cx3oTV3Vf6ic08uRo';
+
 interface GroupRecordItem {
   id: number;
   activity_id: number;
