@@ -2,7 +2,7 @@
   <view class="container relative mt-[46rpx] px-[40rpx] box-border text-[#1D2129]">
     <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/aitest-wxwork.webp" t-class="w-full"
       mode="widthFix" />
-    <view class="font-bold text-[30rpx] text-white absolute top-[133rpx] left-[300rpx]">0 元领官方限时福利</view>
+    <view class="font-bold text-[30rpx] text-white absolute top-[133rpx] left-[300rpx]">领官方限时福利</view>
     <view class="absolute left-[80rpx] top-[280rpx] w-[380rpx] text-center text-[42rpx] font-bold text-[#4A8DFF]">{{
       title }}</view>
     <view
@@ -42,10 +42,6 @@ createComponent({
       type: String,
       value: '添加牙科小助理，获取专属建议'
     },
-    benefits: {
-      type: Array,
-      value: [],
-    }
   },
   data: {
     loading: false,
