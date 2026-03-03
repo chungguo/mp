@@ -93,9 +93,11 @@
 
   <t-popup visible="{{ moreHospitalNameVisible }}" placement="center">
     <view class="relative py-[68rpx] px-[32rpx]">
-      <view class="w-[420rpx] max-h-[300rpx] overflow-y-auto flex flex-col gap-[16rpx]">
+    <scroll-view scroll-y class="w-[420rpx] max-h-[300rpx]">
+      <view class="flex flex-col gap-[16rpx]">
         <view wx:for="{{ moreHospital }}" wx:key="index">{{ item.name }}</view>
       </view>
+    </scroll-view>
       <t-icon t-class="absolute bottom-[-100rpx] translate-x-[-50%] left-[50%]" name="close-circle" size="64rpx"
         color="#fff" bind:tap="onMoreHospitalClose" />
     </view>
