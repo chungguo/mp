@@ -47,6 +47,11 @@
     </view>
   </t-dialog>
 
+  <view class="flex justify-center mt-[64rpx]">
+    <t-link size="small" theme="primary" navigator-props="{{ navigatorProps }}">
+      《隐私协议》
+    </t-link>
+  </view>
   <phone-popup visible="{{ phonepopup }}" bind:confirmed="onPhoneConfirmed" bind:canceled="onPhoneCanceled" />
 </template>
 
@@ -62,6 +67,7 @@ createPage({
     scaned: false,
     phonepopup: false,
     callback: '',
+    navigatorProps: { url: '/pages/webview/index?url=https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/user_privacy.html' },
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
@@ -261,6 +267,7 @@ page {
     "t-col": "tdesign-miniprogram/miniprogram_dist/col/col",
     "t-dialog": "tdesign-miniprogram/miniprogram_dist/dialog/dialog",
     "t-loading": "tdesign-miniprogram/miniprogram_dist/loading/loading",
+    "t-link": "tdesign-miniprogram/miniprogram_dist/link/link",
     "phone-popup": "@/components/phone-popup",
   }
 }
