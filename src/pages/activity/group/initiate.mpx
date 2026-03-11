@@ -187,7 +187,9 @@ createPage({
         });
 
         setTimeout(() => {
-          this.safeNavigateBack(`/pages/activity/group/join?group_id=${data.group_id}`);
+          mpx.redirectTo({
+            url: `/pages/activity/group/join?group_id=${data.group_id}`,
+          });
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';
@@ -242,7 +244,9 @@ createPage({
         });
 
         setTimeout(() => {
-          this.safeNavigateBack('/pages/order/list');
+          mpx.redirectTo({
+            url: '/pages/order/list',
+          });
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';

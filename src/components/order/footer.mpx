@@ -99,7 +99,9 @@ createComponent({
         });
 
         setTimeout(() => {
-          this.safeNavigateBack('/pages/order/list');
+          mpx.redirectTo({
+            url: '/pages/order/list',
+          });
         }, 1500);
       } catch (error) {
         let errorMessage = '支付失败';
