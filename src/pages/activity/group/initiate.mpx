@@ -30,7 +30,7 @@
   <sticky-bottom>
     <view class="flex justify-between">
       <view class="flex items-center flex-col" bindtap="makeOrder">
-        <text>￥{{ item.original_price }}</text>
+        <text>￥{{ item.discount_price }}</text>
         <text>单独购买</text>
       </view>
 
