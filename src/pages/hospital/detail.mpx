@@ -4,7 +4,8 @@
   <!-- 医院图片轮播 -->
   <view class="p-26rpx flex flex-col gap-[26rpx]">
     <view class="rounded-24rpx of-hidden">
-      <t-swiper height="260rpx" list="{{ hospital.images }}" navigation="{{ { type: 'dots' } }}" />
+      <t-swiper height="260rpx" list="{{ banners }}" navigation="{{ { type: 'dots' } }}"
+        image-props="{{ imageProps }}" />
     </view>
 
     <!-- 医院基本信息 -->
@@ -47,11 +48,23 @@ createPage({
   data: {
     hospital: {} as Hospital,
     items: [] as Item[],
+    imageProps: {
+      mode: 'aspectFill',
+      lazyLoad: true,
+    },
   },
 
   ...mapActions(useHospitalStore, ['fetchHospitalById']),
   ...mapActions(useItemStore, ['fetchItems']),
+  computed: {
+    banners() {
+      if (!this.hospital.images) {
+        return [];
+      }
 
+      return this.hospital.images.length > 1 ? this.hospital.images.slice(1) : this.hospital.images;
+    },
+  },
   async onLoad(options) {
     const { id } = options;
     this.getHospitalDetail(id);

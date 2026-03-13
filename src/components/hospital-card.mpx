@@ -12,7 +12,7 @@
 <template>
   <view class="flex items-center gap-[22rpx]">
     <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
-      <t-image src="{{ cover }}" width="140rpx" height="140rpx" />
+      <t-image src="{{ cover }}" width="140rpx" height="140rpx" mode="aspectFill" />
     </view>
     <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
       <text class="text-[28rpx] color-[#090E0B] font-bold truncate">{{
@@ -25,15 +25,17 @@
       </view>
     </view>
   </view>
-  <t-divider />
-  <view class="flex flex-col gap-[22rpx]">
-    <view wx:for="{{ items }}" wx:key="id" class="flex items-center gap-[26rpx]">
-      <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.price }}</view>
-      <view wx:if="{{ item.discount }}"
-        class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
-        {{ item.discount }}</view>
-      <view class="truncate color-[#090E0B] text-[22rpx]">{{
-        item.name }}</view>
+  <view wx:if="{{ items.length > 0 }}">
+    <t-divider />
+    <view class="flex flex-col gap-[22rpx]">
+      <view wx:for="{{ items }}" wx:key="id" class="flex items-center gap-[26rpx]">
+        <view class="color-[#F42020] font-bold text-[28rpx] min-w-[100rpx]">￥{{ item.price }}</view>
+        <view wx:if="{{ item.discount }}"
+          class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
+          {{ item.discount }}</view>
+        <view class="truncate color-[#090E0B] text-[22rpx]">{{
+          item.name }}</view>
+      </view>
     </view>
   </view>
 </template>

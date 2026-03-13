@@ -15,7 +15,7 @@
     <view wx:for="{{ localItems }}" wx:key="id" bindtap="goItemDetail" data-id="{{ item.id }}"
       class="flex items-center gap-[20rpx]">
       <view class="w-[166rpx] h-[126rpx] of-hidden rounded-[16rpx] flex items-center justify-center">
-        <t-image src="{{ item.cover_image }}" t-class="w-[166rpx] h-[126rpx] of-hidden" mode="widthFix" />
+        <t-image src="{{ item.cover_image }}" width="166rpx" height="126rpx" t-class="of-hidden" mode="aspectFill" />
       </view>
 
       <view class="flex flex-col flex-1 gap-[22rpx] min-w-0">
@@ -23,7 +23,9 @@
           item.name }}</view>
         <view class="flex items-center justify-between">
           <view class="flex items-center gap-[10rpx]">
-            <view wx:if="{{ item.lto }}" class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">秒杀</view>
+            <view wx:if="{{ item.lto }}"
+              class="color-[#F42020] font-bold text-[20rpx] px-[8rpx] border border-solid border-[#F42020] rounded-[8rpx]">
+              秒杀</view>
             <view class="text-[28rpx] font-bold color-[#F42020]">￥{{ item.discount_price }}</view>
             <view class="text-[24rpx] color-[#1D2129] font-400 line-through mx-[6rpx]">￥{{ item.original_price }}
             </view>

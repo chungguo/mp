@@ -74,8 +74,7 @@
         <t-tab-panel label="甄选机构" value="hospital">
           <view class="flex flex-col gap-[16rpx] mt-[26rpx]">
             <view class="w-full box-border bg-white rounded-[22rpx] px-[26rpx] py-[36rpx]" wx:for="{{ hospitals }}"
-              wx:if="{{ hospital.items.length !== 0 }}" wx:key="id" wx:for-item="hospital"
-              bindtap="navigateToHospitalDetail" data-id="{{ hospital.id }}">
+              wx:key="id" wx:for-item="hospital" bindtap="navigateToHospitalDetail" data-id="{{ hospital.id }}">
               <hospital-card hospital="{{ hospital }}" />
             </view>
           </view>
@@ -87,7 +86,8 @@
               class="flex items-center bg-white box-border px-[26rpx] py-[36rpx] gap-[22rpx] rounded-[22rpx]"
               bindtap="navigateToDoctorDetail" data-id="{{ item.id }}">
               <view class="relative rounded-[16rpx]">
-                <t-image t-class="rounded-[16rpx] of-hidden w-[194rpx] h-[194rpx]" src="{{ item.avatar }}" />
+                <t-image width="194rpx" height="194rpx" t-class="rounded-[16rpx] of-hidden" mode="aspectFill"
+                  src="{{ item.avatar }}" />
                 <view
                   class="bg-[#4A8DFF] absolute z-2 bottom-0 left-0 right-0 color-white text-center truncate rounded-b-[16rpx] text-[22rpx] py-[5rpx]">
                   {{ item.title }}
@@ -97,7 +97,7 @@
                 <view class="flex justify-between items-center">
                   <view class="color-[#090E0B] text-[36rpx] font-bold">{{ item.name }}</view>
                   <view wx:if="{{ item.experienceYear }}" class="color-[#51555E] text-[24rpx]">从业{{ item.experienceYear
-                  }}年</view>
+                    }}年</view>
                 </view>
                 <view class="text-[24rpx] color-[#51555E] flex flex-col gap-[10rpx]">
                   <view class="truncate">{{ item.hospitals }}</view>
