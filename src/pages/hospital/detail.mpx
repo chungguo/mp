@@ -78,7 +78,7 @@ createPage({
 
     try {
       const hospitals = await this.fetchHospitalById(id);
-      const res = await this.fetchItems({ hospital_ids: [id] });
+      const res = await this.fetchItems({ hospital_ids: id });
       this.setData({
         hospital: hospitals,
         items: res.items,
