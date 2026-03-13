@@ -3,7 +3,7 @@
   <t-navbar left-arrow bind:go-back="goBack" title="{{ hospital.name }}" />
   <!-- 医院图片轮播 -->
   <view class="p-26rpx flex flex-col gap-[26rpx]">
-    <view class="rounded-24rpx of-hidden">
+    <view class="rounded-24rpx of-hidden" wx:if="{{ banners.length > 0 }}">
       <t-swiper height="260rpx" list="{{ banners }}" navigation="{{ { type: 'dots' } }}"
         image-props="{{ imageProps }}" />
     </view>
@@ -62,7 +62,7 @@ createPage({
         return [];
       }
 
-      return this.hospital.images.length > 1 ? this.hospital.images.slice(1) : this.hospital.images;
+      return this.hospital.images.length > 1 ? this.hospital.images.slice(1) : [];
     },
   },
   async onLoad(options) {
