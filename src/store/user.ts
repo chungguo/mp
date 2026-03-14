@@ -1,6 +1,6 @@
-import mpx, { ref } from '@mpxjs/core';
+import mpx, { ref, computed } from '@mpxjs/core';
 import { defineStore } from '@mpxjs/pinia';
-import request, { BASE_URL } from '@/common/request';
+import { BASE_URL } from '@/common/request';
 import { log } from '@/common/log';
 
 export enum Gender {
@@ -12,7 +12,7 @@ export enum Gender {
 export const GenderOptions = [
   { label: '男', value: Gender.Male },
   { label: '女', value: Gender.Female }
-]
+];
 
 export enum RoleId {
   // 平台管理员
@@ -39,7 +39,7 @@ export const RoleName: Record<RoleId, string> = {
   [RoleId.HospitalOperator]: '医院运营',
   [RoleId.HospitalCustomerService]: '医院客服',
   [RoleId.HospitalDoctor]: '医院医生',
-}
+};
 
 export interface Profile {
   id: number;
@@ -53,16 +53,29 @@ export interface Profile {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const token = ref('');
+  const token = ref<string>('');
   const newUser = ref<boolean | null>(null);
   const profile = ref<Profile | null>(null);
   let loginPromise: Promise<string> | null = null;
 
-  const login = async () => {
+  // 计算属性：是否已登录
+  const isLoggedIn = computed(() => !!token.value && !!profile.value);
+
+  // 计算属性：用户角色名称
+  const roleName = computed(() => {
+    if (!profile.value?.role_id) return null;
+    return RoleName[profile.value.role_id];
+  });
+
+  // 优化后的 token 获取方法：已登录直接返回，否则触发登录
+  const ensureToken = async (): Promise<string> => {
     if (token.value) {
       return token.value;
     }
+    return login();
+  };
 
+  const login = async (): Promise<string> => {
     // 如果已经有登录请求在进行中，直接返回该 Promise
     if (loginPromise) {
       return loginPromise;
@@ -74,47 +87,20 @@ export const useUserStore = defineStore('user', () => {
         const loginRes = await mpx.login();
 
         if (!loginRes.code) {
-          throw new Error('登录失败');
+          throw new Error('微信登录失败：未获取到 code');
         }
 
-        const result = await new Promise<string>((resolve, reject) => {
-          mpx.request<{
-            statusCode: number;
-            data: {
-              is_new_user: boolean;
-              session_token: string;
-            }
-          }>({
-            url: `${BASE_URL}/auth/login`,
-            method: "POST",
-            data: {
-              code: loginRes.code,
-            },
-            // @ts-expect-error mpx 的 request 方法不支持 usePromise 选项，需要手动设置
-            usePromise: false,
-            success: (res) => {
-              const newToken = res.data.data.session_token;
-
-              if (!newToken) {
-                reject('');
-                log.error(res);
-                return;
-              }
-
-              token.value = newToken;
-              newUser.value = res.data.data.is_new_user;
-              resolve(newToken);
-            },
-            fail: (err) => {
-              log.error(err);
-              reject(err);
-            },
-          });
-        });
-
-        return result;
+        const sessionToken = await exchangeCodeForToken(loginRes.code);
+        token.value = sessionToken;
+        
+        // 登录成功后自动获取用户信息
+        await queryProfile();
+        
+        return sessionToken;
+      } catch (error) {
+        log.error('登录失败:', error);
+        throw error;
       } finally {
-        // 登录完成后清除 Promise 缓存
         loginPromise = null;
       }
     })();
@@ -122,30 +108,94 @@ export const useUserStore = defineStore('user', () => {
     return loginPromise;
   };
 
-  const queryProfile = async () => {
-    const res = await request.fetch<{
-      data: Profile
-    }>({
-      url: '/auth/profile',
-      method: 'GET',
+  // 提取：code 换 token
+  const exchangeCodeForToken = (code: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      mpx.request<{
+        statusCode: number;
+        data: {
+          is_new_user: boolean;
+          session_token: string;
+        }
+      }>({
+        url: `${BASE_URL}/auth/login`,
+        method: 'POST',
+        data: { code },
+        success: (res) => {
+          if (res.statusCode === 200 && res.data.data?.session_token) {
+            newUser.value = res.data.data.is_new_user;
+            resolve(res.data.data.session_token);
+          } else {
+            reject(new Error(res.data.data?.session_token ? '登录响应异常' : '获取 token 失败'));
+          }
+        },
+        fail: reject,
+      });
     });
-    profile.value = res.data.data;
   };
 
-  const updateProfile = async (data: Partial<Profile>) => {
-    return request.fetch({
-      url: '/auth/profile',
+  const queryProfile = async (): Promise<void> => {
+    if (!token.value) {
+      throw new Error('未登录');
+    }
+
+    try {
+      const res = await mpx.request<{
+        data: { data: Profile }
+      }>({
+        url: `${BASE_URL}/auth/profile`,
+        method: 'GET',
+        header: {
+          'Authorization': `Bearer ${token.value}`,
+        },
+      });
+      
+      if (res.data?.data) {
+        profile.value = res.data.data;
+      }
+    } catch (error) {
+      log.error('获取用户信息失败:', error);
+      throw error;
+    }
+  };
+
+  const updateProfile = async (data: Partial<Profile>): Promise<void> => {
+    if (!token.value) {
+      throw new Error('未登录');
+    }
+
+    const res = await mpx.request({
+      url: `${BASE_URL}/auth/profile`,
       method: 'PUT',
+      header: {
+        'Authorization': `Bearer ${token.value}`,
+      },
       data,
     });
+    
+    if (res.statusCode === 200 && profile.value) {
+      // 更新本地状态
+      profile.value = { ...profile.value, ...data };
+    }
+  };
+
+  const logout = (): void => {
+    token.value = '';
+    profile.value = null;
+    newUser.value = null;
+    loginPromise = null;
   };
 
   return {
     token,
     profile,
     newUser,
+    isLoggedIn,
+    roleName,
+    ensureToken,
     login,
     queryProfile,
     updateProfile,
+    logout,
   };
 });
