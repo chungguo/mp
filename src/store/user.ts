@@ -15,19 +15,12 @@ export const GenderOptions = [
 ];
 
 export enum RoleId {
-  // 平台管理员
   Admin = 1,
-  // 平台运营者
   Operator,
-  // 平台客服
   CustomerService,
-  // 医院管理员
   HospitalAdmin,
-  // 医院运营
   HospitalOperator,
-  // 医院客服
   HospitalCustomerService,
-  // 医院医生
   HospitalDoctor,
 }
 
@@ -52,132 +45,100 @@ export interface Profile {
   role_id: RoleId | null;
 }
 
-// 登录状态类型
-interface LoginState {
-  promise: Promise<string> | null;
-  isRefreshing: boolean;
-  retryCount: number;
-  maxRetries: number;
-}
-
-export const useUserStore = defineStore('user', () => {
-  const token = ref<string>('');
-  const newUser = ref<boolean | null>(null);
-  const profile = ref<Profile | null>(null);
-  
-  // 登录状态管理 - 确保只有一个登录请求
-  const loginState: LoginState = {
-    promise: null,
-    isRefreshing: false,
-    retryCount: 0,
-    maxRetries: 3,
-  };
-
-  // 等待登录完成的请求队列
-  const waitingQueue: Array<{
+/**
+ * Token 管理器
+ * 核心职责：
+ * 1. 全局唯一 Token 状态
+ * 2. 自动获取 Token（带并发控制）
+ * 3. Token 刷新管理
+ */
+class TokenManager {
+  private token: string = '';
+  private isAcquiring: boolean = false;
+  private acquirePromise: Promise<string> | null = null;
+  private waiters: Array<{
     resolve: (token: string) => void;
     reject: (error: Error) => void;
   }> = [];
 
-  // 计算属性：是否已登录
-  const isLoggedIn = computed(() => !!token.value && !!profile.value);
-
-  // 计算属性：用户角色名称
-  const roleName = computed(() => {
-    if (!profile.value?.role_id) return null;
-    return RoleName[profile.value.role_id];
-  });
-
   /**
-   * 核心方法：确保获取有效 Token
-   * - 如果已有 token，直接返回
-   * - 如果正在登录，加入等待队列
-   * - 如果未登录，触发登录流程
+   * 获取有效 Token（全局入口）
+   * - 有 Token：直接返回
+   * - 正在获取：加入等待队列
+   * - 无 Token：触发获取流程
    */
-  const ensureToken = async (): Promise<string> => {
-    // 1. 已有有效 token，直接返回
-    if (token.value) {
-      return token.value;
+  async getToken(): Promise<string> {
+    // 1. 已有有效 Token，直接返回
+    if (this.token) {
+      return this.token;
     }
 
-    // 2. 正在登录中，加入等待队列，共享登录结果
-    if (loginState.isRefreshing && loginState.promise) {
+    // 2. 正在获取中，排队等待
+    if (this.isAcquiring && this.acquirePromise) {
       return new Promise((resolve, reject) => {
-        waitingQueue.push({ resolve, reject });
+        this.waiters.push({ resolve, reject });
       });
     }
 
-    // 3. 触发登录流程
-    return performLogin();
-  };
+    // 3. 开始获取 Token
+    return this.doAcquire();
+  }
 
   /**
-   * 执行登录流程 - 保证全局唯一
+   * 执行 Token 获取（保证全局唯一）
    */
-  const performLogin = async (): Promise<string> => {
-    // 双重检查，防止竞态
-    if (loginState.isRefreshing && loginState.promise) {
-      return loginState.promise;
-    }
+  private async doAcquire(): Promise<string> {
+    this.isAcquiring = true;
 
-    loginState.isRefreshing = true;
-    loginState.retryCount = 0;
+    this.acquirePromise = (async () => {
+      try {
+        const token = await this.loginWithRetry();
+        this.token = token;
+        
+        // 唤醒所有等待的请求
+        this.resolveWaiters(token);
+        
+        return token;
+      } catch (error) {
+        // 获取失败，通知所有等待者
+        this.rejectWaiters(error as Error);
+        throw error;
+      } finally {
+        this.isAcquiring = false;
+        this.acquirePromise = null;
+      }
+    })();
 
-    const loginTask = async (): Promise<string> => {
-      while (loginState.retryCount <= loginState.maxRetries) {
-        try {
-          const sessionToken = await doLogin();
-          
-          // 登录成功，更新状态
-          token.value = sessionToken;
-          loginState.retryCount = 0;
-          
-          // 获取用户信息
-          await queryProfile();
-          
-          // 唤醒所有等待的请求
-          flushWaitingQueue(sessionToken);
-          
-          return sessionToken;
-        } catch (error) {
-          loginState.retryCount++;
-          
-          if (loginState.retryCount > loginState.maxRetries) {
-            // 重试次数耗尽，登录失败
-            const loginError = error instanceof Error 
-              ? error 
-              : new Error('登录失败，请重试');
-            
-            // 通知所有等待的请求
-            rejectWaitingQueue(loginError);
-            throw loginError;
-          }
-          
-          // 指数退避重试
-          const delay = Math.pow(2, loginState.retryCount - 1) * 1000;
+    return this.acquirePromise;
+  }
+
+  /**
+   * 登录并带重试机制
+   */
+  private async loginWithRetry(maxRetries = 3): Promise<string> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.performLogin();
+      } catch (error) {
+        lastError = error as Error;
+        
+        if (attempt < maxRetries) {
+          // 指数退避：1s, 2s, 4s
+          const delay = Math.pow(2, attempt) * 1000;
           await new Promise(r => setTimeout(r, delay));
         }
       }
-      
-      throw new Error('登录失败，重试次数已耗尽');
-    };
-
-    loginState.promise = loginTask();
-
-    try {
-      const result = await loginState.promise;
-      return result;
-    } finally {
-      // 清理状态
-      loginState.isRefreshing = false;
-      loginState.promise = null;
     }
-  };
+
+    throw lastError || new Error('登录失败，请检查网络后重试');
+  }
 
   /**
-   * 实际登录操作
+   * 执行微信登录
    */
-  const doLogin = async (): Promise<string> => {
+  private async performLogin(): Promise<string> {
     const loginRes = await mpx.login();
 
     if (!loginRes.code) {
@@ -197,98 +158,135 @@ export const useUserStore = defineStore('user', () => {
         data: { code: loginRes.code },
         success: (res) => {
           if (res.statusCode === 200 && res.data.data?.session_token) {
-            newUser.value = res.data.data.is_new_user;
             resolve(res.data.data.session_token);
           } else {
-            reject(new Error(res.data.data?.session_token ? '登录响应异常' : '获取 token 失败'));
+            reject(new Error('服务器返回无效的登录凭证'));
           }
         },
         fail: (err) => {
-          reject(new Error(`网络请求失败: ${err.errMsg || '未知错误'}`));
+          reject(new Error(`网络请求失败: ${err.errMsg || '请检查网络连接'}`));
         },
       });
     });
-  };
+  }
 
   /**
-   * 唤醒等待队列中的所有请求
+   * 唤醒等待队列
    */
-  const flushWaitingQueue = (sessionToken: string): void => {
-    while (waitingQueue.length > 0) {
-      const waiter = waitingQueue.shift();
-      if (waiter) {
-        waiter.resolve(sessionToken);
-      }
+  private resolveWaiters(token: string): void {
+    while (this.waiters.length > 0) {
+      const waiter = this.waiters.shift();
+      waiter?.resolve(token);
     }
-  };
+  }
 
   /**
-   * 通知等待队列登录失败
+   * 拒绝等待队列
    */
-  const rejectWaitingQueue = (error: Error): void => {
-    while (waitingQueue.length > 0) {
-      const waiter = waitingQueue.shift();
-      if (waiter) {
-        waiter.reject(error);
-      }
+  private rejectWaiters(error: Error): void {
+    while (this.waiters.length > 0) {
+      const waiter = this.waiters.shift();
+      waiter?.reject(error);
     }
+  }
+
+  /**
+   * 设置 Token（外部更新）
+   */
+  setToken(token: string): void {
+    this.token = token;
+  }
+
+  /**
+   * 获取当前 Token（不触发获取）
+   */
+  getCurrentToken(): string {
+    return this.token;
+  }
+
+  /**
+   * 清除 Token（退出登录/过期）
+   */
+  clear(): void {
+    this.token = '';
+    this.isAcquiring = false;
+    this.acquirePromise = null;
+    this.rejectWaiters(new Error('Token 已清除'));
+  }
+}
+
+// 全局 Token 管理器实例
+const tokenManager = new TokenManager();
+
+/**
+ * User Store
+ * 基于 TokenManager 构建用户状态管理
+ */
+export const useUserStore = defineStore('user', () => {
+  const newUser = ref<boolean | null>(null);
+  const profile = ref<Profile | null>(null);
+
+  const isLoggedIn = computed(() => !!tokenManager.getCurrentToken() && !!profile.value);
+  const roleName = computed(() => {
+    if (!profile.value?.role_id) return null;
+    return RoleName[profile.value.role_id];
+  });
+
+  /**
+   * 【核心方法】确保获取有效 Token
+   * 供 request 拦截器调用
+   */
+  const ensureToken = async (): Promise<string> => {
+    const token = await tokenManager.getToken();
+    
+    // 如果是新获取的 token，同步到 store
+    if (token && !profile.value) {
+      await queryProfile();
+    }
+    
+    return token;
   };
 
   /**
-   * 刷新 Token（用于 token 过期时）
+   * 刷新 Token（用于 401 过期）
    */
   const refreshToken = async (): Promise<string> => {
-    // 清除当前 token
-    token.value = '';
-    
-    // 触发重新登录
-    return performLogin();
-  };
-
-  /**
-   * 兼容旧版本的 login 方法
-   * @deprecated 请使用 ensureToken()
-   */
-  const login = async (): Promise<string> => {
+    tokenManager.clear();
     return ensureToken();
   };
 
+  /**
+   * 兼容旧接口
+   */
+  const login = ensureToken;
+
   const queryProfile = async (): Promise<void> => {
-    if (!token.value) {
+    const token = tokenManager.getCurrentToken();
+    if (!token) {
       throw new Error('未登录');
     }
 
-    try {
-      const res = await mpx.request<{
-        data: { data: Profile }
-      }>({
-        url: `${BASE_URL}/auth/profile`,
-        method: 'GET',
-        header: {
-          'Authorization': `Bearer ${token.value}`,
-        },
-      });
-      
-      if (res.data?.data) {
-        profile.value = res.data.data;
-      }
-    } catch (error) {
-      log.error('获取用户信息失败:', error);
-      throw error;
+    const res = await mpx.request<{
+      data: { data: Profile }
+    }>({
+      url: `${BASE_URL}/auth/profile`,
+      method: 'GET',
+      header: { 'Authorization': `Bearer ${token}` },
+    });
+    
+    if (res.data?.data) {
+      profile.value = res.data.data;
     }
   };
 
   const updateProfile = async (data: Partial<Profile>): Promise<void> => {
-    if (!token.value) {
-      throw new Error('未登录');
-    }
+    const token = tokenManager.getCurrentToken();
+    if (!token) throw new Error('未登录');
 
     const res = await mpx.request({
       url: `${BASE_URL}/auth/profile`,
       method: 'PUT',
-      header: {
-        'Authorization': `Bearer ${token.value}`,
-      },
+      header: { 'Authorization': `Bearer ${token}` },
       data,
     });
     
@@ -298,19 +296,13 @@ export const useUserStore = defineStore('user', () => {
   };
 
   const logout = (): void => {
-    token.value = '';
+    tokenManager.clear();
     profile.value = null;
     newUser.value = null;
-    loginState.isRefreshing = false;
-    loginState.promise = null;
-    loginState.retryCount = 0;
-    
-    // 清空等待队列
-    rejectWaitingQueue(new Error('用户已退出登录'));
   };
 
   return {
-    token,
+    token: computed(() => tokenManager.getCurrentToken()),
     profile,
     newUser,
     isLoggedIn,
@@ -323,3 +315,6 @@ export const useUserStore = defineStore('user', () => {
     logout,
   };
 });
+
+// 导出 TokenManager 供其他模块使用
+export { tokenManager };
