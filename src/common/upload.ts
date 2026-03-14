@@ -2,6 +2,7 @@ import mpx from '@mpxjs/core';
 import { BASE_URL } from './request';
 import { useUserStore } from '@/store/user';
 import { log } from './log';
+import { showErrorModal } from './error-handler';
 
 export interface UploadOptions {
   onProgress?: (progress: number) => void;
@@ -82,10 +83,7 @@ export const uploadImages = async (
   // 如果有失败的，显示提示
   const failures = results.filter(r => !r.success);
   if (failures.length > 0) {
-    mpx.showToast({
-      title: `${failures.length}张图片上传失败`,
-      icon: 'none',
-    });
+    showErrorModal('上传失败', `${failures.length}张图片上传失败，请重试`);
   }
   
   return results;
@@ -117,10 +115,7 @@ export const uploadWithRetry = async (
   }
   
   // 最终失败提示
-  mpx.showToast({
-    title: lastError.error || '上传失败，请重试',
-    icon: 'none',
-  });
+  showErrorModal('上传失败', lastError.error || '上传失败，请重试');
   
   return lastError;
 };

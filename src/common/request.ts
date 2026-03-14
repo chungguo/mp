@@ -2,7 +2,7 @@ import mpx from '@mpxjs/core';
 import mpxFetch from '@mpxjs/fetch';
 import { tokenManager } from '@/store/user';
 import { log } from './log';
-import { handleError } from './error-handler';
+import { showErrorModal } from './error-handler';
 import { APP_CONFIG } from '@/constants';
 
 export const BASE_URL = APP_CONFIG.baseUrl;
@@ -169,8 +169,8 @@ mpx.xfetch.interceptors.response.use(
         return handleTokenExpired(res, apiError);
       }
       
-      // 其他业务错误提示
-      handleError(apiError, { showToast: true, report: false });
+      // 其他业务错误直接弹窗提示
+      showErrorModal('提示', errorMessage);
       return Promise.reject(apiError);
     }
 
@@ -184,7 +184,7 @@ mpx.xfetch.interceptors.response.use(
   },
   async (error) => {
     log.error('Network Error:', error);
-    handleError(error, { showToast: true });
+    showErrorModal('网络异常', '请检查网络连接后重试');
     return Promise.reject(error);
   }
 );
