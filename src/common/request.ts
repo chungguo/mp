@@ -2,6 +2,7 @@ import mpx from '@mpxjs/core';
 import mpxFetch from '@mpxjs/fetch';
 import { useUserStore } from '@/store/user';
 import { log } from './log';
+import { handleError } from './error-handler';
 import { APP_CONFIG } from '@/constants';
 
 export const BASE_URL = APP_CONFIG.baseUrl;
@@ -129,14 +130,14 @@ mpx.xfetch.interceptors.response.use(
         return handleTokenExpired(res);
       }
       
-      // 其他业务错误使用轻量级提示
-      mpx.showToast({
-        title: res.data.details || res.data.error,
-        icon: 'none',
-        duration: 2000,
+      // 其他业务错误使用统一错误处理
+      const errorMessage = res.data.details || res.data.error;
+      handleError(new ApiError(res.data.error, errorMessage, res.status), {
+        showToast: true,
+        report: false, // 上面已经记录了
       });
       
-      return Promise.reject(new ApiError(res.data.error, res.data.details, res.status));
+      return Promise.reject(new ApiError(res.data.error, errorMessage, res.status));
     }
 
     // HTTP 错误处理
