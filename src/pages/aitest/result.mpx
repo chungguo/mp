@@ -88,10 +88,22 @@ createPage({
     hasMore: true,
     loading: false,
   },
-  onLoad() {
+  onLoad(options: { openDetail?: string }) {
+    const { openDetail } = options;
+
+    // 从通知入口进入时，result 作为中转页，加载完数据后自动跳转到 detail
+    if (openDetail) {
+      this.queryAiTestRecords(true).then(() => {
+        mpx.navigateTo({
+          url: `./detail?id=${openDetail}`,
+        });
+      });
+      return;
+    }
+
     this.queryAiTestRecords(true);
   },
-  async queryAiTestRecords(isRefresh = false) {
+  async queryAiTestRecords(isRefresh = false): Promise<void> {
     if (this.loading) {
       return;
     }

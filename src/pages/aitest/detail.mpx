@@ -67,13 +67,23 @@ interface Detail {
 
 createPage({
   data: {
-    detail: {} as Detail
+    detail: {} as Detail,
   },
   onLoad(options: { id: string }) {
     const { id } = options;
     if (!id) {
       mpx.redirectTo({
         url: './result',
+      });
+      return;
+    }
+
+    // 检测是否为通知入口：页面栈只有1个页面
+    const pages = getCurrentPages();
+    if (pages.length <= 1) {
+      // 重建导航栈：先重定向到 result，然后 result 会自动跳转到 detail
+      mpx.redirectTo({
+        url: `./result?openDetail=${id}`,
       });
       return;
     }
