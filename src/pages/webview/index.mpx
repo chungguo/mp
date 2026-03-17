@@ -10,10 +10,33 @@ createPage({
     url: '',
   },
   onLoad(query: Record<string, string>) {
-    this.url = query.url;
+    let targetUrl = query.url;
+
+    // 处理 URL 可能被多次编码的情况（鸿蒙微信小程序特殊处理）
+    if (targetUrl) {
+      // 先尝试解码，如果解码后还是编码格式，继续解码
+      try {
+        while (targetUrl.includes('%')) {
+          const decoded = decodeURIComponent(targetUrl);
+          if (decoded === targetUrl) break;
+          targetUrl = decoded;
+        }
+      } catch (e) {
+        // 解码失败，使用原始值
+        console.warn('URL decode failed:', e);
+      }
+    }
+
+    this.url = targetUrl;
 
     if (!this.url) {
-      this.safeNavigateBack();
+      wx.showToast({
+        title: '链接无效',
+        icon: 'none',
+      });
+      setTimeout(() => {
+        wx.navigateBack();
+      }, 1500);
     }
   },
 });
