@@ -32,7 +32,7 @@
             <view wx:for="{{ rewards }}" wx:key="id"
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
               <text>{{ item.milestone }}位</text>
-              <t-image webp="{{ true }}" src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" mode="widthFix"
+              <t-image src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" mode="widthFix"
                 style="opacity: {{(item.is_unlocked && !item.is_claimed) ? 1 : 0.85}}" />
               <view class="w-[120rpx] truncate">{{ item.reward_name }}</view>
               <view class="flex justify-center w-[110rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">

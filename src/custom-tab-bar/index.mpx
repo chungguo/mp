@@ -6,14 +6,14 @@
 
       <view wx:if="{{ tab === item.value }}" bindtap="switchTab" data-value="{{ item.value }}"
         class="flex-1 flex flex-col items-center gap-[4rpx] py-[10rpx] relative">
-        <t-image webp="{{ true }}" width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{ item.selectedIcon }}"
+        <t-image width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{ item.selectedIcon }}"
           wx:class="{{ { aitest: item.value === 'aitest'} }}" />
         <text class="text-[22rpx] color-[#4A8DFF]">{{ item.text }}</text>
       </view>
 
       <view wx:else bindtap="switchTab" data-value="{{ item.value }}"
         class="flex-1 flex flex-col items-center gap-[4rpx] py-[10rpx] relative">
-        <t-image webp="{{ true }}" width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{  item.icon }}"
+        <t-image width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{  item.icon }}"
           wx:class="{{ { aitest: item.value === 'aitest'} }}" />
         <text class="text-[22rpx] color-[#999999]">{{ item.text }}</text>
       </view>

@@ -9,7 +9,7 @@
         </view>
 
         <view class="small-btn" bindtap="onConsultation">
-          <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/hospital/consulation.png"
+          <t-image src="https://cos.yesmilesh.com/public/hospital/consulation.png"
             t-class="w-[40rpx]" mode="widthFix" />
           医院客服
         </view>
@@ -24,7 +24,7 @@
       </view>
 
       <view class="large-btn" bindtap="onConsultation">
-        <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/hospital/consulation.png"
+        <t-image src="https://cos.yesmilesh.com/public/hospital/consulation.png"
           t-class="w-[40rpx]" mode="widthFix" />
         医院客服
       </view>

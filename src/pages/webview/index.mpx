@@ -1,5 +1,5 @@
 <template>
-  <web-view class="min-h-[100%] min-w-[100%]" src="{{ url }}"></web-view>
+  <web-view src="{{ url }}"></web-view>
 </template>
 
 <script lang="ts">
@@ -10,7 +10,7 @@ createPage({
     url: '',
   },
   onLoad(query: Record<string, string>) {
-    if (!this.url) {
+    if (!query.url) {
       this.safeNavigateBack();
       return;
     }

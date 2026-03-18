@@ -19,13 +19,13 @@
         <view class="flex flex-justify-center gap-[38rpx] .w100\%">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
             <view class="w-[306rpx] h-[306rpx] overflow-hidden">
-              <image class="w-full" src="{{ detail.images[0] }}" mode="widthFix" />
+              <image class="w-full" src="{{ front }}" mode="widthFix" />
             </view>
             <text>正面露齿照</text>
           </view>
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
             <view class="w-[306rpx] h-[306rpx] overflow-hidden">
-              <image class="w-full" src="{{ detail.images[1] }}" mode="widthFix" />
+              <image class="w-full" src="{{ aside }}" mode="widthFix" />
             </view>
             <text>侧面不露齿照</text>
           </view>
@@ -80,7 +80,14 @@ createPage({
 
     this.queryAiTestDetail(id);
   },
-
+  computed:{
+    front() {
+      return this.detail?.images?.[0] ?? '';
+    },
+    aside() {
+      return this.detail?.images?.[1] ?? '';
+    }
+  },
   methods: {
     async queryAiTestDetail(id: string) {
       const res = await request.fetch<{

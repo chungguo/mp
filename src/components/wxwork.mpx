@@ -7,7 +7,7 @@
       title }}</view>
     <view
       class="absolute top-[570rpx] left-[50%] translate-x-[-50%] flex flex-col justify-center items-center gap-[16rpx]">
-      <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/aitest/wxwork-qrcode.png"
+      <t-image src="https://cos.yesmilesh.com/public/aitest/wxwork-qrcode.png"
         t-class="w-[278rpx]" mode="widthFix" show-menu-by-longpress="{{ true }}" />
       <view class="text-[28rpx]">长按保存扫码添加</view>
     </view>

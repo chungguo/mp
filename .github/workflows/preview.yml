@@ -1,6 +1,10 @@
-name: 微信小程序自动化发布
+name: 自动发布
 
-on: push
+on:
+  push:
+    branches:
+      - main
+      - fix/*
 
 jobs:
   version-and-upload:
@@ -39,11 +43,12 @@ jobs:
         id: commit_message
         run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
 
+      - name: create private key file
+        run: echo "$WECHAT_UPLOAD_KEY" > private.key
+        env:
+          WECHAT_UPLOAD_KEY: ${{ secrets.WECHAT_UPLOAD_KEY }}
+
       # 步骤6：上传到微信小程序
       - name: Upload to WeChat
         run: |
-          mkdir -p ./.secrets
-          echo "${{ secrets.WECHAT_UPLOAD_KEY }}" > ./.secrets/private.key
-          chmod 600 ./.secrets/private.key
-          npx miniprogram-ci upload --appid ${{ secrets.MINI_APP_ID }} --pp ./dist/wx --pt miniProgram --uv ${{ steps.version.outputs.new_version }} --pkp ./.secrets/private.key
-          rm -rf .secrets
+          npx miniprogram-ci upload --appid ${{ secrets.MINI_APP_ID }} --pp ./dist/wx --pt miniProgram --uv ${{ steps.version.outputs.new_version }} --pkp ./private.key

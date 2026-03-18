@@ -13,7 +13,7 @@
     <t-divider />
 
     <view class="flex items-center gap-[26rpx] mb-[26rpx]">
-      <t-image webp="{{ true }}" src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
+      <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
         mode="aspectFill" />
       <view class="flex-1 min-w-0 flex flex-col gap-[10rpx]">
         <view class="text-[28rpx] font-bold truncate">{{ order.item_name }}</view>

@@ -12,7 +12,7 @@
 <template>
   <view class="flex items-center gap-[22rpx]">
     <view class="w-[140rpx] h-[140rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
-      <t-image webp="{{ true }}" src="{{ cover }}" width="140rpx" height="140rpx" mode="aspectFill" />
+      <t-image src="{{ cover }}" width="140rpx" height="140rpx" mode="aspectFill" />
     </view>
     <view class="flex flex-col justify-center flex-1 gap-[12rpx]">
       <text class="text-[28rpx] color-[#090E0B] font-bold truncate">{{

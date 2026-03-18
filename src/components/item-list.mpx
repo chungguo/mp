@@ -15,7 +15,7 @@
     <view wx:for="{{ localItems }}" wx:key="id" bindtap="goItemDetail" data-id="{{ item.id }}"
       class="flex items-center gap-[20rpx]">
       <view class="w-[166rpx] h-[126rpx] of-hidden rounded-[16rpx] flex items-center justify-center">
-        <t-image webp="{{ true }}" src="{{ item.cover_image }}" width="166rpx" height="126rpx" t-class="of-hidden" mode="aspectFill" />
+        <t-image src="{{ item.cover_image }}" width="166rpx" height="126rpx" t-class="of-hidden" mode="aspectFill" />
       </view>
 
       <view class="flex flex-col flex-1 gap-[22rpx] min-w-0">

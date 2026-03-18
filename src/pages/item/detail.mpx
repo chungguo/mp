@@ -32,7 +32,7 @@
   <sticky-bottom>
     <view class="flex">
       <view class="flex flex-1 justify-center items-center gap-[14rpx]" bindtap="navigateToConsultation">
-        <t-image webp="{{ true }}" t-class="w-[44rpx] h-[44rpx]"
+        <t-image t-class="w-[44rpx] h-[44rpx]"
           src="https://cos.yesmilesh.com/public/hospital/consulation.png"
           bindtap="goConsultation" />
         <text>咨询门诊</text>

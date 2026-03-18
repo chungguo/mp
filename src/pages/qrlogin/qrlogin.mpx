@@ -1,7 +1,7 @@
 <template>
   <t-navbar title="二维码登录" />
   <view class="flex flex-col items-center mt-[100rpx] gap-[32rpx]">
-    <t-image webp="{{ true }}" src="{{ image }}" width="120rpx" height="120rpx" t-class="rounded-[50%] of-hidden" />
+    <t-image src="{{ image }}" width="120rpx" height="120rpx" t-class="rounded-[50%] of-hidden" />
     <view class="text-[32rpx] font-bold">{{ text }}</view>
   </view>
   <view class='absolute bottom-[200rpx] left-0 right-0 px-[120rpx]'>

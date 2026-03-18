@@ -3,7 +3,7 @@
   <view class="p-[26rpx] flex flex-col gap-[26rpx]">
     <view class="px-[26rpx] py-[36rpx] rounded-[22rpx] bg-white box-border b-[1rpx] b-[#FFFFFF]">
       <view class="flex gap-[22rpx] items-center">
-        <t-image webp="{{ true }}" t-class="w-[116rpx] h-[116rpx] rounded-[16rpx] of-hidden" src="{{ doctor.avatar }}" />
+        <t-image t-class="w-[116rpx] h-[116rpx] rounded-[16rpx] of-hidden" src="{{ doctor.avatar }}" />
         <view class="color-[#51555E] text-[24rpx] flex-1">
           <view class="flex justify-between items-center mb-[16rpx]">
             <view class="color-[#090E0B] text-[36rpx] font-bold">{{ doctor.name }}</view>

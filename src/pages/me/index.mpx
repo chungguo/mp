@@ -67,7 +67,7 @@ createPage({
     scaned: false,
     phonepopup: false,
     callback: '',
-    navigatorProps: { url: '/pages/webview/index?url=https://cos.yesmilesh.com/public/ts/user_privacy.html' },
+    navigatorProps: { url: `/pages/webview/index?url=${encodeURIComponent('https://cos.yesmilesh.com/public/ts/user_privacy.html')}` },
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),

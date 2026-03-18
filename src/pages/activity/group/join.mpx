@@ -4,7 +4,7 @@
     <card>
       <view class="text-[#333333] mb-[16rpx] truncate text-[30rpx] font-bold">{{ item.name }}</view>
       <view class="flex gap-[20rpx]">
-        <t-image webp="{{ true }}" src="{{ item.cover_image }}" t-class="w-[226rpx] h-[172rpx] rounded-[16rpx] of-hidden"
+        <t-image src="{{ item.cover_image }}" t-class="w-[226rpx] h-[172rpx] rounded-[16rpx] of-hidden"
           mode="widthFix" />
         <view class="flex-1 flex flex-col justify-between">
           <view class="text-[#999999] text-[22rpx] h-[94rpx] overflow-3">

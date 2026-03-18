@@ -1,7 +1,7 @@
 <template>
   <view class="bg-white rounded-[20rpx] px-[26rpx] py-[30rpx] flex gap-[20rpx]">
     <!-- 商品图片 -->
-    <t-image webp="{{ true }}" src="{{ order.item_cover_image }}" t-class="w-[178rpx] h-[136rpx] rounded-[16rpx] overflow-hidden"
+    <t-image src="{{ order.item_cover_image }}" t-class="w-[178rpx] h-[136rpx] rounded-[16rpx] overflow-hidden"
       mode="widthFix" />
 
     <!-- 商品信息 -->
