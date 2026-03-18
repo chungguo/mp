@@ -29,6 +29,9 @@ createApp({
       menus: ['shareAppMessage', 'shareTimeline']
     });
   },
+  onUnhandledRejection(err) {
+    console.log(err);
+  },
   restartMiniProgram() {
     mpx.showModal({
       title: '温馨提示',
@@ -36,7 +39,7 @@ createApp({
       showCancel: false,
       complete: () => {
         mpx.restartMiniProgram({
-          path: "./pages/index",
+          path: "/pages/index",
         });
       },
     });
