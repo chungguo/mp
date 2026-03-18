@@ -274,7 +274,7 @@ createPage({
     },
     showProtocol() {
       mpx.navigateTo({
-        url: '/pages/webview/index?url=https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/ai_test_privacy.html',
+        url: `/pages/webview/index?url=${encodeURIComponent('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/ai_test_privacy.html')}`,
       });
     }
   }
