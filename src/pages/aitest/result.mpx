@@ -88,7 +88,7 @@ createPage({
     hasMore: true,
     loading: false,
   },
-  onLoad() {
+  onShow() {
     this.queryAiTestRecords(true);
   },
   async queryAiTestRecords(isRefresh = false) {

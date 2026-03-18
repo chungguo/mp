@@ -10,11 +10,12 @@ createPage({
     url: '',
   },
   onLoad(query: Record<string, string>) {
-    this.url = query.url;
-
     if (!this.url) {
       this.safeNavigateBack();
+      return;
     }
+
+    this.url = decodeURIComponent(query.url);
   },
 });
 </script>

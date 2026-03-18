@@ -67,7 +67,7 @@ createPage({
     scaned: false,
     phonepopup: false,
     callback: '',
-    navigatorProps: { url: '/pages/webview/index?url=https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/user_privacy.html' },
+    navigatorProps: { url: `/pages/webview/index?url=${encodeURIComponent('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/user_privacy.html')}` },
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
