@@ -4,7 +4,7 @@
     <card>
       <view class="text-[#333333] mb-[16rpx] truncate text-[30rpx] font-bold">{{ item.name }}</view>
       <view class="flex gap-[20rpx]">
-        <t-image src="{{ item.cover_image }}" t-class="w-[226rpx] h-[172rpx] rounded-[16rpx] of-hidden"
+        <t-image webp="{{ true }}" src="{{ item.cover_image }}" t-class="w-[226rpx] h-[172rpx] rounded-[16rpx] of-hidden"
           mode="widthFix" />
         <view class="flex-1 flex flex-col justify-between">
           <view class="text-[#999999] text-[22rpx] h-[94rpx] overflow-3">
@@ -30,7 +30,7 @@
         </view>
         <!-- 拼团成功 -->
         <view wx:if="{{ status === 2 }}" class="flex items-center gap-[10rpx]">
-          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/finished.webp" width="32rpx"
+          <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/tuan/finished.webp" width="32rpx"
             height="32rpx" />
           拼团成功，优惠券已发放至账户
         </view>
@@ -91,7 +91,7 @@ import { omit, orderBy, sortBy } from "lodash-es";
 import { mapActions, mapState } from '@mpxjs/pinia';
 
 const defaultParticipant = {
-  avatar: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/invite.webp',
+  avatar: 'https://cos.yesmilesh.com/public/tuan/invite.webp',
   name: '',
   color: '',
   join_order: 0,
@@ -110,7 +110,7 @@ createPage({
     participants: [] as typeof defaultParticipant[],
     share: {
       title: '在线问诊，牙齿健康状态早知道',
-      imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+      imageUrl: 'https://cos.yesmilesh.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
     }
   },
   ...mapState(useUserStore, ['profile']),
@@ -330,7 +330,7 @@ page {
   --td-button-primary-active-border-color: transparent;
   --td-button-primary-border-color: transparent;
   --td-button-medium-font-size: 30rpx;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/tuan.webp");
+  background-image: url("https://cos.yesmilesh.com/public/tuan/tuan.webp");
   background-repeat: no-repeat;
   background-size: 100%;
 }

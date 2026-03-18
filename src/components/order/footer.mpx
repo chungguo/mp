@@ -3,13 +3,13 @@
     <view wx:if="{{ status === 0 }}" class="flex items-center justify-between">
       <view class="flex items-center gap-[76rpx]">
         <view class="small-btn" bindtap="onMakePhoneCall">
-          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
+          <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/order/telephone.webp"
             t-class="w-[40rpx]" mode="widthFix" />
           医院电话
         </view>
 
         <view class="small-btn" bindtap="onConsultation">
-          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+          <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/hospital/consulation.png"
             t-class="w-[40rpx]" mode="widthFix" />
           医院客服
         </view>
@@ -18,13 +18,13 @@
     </view>
     <view wx:else class="flex items-center justify-between">
       <view class="large-btn" bindtap="onMakePhoneCall">
-        <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/telephone.webp"
+        <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/order/telephone.webp"
           t-class="w-[40rpx]" mode="widthFix" />
         医院电话
       </view>
 
       <view class="large-btn" bindtap="onConsultation">
-        <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+        <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/hospital/consulation.png"
           t-class="w-[40rpx]" mode="widthFix" />
         医院客服
       </view>

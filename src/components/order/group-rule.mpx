@@ -6,7 +6,7 @@
       <t-icon name="chevron-right" />
     </view>
     <view class="box-border px-[36rpx] mt-[54rpx] mb-[34rpx]">
-      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/tuan_progress.webp" t-class="w-full"
+      <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/tuan/tuan_progress.webp" t-class="w-full"
         mode="widthFix" />
     </view>
     <view class="text-[#1D2129] opacity-[0.3] text-[22rpx] text-center">拼团成功后优惠券24小时内到账，拼团失败立即自动退款</view>

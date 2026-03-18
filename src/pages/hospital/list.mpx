@@ -8,7 +8,7 @@
       <view class="flex flex-col rounded-[24rpx] bg-white mb-[24rpx] overflow-hidden" bindtap="navigateToHospital"
         data-id="{{ item.id }}">
         <!-- 医院图片 -->
-        <t-image src="{{ item.images[0] }}" mode="aspectFill" width="100%" height="160" />
+        <t-image webp="{{ true }}" src="{{ item.images[0] }}" mode="aspectFill" width="100%" height="160" />
         <!-- 医院信息 -->
         <view class="flex-1 flex flex-col gap-[16rpx] px-[24rpx] py-[32rpx]">
           <view class="flex items-center gap-[12rpx]">
@@ -80,7 +80,7 @@ page {
   --td-navbar-color: white;
   --td-navbar-background: transparent;
   --td-tag-disabled-background-color: #F0FFFB;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png");
+  background-image: url("https://cos.yesmilesh.com/public/lowcode-2385148.png");
   background-repeat: no-repeat;
   background-size: 100%;
 }

@@ -1,7 +1,7 @@
 <template>
   <t-navbar title="二维码登录" />
   <view class="flex flex-col items-center mt-[100rpx] gap-[32rpx]">
-    <t-image src="{{ image }}" width="120rpx" height="120rpx" t-class="rounded-[50%] of-hidden" />
+    <t-image webp="{{ true }}" src="{{ image }}" width="120rpx" height="120rpx" t-class="rounded-[50%] of-hidden" />
     <view class="text-[32rpx] font-bold">{{ text }}</view>
   </view>
   <view class='absolute bottom-[200rpx] left-0 right-0 px-[120rpx]'>
@@ -24,7 +24,7 @@ createPage({
   data: {
     scene: '',
     success: false,
-    image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/logo.jpeg',
+    image: 'https://cos.yesmilesh.com/public/logo.jpeg',
     text: '登录"健牙宝"',
   },
   onLoad(options) {
@@ -57,7 +57,7 @@ createPage({
 
         this.setData({
           text: '登录成功',
-          image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/success.png',
+          image: 'https://cos.yesmilesh.com/public/success.png',
           success: true,
         });
       } finally {

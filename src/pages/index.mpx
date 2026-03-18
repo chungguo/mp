@@ -6,7 +6,7 @@
     <view class="hero-cards p-[32rpx]">
       <view class="flex gap-[22rpx] items-center">
         <view class="relative w-[302rpx] h-[306rpx] rounded-[26rpx] of-hidden" bindtap="navigateToAiTest">
-          <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/aitest.png" width="302rpx"
+          <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/index/aitest.png" width="302rpx"
             height="306rpx" shape="rounded" />
           <view class="absolute top-0 left-0 flex flex-col color-white pl-[30rpx] pt-[36rpx] gap-[6rpx]">
             <text class="text-[30rpx] font-800">AI·牙卫士</text>
@@ -16,8 +16,8 @@
         <view class="flex flex-col gap-[22rpx]">
           <view class="box-border bg-white p-[36rpx] rounded-[22rpx] flex gap-[24rpx] items-center"
             bindtap="navigateToPackageInsurance">
-            <t-image width="80rpx" height="80rpx"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E7%88%B1%E7%89%99%E6%97%A0%E5%BF%A7%E5%8C%85.png" />
+            <t-image webp="{{ true }}" width="80rpx" height="80rpx"
+              src="https://cos.yesmilesh.com/public/index/%E7%88%B1%E7%89%99%E6%97%A0%E5%BF%A7%E5%8C%85.png" />
             <view>
               <view class="text-[30rpx] font-bold color-[#1D2129]">爱牙无忧包</view>
               <view class="text-[24rpx] color-[#86909C]">基础项目安心全包</view>
@@ -27,14 +27,14 @@
             <view bindtap="navigateToConsultationForm"
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">专属客服</view>
-              <t-image width="80rpx" height="80rpx"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
+              <t-image webp="{{ true }}" width="80rpx" height="80rpx"
+                src="https://cos.yesmilesh.com/public/index/%E4%B8%93%E5%B1%9E%E5%AE%A2%E6%9C%8D.png" />
             </view>
             <view bindtap="navigateToGroup"
               class="box-border rounded-[22rpx] flex-1 p-[12rpx] bg-white flex flex-col justify-center items-center gap-[6rpx]">
               <view class="color-[#1D2129] text-[28rpx] font-bold">拼团</view>
-              <t-image width="80rpx" height="80rpx"
-                src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/tuan/image.webp" />
+              <t-image webp="{{ true }}" width="80rpx" height="80rpx"
+                src="https://cos.yesmilesh.com/public/tuan/image.webp" />
             </view>
           </view>
         </view>
@@ -48,7 +48,7 @@
           <block wx:for="{{ grid }}" wx:key="text" wx:for-item="item" wx:for-index="idx">
             <view class="flex flex-col items-center gap-[16rpx]" data-id="{{ item.id }}" bindtap="navigateToCategory"
               style="margin-left: {{ idx === 0 ? '38rpx' : '0'}}; margin-right: {{ idx === grid.length - 1 ? '20rpx' : '0'}}">
-              <t-image src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
+              <t-image webp="{{ true }}" src="{{ item.image }}" t-class="w-[60rpx] h-[60rpx]" />
               <view class="text-[#1D2129] text-[24rpx]">{{ item.name }}</view>
             </view>
           </block>
@@ -86,7 +86,7 @@
               class="flex items-center bg-white box-border px-[26rpx] py-[36rpx] gap-[22rpx] rounded-[22rpx]"
               bindtap="navigateToDoctorDetail" data-id="{{ item.id }}">
               <view class="relative rounded-[16rpx]">
-                <t-image width="194rpx" height="194rpx" t-class="rounded-[16rpx] of-hidden" mode="aspectFill"
+                <t-image webp="{{ true }}" width="194rpx" height="194rpx" t-class="rounded-[16rpx] of-hidden" mode="aspectFill"
                   src="{{ item.avatar }}" />
                 <view
                   class="bg-[#4A8DFF] absolute z-2 bottom-0 left-0 right-0 color-white text-center truncate rounded-b-[16rpx] text-[22rpx] py-[5rpx]">
@@ -236,7 +236,7 @@ createPage({
     const res = await store.avaliable();
 
     const banner = [{
-      image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/b4c753daef99a3bd23293805978eafc9.webp',
+      image: 'https://cos.yesmilesh.com/public/index/b4c753daef99a3bd23293805978eafc9.webp',
       path: '/pages/coupon/list',
       type: 'coupon',
     }];

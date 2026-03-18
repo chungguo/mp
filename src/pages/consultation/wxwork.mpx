@@ -47,7 +47,7 @@ page {
   --td-button-default-bg-color: rgba(255, 255, 255, 0.6);
   --td-button-default-active-bg-color: rgba(255, 255, 255, 0.6);
   --td-button-default-active-border-color: #317DFF;
-  background-image: url('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/gradient.png');
+  background-image: url('https://cos.yesmilesh.com/public/aitest/gradient.png');
   background-repeat: no-repeat;
   background-size: 100%;
 }

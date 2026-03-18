@@ -13,7 +13,7 @@
 <template>
   <view class="rounded-[22rpx] of-hidden bg-white box-border w-[334rpx] h-full" data-id="{{ item.id }}"
     bindtap="navigateToItemDetail">
-    <t-image src="{{ item.cover_image }}" width="334rpx" height="254rpx" t-class="of-hidden block!" mode="aspectFill" />
+    <t-image webp="{{ true }}" src="{{ item.cover_image }}" width="334rpx" height="254rpx" t-class="of-hidden block!" mode="aspectFill" />
     <view class="px-[16rpx] py-[14rpx] flex flex-col gap-[16rpx]">
       <view class="truncate text-[28rpx] font-bold">{{ item.name }}
       </view>

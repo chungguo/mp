@@ -1,13 +1,13 @@
 <template>
   <view class="container relative mt-[46rpx] px-[40rpx] box-border text-[#1D2129]">
-    <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/aitest-wxwork.webp" t-class="w-full"
+    <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/aitest/aitest-wxwork.webp" t-class="w-full"
       mode="widthFix" />
     <view class="font-bold text-[30rpx] text-white absolute top-[133rpx] left-[300rpx]">领官方限时福利</view>
     <view class="absolute left-[80rpx] top-[280rpx] w-[380rpx] text-center text-[42rpx] font-bold text-[#4A8DFF]">{{
       title }}</view>
     <view
       class="absolute top-[570rpx] left-[50%] translate-x-[-50%] flex flex-col justify-center items-center gap-[16rpx]">
-      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-qrcode.png"
+      <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/aitest/wxwork-qrcode.png"
         t-class="w-[278rpx]" mode="widthFix" show-menu-by-longpress="{{ true }}" />
       <view class="text-[28rpx]">长按保存扫码添加</view>
     </view>
@@ -30,7 +30,7 @@
 import { type Benefit, useWxworkStore } from "@/store/wxwork";
 import { createComponent } from "@mpxjs/core";
 
-const WXWORK_QRCODE = 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/wxwork-qrcode.png';
+const WXWORK_QRCODE = 'https://cos.yesmilesh.com/public/aitest/wxwork-qrcode.png';
 
 createComponent({
   properties: {

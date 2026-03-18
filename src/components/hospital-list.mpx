@@ -14,7 +14,7 @@
     <view class="w-full box-border flex items-center gap-[22rpx]" wx:for="{{ hospitals }}" wx:key="id"
       data-id="{{ item.id }}" bindtap="navigateToHospital">
       <view class="w-[134rpx] h-[134rpx] of-hidden rounded-[22rpx] flex items-center justify-center">
-        <t-image src="{{ item.images && item.images[0] }}" t-class="w-full" mode="widthFix" />
+        <t-image webp="{{ true }}" src="{{ item.images && item.images[0] }}" t-class="w-full" mode="widthFix" />
       </view>
       <view class="flex flex-col justify-center flex-1 gap-[16rpx] min-w-0">
         <text class="text-[28rpx] color-[#090E0B] font-bold truncate">{{ item.name }}</text>
@@ -23,8 +23,8 @@
             <t-icon name="location" size="26rpx" />
             <view class="truncate">{{ item.address }}</view>
           </view>
-          <t-image t-class="w-[44rpx] h-[44rpx]"
-            src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/hospital/consulation.png"
+          <t-image webp="{{ true }}" t-class="w-[44rpx] h-[44rpx]"
+            src="https://cos.yesmilesh.com/public/hospital/consulation.png"
             bindtap="goConsultation" />
         </view>
       </view>

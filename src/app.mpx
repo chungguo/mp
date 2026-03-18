@@ -3,6 +3,7 @@ import mpx, { createApp } from '@mpxjs/core';
 import apiProxy from '@mpxjs/api-proxy';
 import { createPinia } from '@mpxjs/pinia';
 import { updateManager } from '@/common/update-manager';
+import { log } from '@/common/log';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import '@/mixins/share';
@@ -11,7 +12,6 @@ import '@/mixins/navigation';
 // golden oV8BL1zWxzH1V3qAx7iR6YGvkAEY
 // lele oV8BL16mmQFfwIvDihb3CJFX9nYY
 const pinia = createPinia();
-
 dayjs.extend(duration);
 
 mpx.use(pinia);
@@ -29,8 +29,11 @@ createApp({
       menus: ['shareAppMessage', 'shareTimeline']
     });
   },
+  onError(msg) {
+    log.error(msg);
+  },
   onUnhandledRejection(err) {
-    console.log(err);
+    log.error(err);
   },
   restartMiniProgram() {
     mpx.showModal({

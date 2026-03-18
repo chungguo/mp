@@ -5,12 +5,12 @@
       领专属福利
     </view>
     <view bindtap="startTest">
-      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/test-btn.png" mode="widthFix"
+      <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/aitest/test-btn.png" mode="widthFix"
         t-class="w-full" />
       <view class="text-[22rpx] color-[#86909C] text-center mt-[-36rpx] absolute left-0 right-0">本服务为AI生成内容，结果仅供参考</view>
     </view>
     <view class="mt-[10rpx] mb-[66rpx]">
-      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/steps.png" mode="widthFix"
+      <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/aitest/steps.png" mode="widthFix"
         t-class="w-full" />
     </view>
 
@@ -29,13 +29,13 @@
         </view>
         <view class="flex flex-justify-center gap-[38rpx] .w100\%">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <t-image t-class="w-[306rpx] h-[306rpx]"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/real-front.png" mode="widthFix" />
+            <t-image webp="{{ true }}" t-class="w-[306rpx] h-[306rpx]"
+              src="https://cos.yesmilesh.com/public/aitest/real-front.png" mode="widthFix" />
             <text>正面露齿照</text>
           </view>
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <t-image t-class="w-[306rpx] h-[306rpx]"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/real-side.png" mode="widthFix" />
+            <t-image webp="{{ true }}" t-class="w-[306rpx] h-[306rpx]"
+              src="https://cos.yesmilesh.com/public/aitest/real-side.png" mode="widthFix" />
             <text>侧面不露齿照</text>
           </view>
         </view>
@@ -56,13 +56,13 @@
         <view class="flex flex-justify-center gap-[38rpx] .w100\% mt-[46rpx]">
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
             <view class="w-[306rpx] h-[306rpx] overflow-hidden">
-              <t-image t-class="w-full" src="{{ images[0] }}" mode="widthFix" />
+              <t-image webp="{{ true }}" t-class="w-full" src="{{ images[0] }}" mode="widthFix" />
             </view>
             <text>正面露齿照（已上传）</text>
           </view>
           <view class="flex flex-col flex-items-center gap-[26rpx] text-[24rpx]">
-            <t-image t-class="w-[306rpx] h-[306rpx]"
-              src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/real-side.png" mode="widthFix" />
+            <t-image webp="{{ true }}" t-class="w-[306rpx] h-[306rpx]"
+              src="https://cos.yesmilesh.com/public/aitest/real-side.png" mode="widthFix" />
             <text>侧面不露齿照（示例）</text>
           </view>
         </view>
@@ -274,7 +274,7 @@ createPage({
     },
     showProtocol() {
       mpx.navigateTo({
-        url: `/pages/webview/index?url=${encodeURIComponent('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/ai_test_privacy.html')}`,
+        url: '/pages/webview/index?url=https://cos.yesmilesh.com/public/ts/ai_test_privacy.html',
       });
     }
   }
@@ -290,7 +290,7 @@ page {
   --td-button-default-active-bg-color: rgba(255, 255, 255, 0.6);
   --td-button-default-active-border-color: #317DFF;
   background-color: #F1F3F7;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/banner.png");
+  background-image: url("https://cos.yesmilesh.com/public/aitest/banner.png");
   background-repeat: no-repeat;
   background-size: 100%;
 }

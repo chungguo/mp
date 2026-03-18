@@ -26,7 +26,7 @@ createPage({
 <style lang="less">
 page {
   --td-navbar-background: transparent;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/success.webp");
+  background-image: url("https://cos.yesmilesh.com/public/order/success.webp");
   background-repeat: no-repeat;
   background-size: 100%;
 }

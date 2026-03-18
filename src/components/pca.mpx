@@ -61,7 +61,7 @@ createComponent({
   methods: {
     async init() {
       const res = await request.fetch<Node[]>({
-        url: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/pca-code.json',
+        url: 'https://cos.yesmilesh.com/public/pca-code.json',
         method: 'GET',
       });
 

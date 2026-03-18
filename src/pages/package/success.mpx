@@ -3,7 +3,7 @@
   <view class="mt-[66rpx]">
     <view class="text-[#14C64C] text-[46rpx] text-center font-bold">领取成功</view>
     <view class="flex justify-center mt-[46rpx] mb-[66rpx]">
-      <t-image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/success.webp"
+      <t-image webp="{{ true }}" src="https://cos.yesmilesh.com/public/package/success.webp"
         t-class="w-[316rpx]" mode="widthFix" />
     </view>
 
@@ -37,7 +37,7 @@ page {
   --td-navbar-background: transparent;
   --td-button-medium-font-size: 28rpx;
   --td-button-font-weight: 400;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/gradient.webp");
+  background-image: url("https://cos.yesmilesh.com/public/package/gradient.webp");
   background-repeat: no-repeat;
   background-size: 100%;
 }

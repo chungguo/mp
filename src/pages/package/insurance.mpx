@@ -1,10 +1,10 @@
 <template>
   <t-navbar title="爱牙无忧包" left-arrow bind:go-back="goBack"></t-navbar>
   <view class="flex item-center gap-[26rpx] px-[26rpx] box-border mt-[240rpx]">
-    <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToBasicItemDetail"
-      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/basic-package.webp" />
-    <t-image t-class="flex-1" mode="widthFix" bindtap="navigateToPremiumItemDetail"
-      src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/%E5%8D%87%E7%BA%A7%E5%8C%85.webp" />
+    <t-image webp="{{ true }}" t-class="flex-1" mode="widthFix" bindtap="navigateToBasicItemDetail"
+      src="https://cos.yesmilesh.com/public/package/basic-package.webp" />
+    <t-image webp="{{ true }}" t-class="flex-1" mode="widthFix" bindtap="navigateToPremiumItemDetail"
+      src="https://cos.yesmilesh.com/public/package/%E5%8D%87%E7%BA%A7%E5%8C%85.webp" />
   </view>
   <view class="px-[26rpx] mt-[26rpx] text-[22rpx]">
     <card title="爱牙无忧包使用规则">
@@ -43,7 +43,7 @@ createPage({
 <style lang="less">
 page {
   --td-navbar-background: transparent;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/package/banner.webp");
+  background-image: url("https://cos.yesmilesh.com/public/package/banner.webp");
   background-repeat: no-repeat;
   background-size: 100%;
 }

@@ -32,7 +32,7 @@
             <view wx:for="{{ rewards }}" wx:key="id"
               class="flex flex-col gap-[24rpx] items-center justify-center color-[#00000073]">
               <text>{{ item.milestone }}位</text>
-              <t-image src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" mode="widthFix"
+              <t-image webp="{{ true }}" src="{{ item.reward_image }}" width="98rpx" height="98rpx" shape="circle" mode="widthFix"
                 style="opacity: {{(item.is_unlocked && !item.is_claimed) ? 1 : 0.85}}" />
               <view class="w-[120rpx] truncate">{{ item.reward_name }}</view>
               <view class="flex justify-center w-[110rpx] box-border py-[4rpx] px-[16rpx] color-white text-[24rpx]">
@@ -57,11 +57,11 @@
       <!-- 步骤指引 -->
       <view class="relative p-[24rpx] bg-white rounded-[20rpx] text-[28rpx] flex flex-col gap-[24rpx]">
         <view class="w-[20rpx] absolute top-[-45rpx] left-[22rpx]">
-          <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
+          <image src="https://cos.yesmilesh.com/public/activity/referral/connector.png"
             mode="widthFix" />
         </view>
         <view class="w-[20rpx] absolute top-[-45rpx] right-[22rpx]">
-          <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/connector.png"
+          <image src="https://cos.yesmilesh.com/public/activity/referral/connector.png"
             mode="widthFix" />
         </view>
 
@@ -167,17 +167,17 @@ createPage({
       {
         title: '邀请好友',
         content: '点击下方立即邀请按钮，分享给好友',
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/share.png',
+        image: 'https://cos.yesmilesh.com/public/activity/referral/share.png',
       },
       {
         title: '好友完成咨询',
         content: '好友完成口腔咨询',
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/users.png'
+        image: 'https://cos.yesmilesh.com/public/activity/referral/users.png'
       },
       {
         title: '获得奖励',
         content: '人数达标后，可领取对应奖励',
-        image: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/gift.png'
+        image: 'https://cos.yesmilesh.com/public/activity/referral/gift.png'
       },
     ],
     claimRewardId: 0,
@@ -460,7 +460,7 @@ createPage({
         }).then((data: { share_code: string }) => {
           resolve({
             title: this.share_text,
-            imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+            imageUrl: 'https://cos.yesmilesh.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
             path: `/pages/consultation/form?activity_id=${this.activity_id}&share_code=${data.share_code}`,
           });
         });
@@ -469,7 +469,7 @@ createPage({
       return {
         title: this.share_text,
         path: `/pages/consultation/form?activity_id=${this.activity_id}`,
-        imageUrl: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
+        imageUrl: 'https://cos.yesmilesh.com/public/activity/referral/7bc7160a5e659265f81a7034a8c543ad.jpeg',
         promise,
       }
     },
@@ -532,13 +532,13 @@ page {
   --td-countdown-bg-color: #438DF0;
   --td-error-color: #438DF0;
   background-color: #DDF2FC;
-  background-image: url(https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/background.png);
+  background-image: url(https://cos.yesmilesh.com/public/activity/referral/background.png);
   background-repeat: no-repeat;
   background-size: 100%;
 }
 
 .countdown {
-  background-image: url(https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/step.png);
+  background-image: url(https://cos.yesmilesh.com/public/activity/referral/step.png);
   background-repeat: no-repeat;
   background-size: 100%;
   position: relative;
@@ -579,7 +579,7 @@ input[disabled] {
 }
 
 .form {
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/popup.png");
+  background-image: url("https://cos.yesmilesh.com/public/activity/referral/popup.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
@@ -594,7 +594,7 @@ input[disabled] {
   background-size: 100%;
   border: none;
   height: 104rpx !important;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/activity/referral/invite.png") !important;
+  background-image: url("https://cos.yesmilesh.com/public/activity/referral/invite.png") !important;
 }
 
 .confirm-popup {

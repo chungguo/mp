@@ -4,7 +4,7 @@
     <t-navbar title="优惠券" left-arrow bind:go-back="goBack" />
 
     <!-- 背景图片 -->
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385145.png" mode="widthFix"
+    <image src="https://cos.yesmilesh.com/public/lowcode-2385145.png" mode="widthFix"
       class="absolute z-1 top-0 left-0 right-0" />
 
     <!-- 滚动容器 -->

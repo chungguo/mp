@@ -18,7 +18,7 @@
       class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
       bind:tap="onClickMyCoupon">
       <view class="relative w-72rpx h-72rpx">
-        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-coupon.png" class="w-full h-full" />
+        <image src="https://cos.yesmilesh.com/public/me-coupon.png" class="w-full h-full" />
       </view>
       优惠券
     </view>
@@ -26,7 +26,7 @@
       class="flex-1 bg-white rounded-24rpx flex flex-col gap-20rpx items-center justify-center text-32rpx font-500 py-30rpx box-border"
       bind:tap="onClickConsultationHistory">
       <view class="relative w-72rpx h-72rpx">
-        <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/me-history.png" class="w-full h-full" />
+        <image src="https://cos.yesmilesh.com/public/me-history.png" class="w-full h-full" />
       </view>
       咨询记录
     </view>
@@ -67,7 +67,7 @@ createPage({
     scaned: false,
     phonepopup: false,
     callback: '',
-    navigatorProps: { url: `/pages/webview/index?url=${encodeURIComponent('https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/ts/user_privacy.html')}` },
+    navigatorProps: { url: '/pages/webview/index?url=https://cos.yesmilesh.com/public/ts/user_privacy.html' },
   },
   ...mapState(useUserStore, ['profile']),
   ...mapActions(useUserStore, ['queryProfile']),
@@ -247,7 +247,7 @@ page {
   --td-navbar-background: transparent;
   --td-cell-group-title-bg-color: transparent;
   --td-navbar-title-font-weight: 500;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385148.png");
+  background-image: url("https://cos.yesmilesh.com/public/lowcode-2385148.png");
   background-repeat: no-repeat;
   background-size: 100%;
 }

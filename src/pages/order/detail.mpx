@@ -2,7 +2,7 @@
   <t-navbar left-arrow bind:go-back="goBack" title="订单详情" />
   <view class="text-[#1D2129]">
     <view class="flex items-center justify-center gap-[16rpx] pt-[46rpx] pb-[16rpx]">
-      <t-image src="{{ statusIcon }}" t-class="w-[36rpx]" mode="widthFix" />
+      <t-image webp="{{ true }}" src="{{ statusIcon }}" t-class="w-[36rpx]" mode="widthFix" />
       <view class="text-[36rpx] font-bold">{{ statusText }}</view>
     </view>
     <!-- 待使用 -->
@@ -41,7 +41,7 @@
         </view>
         <t-divider />
         <view class="flex items-center gap-[26rpx]">
-          <t-image src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
+          <t-image webp="{{ true }}" src="{{ order.item_cover_image }}" t-class="w-[139rpx] h-[106rpx] rounded-[16rpx] overflow-hidden"
             mode="aspectFill" />
           <view class="flex-1 min-w-0 truncate flex flex-col gap-[10rpx]">
             <view class="text-[28rpx] font-bold truncate">{{ order.item_name }}</view>
@@ -165,7 +165,7 @@ createPage({
       };
       const name = statusMap[this.status];
 
-      return name ? `https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/order/icon/${name}.webp` : '';
+      return name ? `https://cos.yesmilesh.com/public/order/icon/${name}.webp` : '';
     },
     paidTime() {
       return this.order.paid_at ? dayjs(this.order.paid_at).format('YYYY-MM-DD HH:mm:ss') : '';

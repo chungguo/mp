@@ -1,7 +1,7 @@
 <template>
   <t-navbar left-arrow bind:go-back="goBack" title="AI 牙齿健康测"></t-navbar>
   <view class="absolute top-0 left-0 right-0 z-1">
-    <image src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/record.png" mode="widthFix" />
+    <image src="https://cos.yesmilesh.com/public/aitest/record.png" mode="widthFix" />
     <view
       class="relative bg-[#FFFFFF99] b-[#FFFFFF] top-[-272rpx] mx-[26rpx] px-[26rpx] py-[36rpx] flex flex-col justify-center rounded-[28rpx] border gap-[26rpx]">
       <view wx:if="{{ records.length === 0 }}">

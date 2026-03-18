@@ -6,14 +6,14 @@
 
       <view wx:if="{{ tab === item.value }}" bindtap="switchTab" data-value="{{ item.value }}"
         class="flex-1 flex flex-col items-center gap-[4rpx] py-[10rpx] relative">
-        <t-image width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{ item.selectedIcon }}"
+        <t-image webp="{{ true }}" width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{ item.selectedIcon }}"
           wx:class="{{ { aitest: item.value === 'aitest'} }}" />
         <text class="text-[22rpx] color-[#4A8DFF]">{{ item.text }}</text>
       </view>
 
       <view wx:else bindtap="switchTab" data-value="{{ item.value }}"
         class="flex-1 flex flex-col items-center gap-[4rpx] py-[10rpx] relative">
-        <t-image width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{  item.icon }}"
+        <t-image webp="{{ true }}" width="{{ item.width }}rpx" height="{{ item.width }}rpx" mode="widthFix" src="{{  item.icon }}"
           wx:class="{{ { aitest: item.value === 'aitest'} }}" />
         <text class="text-[22rpx] color-[#999999]">{{ item.text }}</text>
       </view>
@@ -33,15 +33,15 @@ createComponent({
         text: '首页',
         value: 'index',
         width: 44,
-        icon: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/index.svg',
-        selectedIcon: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/index-active.svg',
+        icon: 'https://cos.yesmilesh.com/public/index/index.svg',
+        selectedIcon: 'https://cos.yesmilesh.com/public/index/index-active.svg',
         path: '/pages/index',
       },
       {
         text: 'AI·牙卫士',
         value: 'aitest',
-        icon: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/aitest.png',
-        selectedIcon: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/aitest/aitest.png',
+        icon: 'https://cos.yesmilesh.com/public/aitest/aitest.png',
+        selectedIcon: 'https://cos.yesmilesh.com/public/aitest/aitest.png',
         width: 88,
         path: '/pages/aitest/index',
       },
@@ -49,8 +49,8 @@ createComponent({
         text: '我的',
         value: 'me',
         width: 44,
-        icon: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/me.svg',
-        selectedIcon: 'https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/index/me-active.svg',
+        icon: 'https://cos.yesmilesh.com/public/index/me.svg',
+        selectedIcon: 'https://cos.yesmilesh.com/public/index/me-active.svg',
         path: '/pages/me/index',
       },
     ],

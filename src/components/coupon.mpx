@@ -10,7 +10,7 @@
 -->
 <template>
   <view class="coupon-item bg-[#F9F1E6] rounded-[20rpx] relative box-border" bind:tap="onClick">
-    <image class="relative z-1" src="https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/lowcode-2385847.png"
+    <image class="relative z-1" src="https://cos.yesmilesh.com/public/lowcode-2385847.png"
       mode="widthFix" />
     <view class="absolute z-2 top-0 left-0 right-0 bottom-0 flex">
       <view class="text-[#FE4A40] font-[600] w-[140rpx] flex justify-center items-center">

@@ -395,7 +395,7 @@ page {
   --td-navbar-background: transparent;
   --td-input-vertical-padding: 0;
   --td-button-font-weight: normal;
-  background-image: url("https://yjb-1376872341.cos.ap-shanghai.myqcloud.com/public/consultation.webp");
+  background-image: url("https://cos.yesmilesh.com/public/consultation.webp");
   background-size: 100%;
   background-repeat: no-repeat;
 }
